@@ -1,7 +1,11 @@
 import React from 'react';
+
 import {View, Text, StyleSheet, Button} from 'react-native';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+// for translation
+import "./i18n.config";
+import {useTranslation, initReactI18next} from "react-i18next";
 
 const Stack = createNativeStackNavigator();
 
@@ -17,10 +21,10 @@ const MyStack = () => {
 };
 
 const HomeScreen = ({navigation}) => {
-  console.log(navigation);
+  const {t} = useTranslation();
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Hallo</Text>
+      <Text style={styles.text}>{t("HELLO")}</Text>
       <Button
         title="Gehe zum Lernmodus"
         onPress={() => navigation.navigate('Lernmodus')}
