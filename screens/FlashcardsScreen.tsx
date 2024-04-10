@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 
 import {View, Text, Pressable, StyleSheet, Dimensions} from 'react-native';
 import Animated, {
@@ -25,7 +25,10 @@ const Flashcard = (props: {
   definition: string;
   words: Array<myWordObj>;
   setWords: React.Dispatch<React.SetStateAction<Array<myWordObj>>>;
+  disableGesture?: boolean; // optional
 }) => {
+  const disableGesture = props.disableGesture ?? false;
+
   // Animation, turn card
   const rotationF = useSharedValue(0);
   const rotationB = useSharedValue(180);
@@ -83,8 +86,11 @@ const Flashcard = (props: {
     'worklet';
     if (props.words.length > 1) {
       runOnJS(props.setWords)(props.words.slice(1));
-      console.log(props.words);
-    } // handle ending, so that last card also comes back to correct position
+    } else {
+      // make function for end of set
+      console.log('You just finished this set');
+    }
+    // handle ending, so that last card also comes back to correct position
     // eventually update
     goBackDuration.value = 300;
     offset.value = {
@@ -106,16 +112,13 @@ const Flashcard = (props: {
     })
     .onFinalize(() => {
       if (offset.value.x > threshold) {
-        console.log('Word known', offset.value.x);
         handleSwipedWord();
         return null;
       } else if (offset.value.x < -threshold) {
-        console.log('Word unkown', offset.value.x);
         handleSwipedWord();
         return null;
       } else {
         goBackDuration.value = 300;
-        console.log('nothing');
         offset.value = {
           x: 0,
           y: 0,
@@ -129,8 +132,12 @@ const Flashcard = (props: {
   return (
     <GestureDetector gesture={pan}>
       <AnimatedPressable
-        onPress={animate}
-        style={[styles.pressBtn, swipeStyle]}>
+        onPress={() => {
+          if (!disableGesture) {
+            animate();
+          }
+        }}
+        style={[styles.pressBtn, !disableGesture ? swipeStyle : null]}>
         <Animated.View style={[frontStyle, styles.card]}>
           <Text style={styles.text}>{props.word}</Text>
         </Animated.View>
@@ -151,6 +158,18 @@ const FlashcardsScreen = () => {
     {word: 'comer', definition: 'to eat', key: 2},
     {word: 'hola', definition: 'hello', key: 3},
   ]);
+
+  const initialLength = words.length;
+
+  useEffect(() => {
+    const wordsWithEnding = [
+      ...words,
+      {word: '', definition: '', key: initialLength},
+    ];
+    setWords(wordsWithEnding);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     // after make car before alreacy appear but text just not visible
     <View style={styles.container}>
@@ -158,28 +177,38 @@ const FlashcardsScreen = () => {
         {words.map((wordObj, index) => {
           if (index === 0) {
             // set unique key
-            const nextWordObj =
-              words.length === 1
-                ? {word: '', definition: '', key: 4}
-                : words[index + 1];
-            return (
-              <>
-                <Flashcard
-                  key={nextWordObj.key}
-                  word={nextWordObj.word}
-                  definition={nextWordObj.definition}
-                  words={words}
-                  setWords={setWords}
-                />
+            if (words.length === 1) {
+              return (
                 <Flashcard
                   key={wordObj.key}
                   word={wordObj.word}
                   definition={wordObj.definition}
                   words={words}
                   setWords={setWords}
+                  disableGesture={true}
                 />
-              </>
-            );
+              );
+            } else {
+              const nextWordObj = words[index + 1];
+              return (
+                <>
+                  <Flashcard
+                    key={nextWordObj.key}
+                    word={nextWordObj.word}
+                    definition={nextWordObj.definition}
+                    words={words}
+                    setWords={setWords}
+                  />
+                  <Flashcard
+                    key={wordObj.key}
+                    word={wordObj.word}
+                    definition={wordObj.definition}
+                    words={words}
+                    setWords={setWords}
+                  />
+                </>
+              );
+            }
           }
         })}
       </GestureHandlerRootView>
@@ -217,5 +246,5 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
-console.log(Dimensions.get('window').width);
+
 export default FlashcardsScreen;
