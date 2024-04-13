@@ -17,7 +17,7 @@ import {
 interface myWordObj {
   word: string;
   definition: string;
-  key: number;
+  id: number;
 }
 
 const Flashcard = (props: {
@@ -84,9 +84,10 @@ const Flashcard = (props: {
 
   const handleSwipedWord = () => {
     'worklet';
-    if (props.words.length > 1) {
+    if (props.words.length > 2) {
       runOnJS(props.setWords)(props.words.slice(1));
-    } else {
+    } else if (props.words.length === 2) {
+      runOnJS(props.setWords)(props.words.slice(1));
       // make function for end of set
       console.log('You just finished this set');
     }
@@ -153,10 +154,10 @@ const Flashcard = (props: {
 // use useState and useEffect to update props
 const FlashcardsScreen = () => {
   const [words, setWords] = useState([
-    {word: 'nadar', definition: 'to swim', key: 0},
-    {word: 'trepar', definition: 'to climb', key: 1},
-    {word: 'comer', definition: 'to eat', key: 2},
-    {word: 'hola', definition: 'hello', key: 3},
+    {word: 'nadar', definition: 'to swim', id: 0},
+    {word: 'trepar', definition: 'to climb', id: 1},
+    {word: 'comer', definition: 'to eat', id: 2},
+    {word: 'hola', definition: 'hello', id: 3},
   ]);
 
   const initialLength = words.length;
@@ -164,7 +165,7 @@ const FlashcardsScreen = () => {
   useEffect(() => {
     const wordsWithEnding = [
       ...words,
-      {word: '', definition: '', key: initialLength},
+      {word: '', definition: '', id: initialLength},
     ];
     setWords(wordsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -176,11 +177,10 @@ const FlashcardsScreen = () => {
       <GestureHandlerRootView>
         {words.map((wordObj, index) => {
           if (index === 0) {
-            // set unique key
             if (words.length === 1) {
               return (
                 <Flashcard
-                  key={wordObj.key}
+                  key={wordObj.id}
                   word={wordObj.word}
                   definition={wordObj.definition}
                   words={words}
@@ -193,14 +193,14 @@ const FlashcardsScreen = () => {
               return (
                 <>
                   <Flashcard
-                    key={nextWordObj.key}
+                    key={nextWordObj.id}
                     word={nextWordObj.word}
                     definition={nextWordObj.definition}
                     words={words}
                     setWords={setWords}
                   />
                   <Flashcard
-                    key={wordObj.key}
+                    key={wordObj.id}
                     word={wordObj.word}
                     definition={wordObj.definition}
                     words={words}
