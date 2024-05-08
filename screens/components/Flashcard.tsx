@@ -11,16 +11,16 @@ import Animated, {
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
 
 interface myWordObj {
-  word: string;
+  term: string;
   definition: string;
   id: number;
 }
 
 const Flashcard = (props: {
-  word: string;
+  term: string;
   definition: string;
-  words: Array<myWordObj>;
-  setWords: React.Dispatch<React.SetStateAction<Array<myWordObj>>>;
+  terms: Array<myWordObj>;
+  setTerms: React.Dispatch<React.SetStateAction<Array<myWordObj>>>;
   disableGesture?: boolean; // optional
 }) => {
   const disableGesture = props.disableGesture ?? false;
@@ -80,10 +80,10 @@ const Flashcard = (props: {
 
   const handleSwipedWord = () => {
     'worklet';
-    if (props.words.length > 2) {
-      runOnJS(props.setWords)(props.words.slice(1));
-    } else if (props.words.length === 2) {
-      runOnJS(props.setWords)(props.words.slice(1));
+    if (props.terms.length > 2) {
+      runOnJS(props.setTerms)(props.terms.slice(1));
+    } else if (props.terms.length === 2) {
+      runOnJS(props.setTerms)(props.terms.slice(1));
       // make function for end of set
       console.log('You just finished this set');
     }
@@ -136,7 +136,7 @@ const Flashcard = (props: {
         }}
         style={[styles.pressBtn, !disableGesture ? swipeStyle : null]}>
         <Animated.View style={[frontStyle, styles.card]}>
-          <Text style={styles.text}>{props.word}</Text>
+          <Text style={styles.text}>{props.term}</Text>
         </Animated.View>
         <Animated.View style={[backStyle, styles.card]}>
           <Text style={styles.text}>{props.definition}</Text>

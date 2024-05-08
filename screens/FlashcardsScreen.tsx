@@ -5,62 +5,60 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import Flashcard from './components/Flashcard';
 
+import {retrieveDataFromTable} from './handleData';
+
 // props need to be updated, maybe in the future add example sentences
 // use useState and useEffect to update props
 const FlashcardsScreen = () => {
-  const [words, setWords] = useState([
-    {word: 'nadar', definition: 'to swim', id: 0},
-    {word: 'trepar', definition: 'to climb', id: 1},
-    {word: 'comer', definition: 'to eat', id: 2},
-    {word: 'hola', definition: 'hello', id: 3},
-  ]);
+  // TODO: use a variable for tableName
+  const [terms, setTerms] = useState(retrieveDataFromTable('spanisch') ?? []);
 
-  const initialLength = words.length;
+  const initialLength = terms.length;
 
   useEffect(() => {
-    const wordsWithEnding = [
-      ...words,
-      {word: '', definition: '', id: initialLength},
+    const termsWithEnding = [
+      ...terms,
+      {term: '', definition: '', id: initialLength},
     ];
-    setWords(wordsWithEnding);
+    setTerms(termsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  console.log(terms);
 
   return (
     // after make card before already appear but text just not visible
     <View style={styles.container}>
       <GestureHandlerRootView>
-        {words.map((wordObj, index) => {
+        {terms.map((wordObj, index) => {
           if (index === 0) {
-            if (words.length === 1) {
-              console.log(wordObj.id);
+            if (terms.length === 1) {
               return (
                 <Flashcard
                   key={wordObj.id}
-                  word={wordObj.word}
+                  term={wordObj.term}
                   definition={wordObj.definition}
-                  words={words}
-                  setWords={setWords}
+                  terms={terms}
+                  setTerms={setTerms}
                   disableGesture={true}
                 />
               );
             } else {
-              const nextWordObj = words[index + 1];
-              console.log(wordObj.id, nextWordObj.id);
+              const nextWordObj = terms[index + 1];
               return (
                 // each object, even if not rendered has to have an unique key
                 <React.Fragment key={wordObj.id}>
                   <Flashcard
-                    word={nextWordObj.word}
+                    term={nextWordObj.term}
                     definition={nextWordObj.definition}
-                    words={words}
-                    setWords={setWords}
+                    terms={terms}
+                    setTerms={setTerms}
                   />
                   <Flashcard
-                    word={wordObj.word}
+                    term={wordObj.term}
                     definition={wordObj.definition}
-                    words={words}
-                    setWords={setWords}
+                    terms={terms}
+                    setTerms={setTerms}
                   />
                 </React.Fragment>
               );
