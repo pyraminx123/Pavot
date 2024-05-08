@@ -27,12 +27,13 @@ const FlashcardsScreen = () => {
   }, []);
 
   return (
-    // after make car before alreacy appear but text just not visible
+    // after make card before already appear but text just not visible
     <View style={styles.container}>
       <GestureHandlerRootView>
         {words.map((wordObj, index) => {
           if (index === 0) {
             if (words.length === 1) {
+              console.log(wordObj.id);
               return (
                 <Flashcard
                   key={wordObj.id}
@@ -45,23 +46,23 @@ const FlashcardsScreen = () => {
               );
             } else {
               const nextWordObj = words[index + 1];
+              console.log(wordObj.id, nextWordObj.id);
               return (
-                <>
+                // each object, even if not rendered has to have an unique key
+                <React.Fragment key={wordObj.id}>
                   <Flashcard
-                    key={nextWordObj.id}
                     word={nextWordObj.word}
                     definition={nextWordObj.definition}
                     words={words}
                     setWords={setWords}
                   />
                   <Flashcard
-                    key={wordObj.id}
                     word={wordObj.word}
                     definition={wordObj.definition}
                     words={words}
                     setWords={setWords}
                   />
-                </>
+                </React.Fragment>
               );
             }
           }
