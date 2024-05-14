@@ -12,42 +12,50 @@ const deleteTable = tableName => {
 
 const createFolder = folderName => {
   try {
-    db.execute(`CREATE TABLE ${folderName} (setId INT PRIMARY KEY, set TEXT)`);
-  } catch {
-    console.error(`Some error occured trying to create a table ${folderName}`);
+    db.execute(
+      `CREATE TABLE [${folderName}] (setId INT PRIMARY KEY, deck TEXT)`,
+    );
+  } catch (error) {
+    console.error(
+      `Some error occured trying to create a table ${folderName}`,
+      error,
+    );
   }
 };
 
-const createSet = (setName, folderName) => {
+const createDeck = (deckName, folderName) => {
   try {
     db.execute(
-      `CREATE TABLE ${setName} (
+      `CREATE TABLE ${deckName} (
         id INT PRIMARY KEY,
         term TEXT,
         definition TEXT,
         folderID INT,
-        FOREIGN KEY (folderID) REFERENCES ${folderName}(setID)
+        FOREIGN KEY (folderID) REFERENCES ${folderName}(deckID)
       );`,
     );
-  } catch {
-    console.error('Table already exists.');
-  }
-};
-
-const insertIntoFolder = (folderName, setName) => {
-  try {
-    db.execute(`INSERT INTO ${folderName} (set) VALUES (?);`, setName);
-  } catch {
+  } catch (error) {
     console.error(
-      `Some error occured trying to insert ${setName} into ${folderName}`,
+      `Some error occured trying to create a table ${deckName}`,
+      error,
     );
   }
 };
 
-const insertIntoSet = (setName, term, definition, folderID) => {
+const insertIntoFolder = (folderName, deckName) => {
+  try {
+    db.execute(`INSERT INTO ${folderName} (set) VALUES (?);`, deckName);
+  } catch {
+    console.error(
+      `Some error occured trying to insert ${deckName} into ${folderName}`,
+    );
+  }
+};
+
+const insertIntoSet = (deckName, term, definition, folderID) => {
   try {
     db.execute(
-      `INSERT INTO ${setName} (term, definition, folderID)
+      `INSERT INTO ${deckName} (term, definition, folderID)
         VALUES (?, ?, ?);`,
       [term, definition, folderID],
     );
@@ -58,22 +66,16 @@ const insertIntoSet = (setName, term, definition, folderID) => {
 
 const retrieveDataFromTable = tableName => {
   try {
-    const res = db.execute(`SELECT * FROM ${tableName}`).rows?._array;
+    const res = db.execute(`SELECT * FROM ${tableName}`);
     return res;
   } catch {
-    return [
-      {
-        term: 'No such table exists!',
-        definition: "I'm sorry you have to experience this",
-        id: 0,
-      },
-    ];
+    console.error(`No such table ${tableName} exists`);
   }
 };
 
 export {
   createFolder,
-  createSet,
+  createDeck,
   deleteTable,
   insertIntoSet,
   insertIntoFolder,
