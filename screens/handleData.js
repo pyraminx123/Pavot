@@ -10,28 +10,46 @@ const deleteTable = tableName => {
   }
 };
 
-const createTable = tableName => {
+const createFolder = folderName => {
+  try {
+    db.execute(`CREATE TABLE ${folderName} (setId INT PRIMARY KEY, set TEXT)`);
+  } catch {
+    console.error(`Some error occured trying to create a table ${folderName}`);
+  }
+};
+
+const createSet = (setName, folderName) => {
   try {
     db.execute(
-      `CREATE TABLE ${tableName} (id INT PRIMARY KEY,
-        term varchar(255),
-        definition varchar(255));`,
+      `CREATE TABLE ${setName} (
+        id INT PRIMARY KEY,
+        term TEXT,
+        definition TEXT,
+        folderID INT,
+        FOREIGN KEY (folderID) REFERENCES ${folderName}(setID)
+      );`,
     );
   } catch {
     console.error('Table already exists.');
   }
 };
 
-const insertIntoTable = (tableName, term, definition) => {
-  const arrayWithID = db.execute(`SELECT id FROM ${tableName}`).rows?._array;
-  console.log('the array:', arrayWithID);
-  const id = arrayWithID.length === 0 ? 0 : arrayWithID[arrayWithID.length - 1];
-  console.log(id);
+const insertIntoFolder = (folderName, setName) => {
+  try {
+    db.execute(`INSERT INTO ${folderName} (set) VALUES (?);`, setName);
+  } catch {
+    console.error(
+      `Some error occured trying to insert ${setName} into ${folderName}`,
+    );
+  }
+};
+
+const insertIntoSet = (setName, term, definition, folderID) => {
   try {
     db.execute(
-      `INSERT INTO ${tableName} (id, term, definition)
+      `INSERT INTO ${setName} (term, definition, folderID)
         VALUES (?, ?, ?);`,
-      [id, term, definition],
+      [term, definition, folderID],
     );
   } catch {
     console.error('Row already exists or no such table exists.');
@@ -53,4 +71,11 @@ const retrieveDataFromTable = tableName => {
   }
 };
 
-export {createTable, deleteTable, insertIntoTable, retrieveDataFromTable};
+export {
+  createFolder,
+  createSet,
+  deleteTable,
+  insertIntoSet,
+  insertIntoFolder,
+  retrieveDataFromTable,
+};
