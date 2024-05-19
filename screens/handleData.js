@@ -2,6 +2,10 @@ import {open} from '@op-engineering/op-sqlite';
 
 const db = open({name: 'myDb.sqlite'});
 
+const getFolders = () => {
+  return db;
+};
+
 const deleteTable = tableName => {
   try {
     db.execute(`DROP TABLE ${tableName}`);
@@ -13,7 +17,7 @@ const deleteTable = tableName => {
 const createFolder = folderName => {
   try {
     db.execute(
-      `CREATE TABLE [${folderName}] (setId INT PRIMARY KEY, deck TEXT)`,
+      `CREATE TABLE ${folderName} (deckID INTEGER PRIMARY KEY, deck TEXT);`,
     );
   } catch (error) {
     console.error(
@@ -27,11 +31,11 @@ const createDeck = (deckName, folderName) => {
   try {
     db.execute(
       `CREATE TABLE ${deckName} (
-        id INT PRIMARY KEY,
+        id INTEGER PRIMARY KEY,
         term TEXT,
         definition TEXT,
-        folderID INT,
-        FOREIGN KEY (folderID) REFERENCES ${folderName}(deckID)
+        deckID INTEGER,
+        FOREIGN KEY (deckID) REFERENCES ${folderName}(deckID)
       );`,
     );
   } catch (error) {
@@ -42,17 +46,30 @@ const createDeck = (deckName, folderName) => {
   }
 };
 
-const insertIntoFolder = (folderName, deckName) => {
+// ! it deletes a row within a folder and not the entire table!
+const deleteDeck = (folderName, deckID) => {
   try {
-    db.execute(`INSERT INTO ${folderName} (set) VALUES (?);`, deckName);
-  } catch {
+    db.execute(`DELETE FROM ${folderName} WHERE deckID=${deckID};`);
+  } catch (error) {
     console.error(
-      `Some error occured trying to insert ${deckName} into ${folderName}`,
+      `Some error ocurred trying to delete a deck from ${folderName}`,
+      error,
     );
   }
 };
 
-const insertIntoSet = (deckName, term, definition, folderID) => {
+const insertIntoFolder = (folderName, deckName) => {
+  try {
+    db.execute(`INSERT INTO ${folderName} (deck) VALUES (?);`, [deckName]);
+  } catch (error) {
+    console.error(
+      `Some error occured trying to insert ${deckName} into ${folderName}`,
+      error,
+    );
+  }
+};
+
+const insertIntoDeck = (deckName, term, definition, folderID) => {
   try {
     db.execute(
       `INSERT INTO ${deckName} (term, definition, folderID)
@@ -66,7 +83,7 @@ const insertIntoSet = (deckName, term, definition, folderID) => {
 
 const retrieveDataFromTable = tableName => {
   try {
-    const res = db.execute(`SELECT * FROM ${tableName}`);
+    const res = db.execute(`SELECT * FROM ${tableName}`).rows?._array;
     return res;
   } catch {
     console.error(`No such table ${tableName} exists`);
@@ -77,7 +94,9 @@ export {
   createFolder,
   createDeck,
   deleteTable,
-  insertIntoSet,
+  deleteDeck,
+  insertIntoDeck,
   insertIntoFolder,
   retrieveDataFromTable,
+  getFolders,
 };
