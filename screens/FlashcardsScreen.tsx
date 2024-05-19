@@ -11,7 +11,7 @@ import {retrieveDataFromTable} from './handleData';
 // use useState and useEffect to update props
 const FlashcardsScreen = () => {
   // TODO: use a variable for tableName
-  const [terms, setTerms] = useState(retrieveDataFromTable('spanisch') ?? []);
+  const [terms, setTerms] = useState(retrieveDataFromTable('spanish') ?? []);
 
   const initialLength = terms.length;
 
@@ -27,7 +27,7 @@ const FlashcardsScreen = () => {
   console.log(terms);
 
   return (
-    // after make card before already appear but text just not visible
+    // TODO after make card before already appear but text just not visible
     <View style={styles.container}>
       <GestureHandlerRootView>
         {terms.map((wordObj, index) => {

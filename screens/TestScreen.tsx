@@ -1,8 +1,23 @@
 import React, {useState} from 'react';
 
-import {View, Text, Pressable, StyleSheet, Modal} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  Modal,
+  TextInput,
+} from 'react-native';
 
-import {createTable, deleteTable, insertIntoTable} from './handleData.js';
+import {
+  createFolder,
+  createDeck,
+  deleteDeck,
+  deleteTable,
+  retrieveDataFromTable,
+  insertIntoFolder,
+  getFolders,
+} from './handleData.js';
 
 const QuestionModal = (props: {
   question: String;
@@ -16,6 +31,7 @@ const QuestionModal = (props: {
       transparent={true}>
       <View style={styles.modalView}>
         <Text>{props.question}</Text>
+        <TextInput />
         <Pressable onPress={() => props.setModalVisible(false)}>
           <Text>close</Text>
         </Pressable>
@@ -26,11 +42,14 @@ const QuestionModal = (props: {
 
 function AddCardsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-
-  deleteTable('spanish');
-  createTable('spanish');
-
-  insertIntoTable('spanish', 'kleiner Beitrag', 'el granito de arena');
+  //deleteTable('Spanish');
+  //deleteTable('Unidad 1');
+  //createFolder('Spanish');
+  //createDeck('Unidad1', 'Spanish');
+  //insertIntoFolder('Spanish', 'Unidad 1');
+  //deleteDeck('Spanish', 3);
+  //console.log(retrieveDataFromTable('Spanish'));
+  console.log(getFolders);
 
   return (
     <View style={styles.centeredView}>
