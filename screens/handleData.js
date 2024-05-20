@@ -69,15 +69,18 @@ const insertIntoFolder = (folderName, deckName) => {
   }
 };
 
-const insertIntoDeck = (deckName, term, definition, folderID) => {
+const insertIntoDeck = (deckName, term, definition, deckID) => {
   try {
     db.execute(
-      `INSERT INTO ${deckName} (term, definition, folderID)
+      `INSERT INTO ${deckName} (term, definition, deckID)
         VALUES (?, ?, ?);`,
-      [term, definition, folderID],
+      [term, definition, deckID],
     );
-  } catch {
-    console.error('Row already exists or no such table exists.');
+  } catch (error) {
+    console.error(
+      `Some error occured trying to insert ${term} into ${deckName}`,
+      error,
+    );
   }
 };
 
