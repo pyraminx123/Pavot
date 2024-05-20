@@ -5,7 +5,7 @@ import {Text, View, StyleSheet, Pressable} from 'react-native';
 import DeckContainer from './components/deckContainer';
 import {retrieveDataFromTable} from './handleData';
 
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList, deckData} from '../App';
 
 type SetsProps = NativeStackScreenProps<AppStackParamList, 'Set'>;
@@ -14,13 +14,13 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
   const decks = route.params.decks;
   const folderName = route.params.tableName;
   console.log(decks);
-  const capitalize = (word: String) => {
+  const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
 
-  interface DeckData {
-    deckID: Number;
-    deck: String;
+  interface folderData {
+    deckID: number;
+    deck: string;
   }
 
   const navigateToFlashcardsScreen = (deckName: string) => {
@@ -33,7 +33,7 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>
-      {decks.map((deckData: DeckData) => {
+      {decks.map((deckData: folderData) => {
         return (
           <Pressable onPress={() => navigateToFlashcardsScreen('Unidad1')}>
             <DeckContainer name={deckData.deck} key={+deckData.deckID} />

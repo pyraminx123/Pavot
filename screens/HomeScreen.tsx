@@ -8,8 +8,8 @@ import {retrieveDataFromTable} from './handleData';
 import '../i18n.config';
 import {useTranslation} from 'react-i18next';
 
-import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {AppStackParamList, folderData} from '../App';
+import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {AppStackParamList, folderData} from '../App';
 
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
