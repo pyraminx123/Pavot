@@ -10,13 +10,13 @@ import {
 } from 'react-native';
 
 import {
-  createFolder,
-  createDeck,
-  deleteDeck,
-  deleteTable,
+  //insertIntoDeck,
+  //createFolder,
+  //createDeck,
+  //deleteDeck,
+  //deleteTable,
   retrieveDataFromTable,
-  insertIntoFolder,
-  getFolders,
+  //insertIntoFolder,
 } from './handleData.js';
 
 const QuestionModal = (props: {
@@ -47,9 +47,9 @@ function AddCardsScreen() {
   //createFolder('Spanish');
   //createDeck('Unidad1', 'Spanish');
   //insertIntoFolder('Spanish', 'Unidad 1');
+  //insertIntoDeck('Unidad1', 'el pozo', 'der Brunnen', 1);
   //deleteDeck('Spanish', 3);
-  //console.log(retrieveDataFromTable('Spanish'));
-  console.log(getFolders);
+  console.log(retrieveDataFromTable('Unidad1'));
 
   return (
     <View style={styles.centeredView}>

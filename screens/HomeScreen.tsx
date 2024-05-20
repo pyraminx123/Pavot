@@ -1,22 +1,26 @@
 import React from 'react';
-
 import {View, Text, StyleSheet, Button, Pressable} from 'react-native';
 
 import {Folder} from './components/Folder';
-
 import {retrieveDataFromTable} from './handleData';
 
 // for translation
 import '../i18n.config';
 import {useTranslation} from 'react-i18next';
 
-const HomeScreen = ({navigation}) => {
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import type {AppStackParamList, folderData} from '../App';
+
+type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
+
+const HomeScreen = ({navigation}: HomeProps) => {
   const {t} = useTranslation();
   // TODO use map()
-  const navigateToSetsScreen = (tableName: String) => {
+  const navigateToSetsScreen = (tableName: string) => {
+    const decks = retrieveDataFromTable(tableName) as folderData[];
     navigation.navigate('Set', {
-      data: retrieveDataFromTable(tableName),
-      tableName: tableName,
+      decks,
+      tableName,
     });
   };
   return (
@@ -38,10 +42,6 @@ const HomeScreen = ({navigation}) => {
           <Folder name={"Französisch - l'étranger"} />
         </Pressable>
       </View>
-      <Button
-        title="Go to flashcards"
-        onPress={() => navigation.navigate('Flashcards')}
-      />
       <Button title="Add" onPress={() => navigation.navigate('Add')} />
     </View>
   );

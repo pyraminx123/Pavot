@@ -1,13 +1,19 @@
 import React from 'react';
 
-import {Text, View, StyleSheet} from 'react-native';
+import {Text, View, StyleSheet, Pressable} from 'react-native';
 
 import DeckContainer from './components/deckContainer';
+import {retrieveDataFromTable} from './handleData';
 
-const SetsScreen = ({route, navigation}) => {
-  const data = route.params.data;
-  const tableName = route.params.tableName;
-  console.log(data);
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import type {AppStackParamList, deckData} from '../App';
+
+type SetsProps = NativeStackScreenProps<AppStackParamList, 'Set'>;
+
+const SetsScreen = ({route, navigation}: SetsProps) => {
+  const decks = route.params.decks;
+  const folderName = route.params.tableName;
+  console.log(decks);
   const capitalize = (word: String) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
@@ -17,11 +23,22 @@ const SetsScreen = ({route, navigation}) => {
     deck: String;
   }
 
+  const navigateToFlashcardsScreen = (deckName: string) => {
+    navigation.navigate(
+      'Flashcards',
+      retrieveDataFromTable(deckName) as deckData[],
+    );
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{capitalize(tableName)}</Text>
-      {data.map((deckData: DeckData) => {
-        return <DeckContainer name={deckData.deck} key={+deckData.deckID} />;
+      <Text style={styles.title}>{capitalize(folderName)}</Text>
+      {decks.map((deckData: DeckData) => {
+        return (
+          <Pressable onPress={() => navigateToFlashcardsScreen('Unidad1')}>
+            <DeckContainer name={deckData.deck} key={+deckData.deckID} />
+          </Pressable>
+        );
       })}
     </View>
   );

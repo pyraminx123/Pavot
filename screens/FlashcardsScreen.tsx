@@ -1,36 +1,45 @@
 import React, {useEffect, useState} from 'react';
-
 import {View, StyleSheet} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import Flashcard from './components/Flashcard';
 
-import {retrieveDataFromTable} from './handleData';
+import type {NativeStackScreenProps} from '@react-navigation/native-stack';
+import type {AppStackParamList} from '../App';
 
-// props need to be updated, maybe in the future add example sentences
+type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
+
+// ?? props need to be updated, maybe in the future add example sentences
 // use useState and useEffect to update props
-const FlashcardsScreen = () => {
-  // TODO: use a variable for tableName
-  const [terms, setTerms] = useState(retrieveDataFromTable('spanish') ?? []);
+const FlashcardsScreen = ({route}: FlashcardsProps) => {
+  const data = route.params as wordObj[];
+  const [terms, setTerms] = useState(data);
 
   const initialLength = terms.length;
 
   useEffect(() => {
     const termsWithEnding = [
       ...terms,
-      {term: '', definition: '', id: initialLength},
+      {term: '', definition: '', id: initialLength + 1, deckID: data[0].deckID},
     ];
     setTerms(termsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  console.log(terms);
+  interface wordObj {
+    deckID: number;
+    definition: string;
+    term: string;
+    id: number;
+  }
 
   return (
+    // TODO handle case where no words are added yet
     // TODO after make card before already appear but text just not visible
+    // TODO there could be a problem when the id is the same
     <View style={styles.container}>
       <GestureHandlerRootView>
-        {terms.map((wordObj, index) => {
+        {terms.map((wordObj: wordObj, index: number) => {
           if (index === 0) {
             if (terms.length === 1) {
               return (

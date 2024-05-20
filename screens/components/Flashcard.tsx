@@ -10,17 +10,18 @@ import Animated, {
 } from 'react-native-reanimated';
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
 
-interface myWordObj {
-  term: string;
+interface wordObj {
+  deckID: number;
   definition: string;
+  term: string;
   id: number;
 }
 
 const Flashcard = (props: {
   term: string;
   definition: string;
-  terms: Array<myWordObj>;
-  setTerms: React.Dispatch<React.SetStateAction<Array<myWordObj>>>;
+  terms: Array<wordObj>;
+  setTerms: React.Dispatch<React.SetStateAction<Array<wordObj>>>;
   disableGesture?: boolean; // optional
 }) => {
   const disableGesture = props.disableGesture ?? false;
