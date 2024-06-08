@@ -2,8 +2,25 @@ import {open} from '@op-engineering/op-sqlite';
 
 const db = open({name: 'myDb.sqlite'});
 
-const getFolders = () => {
-  return db;
+const createFoldersTable = () => {
+  try {
+    db.execute(
+      'CREATE TABLE IF NOT EXISTS allFolders (folderID INTEGER PRIMARY KEY, folderName TEXT);',
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const insertIntoAllFolders = folderName => {
+  try {
+    db.execute('INSERT INTO allFolders (folderName) VALUES (?);', [folderName]);
+  } catch (error) {
+    console.error(
+      `Some error ocurred trying to insert ${folderName} into allFolders`,
+      error,
+    );
+  }
 };
 
 const deleteTable = tableName => {
@@ -14,11 +31,27 @@ const deleteTable = tableName => {
   }
 };
 
+// TODO also handle when input is only whitespaces
+// TODO whitespaces should be replaced with _
+// TODO the folderName can't have spaces, it can however be stored in allFolders correctly
 const createFolder = folderName => {
+  if (folderName.length === 0) {
+    console.log('Input is empty, no folder was created');
+    return;
+  }
   try {
     db.execute(
-      `CREATE TABLE ${folderName} (deckID INTEGER PRIMARY KEY, deck TEXT);`,
+      `CREATE TABLE ${folderName} (
+        deckID INTEGER PRIMARY KEY,
+        deck TEXT,
+        folderID INTEGER,
+        FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
+      );`,
     );
+    insertIntoAllFolders(folderName);
+    //console.log(
+    //  db.execute("SELECT name FROM sqlite_master WHERE type='table';").rows,
+    //);
   } catch (error) {
     console.error(
       `Some error occured trying to create a table ${folderName}`,
@@ -41,6 +74,26 @@ const createDeck = (deckName, folderName) => {
   } catch (error) {
     console.error(
       `Some error occured trying to create a table ${deckName}`,
+      error,
+    );
+  }
+};
+
+// TODO also delete decks associated with it!
+const deleteFolder = folderName => {
+  try {
+    db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
+  } catch (error) {
+    console.error(
+      `An error ocurred trying to delete ${folderName} from allFolders.`,
+      error,
+    );
+  }
+  try {
+    db.execute(`DROP TABLE IF EXISTS "${folderName}";`);
+  } catch (error) {
+    console.error(
+      `An error ocurred trying to delete the table ${folderName}.`,
       error,
     );
   }
@@ -69,6 +122,7 @@ const insertIntoFolder = (folderName, deckName) => {
   }
 };
 
+// TODO remove deckID
 const insertIntoDeck = (deckName, term, definition, deckID) => {
   try {
     db.execute(
@@ -94,12 +148,13 @@ const retrieveDataFromTable = tableName => {
 };
 
 export {
+  createFoldersTable,
   createFolder,
   createDeck,
   deleteTable,
   deleteDeck,
+  deleteFolder,
   insertIntoDeck,
   insertIntoFolder,
   retrieveDataFromTable,
-  getFolders,
 };
