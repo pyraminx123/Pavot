@@ -30,13 +30,15 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
     );
   };
 
+  console.log('Decks:', decks);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>
       {decks.map((deckData: folderData) => {
         return (
           <Pressable onPress={() => navigateToFlashcardsScreen('Unidad1')}>
-            <DeckContainer name={deckData.deck} key={+deckData.deckID} />
+            <DeckContainer name={deckData.deck} key={deckData.deckID} />
           </Pressable>
         );
       })}

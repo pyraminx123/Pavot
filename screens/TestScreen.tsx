@@ -9,16 +9,6 @@ import {
   TextInput,
 } from 'react-native';
 
-import {
-  //insertIntoDeck,
-  //createFolder,
-  //createDeck,
-  //deleteDeck,
-  //deleteTable,
-  retrieveDataFromTable,
-  //insertIntoFolder,
-} from './handleData.js';
-
 const QuestionModal = (props: {
   question: String;
   modalVisible: boolean;
@@ -42,14 +32,6 @@ const QuestionModal = (props: {
 
 function AddCardsScreen() {
   const [modalVisible, setModalVisible] = useState(false);
-  //deleteTable('Spanish');
-  //deleteTable('Unidad 1');
-  //createFolder('Spanish');
-  //createDeck('Unidad1', 'Spanish');
-  //insertIntoFolder('Spanish', 'Unidad 1');
-  //insertIntoDeck('Unidad1', 'el pozo', 'der Brunnen', 1);
-  //deleteDeck('Spanish', 3);
-  console.log(retrieveDataFromTable('Unidad1'));
 
   return (
     <View style={styles.centeredView}>
