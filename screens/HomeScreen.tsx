@@ -1,8 +1,17 @@
-import React from 'react';
-import {View, Text, StyleSheet, Button, Pressable} from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useEffect, useState} from 'react';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  Pressable,
+  ScrollView,
+} from 'react-native';
 
 import {Folder} from './components/Folder';
-import {retrieveDataFromTable} from './handleData';
+import AddFolder from './components/addFolder';
+import {retrieveDataFromTable, createFoldersTable} from './handleData';
 
 // for translation
 import '../i18n.config';
@@ -14,8 +23,9 @@ import {AppStackParamList, folderData} from '../App';
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
+  createFoldersTable();
   const {t} = useTranslation();
-  // TODO use map()
+
   const navigateToSetsScreen = (tableName: string) => {
     const decks = retrieveDataFromTable(tableName) as folderData[];
     navigation.navigate('Set', {
@@ -23,25 +33,38 @@ const HomeScreen = ({navigation}: HomeProps) => {
       tableName,
     });
   };
+
+  interface allFoldersArray {
+    folderID: number;
+    folderName: string;
+  }
+
+  // TODO rerender when new folder is added
+  const [allFolders, setAllFolders] = useState<allFoldersArray[]>([]);
+
+  const fetchFolders = async () => {
+    const folders = (await retrieveDataFromTable(
+      'allFolders',
+    )) as allFoldersArray[];
+    setAllFolders(folders);
+  };
+
+  useEffect(() => {
+    fetchFolders();
+  }, []);
+
+  console.log(allFolders, 'all folders');
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{t('HELLO')}</Text>
-      <View style={styles.containerHorizontal}>
-        <Pressable onPress={() => navigateToSetsScreen('spanish')}>
-          <Folder name={'Spanisch - Impresiones B1'} />
-        </Pressable>
-        <Pressable onPress={() => navigateToSetsScreen('spanish')}>
-          <Folder name={"Französisch - l'étranger"} />
-        </Pressable>
-      </View>
-      <View style={styles.containerHorizontal}>
-        <Pressable onPress={() => navigateToSetsScreen('spanish')}>
-          <Folder name={'Spanisch - Impresiones B1'} />
-        </Pressable>
-        <Pressable onPress={() => navigateToSetsScreen('spanish')}>
-          <Folder name={"Französisch - l'étranger"} />
-        </Pressable>
-      </View>
+      <ScrollView contentContainerStyle={styles.containerHorizontal}>
+        {allFolders?.map(folder => (
+          <Pressable onPress={() => navigateToSetsScreen(folder.folderName)}>
+            <Folder name={folder.folderName} key={folder.folderID} />
+          </Pressable>
+        ))}
+      </ScrollView>
+      <AddFolder onFolderAdded={fetchFolders} />
       <Button title="Add" onPress={() => navigation.navigate('Add')} />
     </View>
   );
@@ -50,6 +73,8 @@ const HomeScreen = ({navigation}: HomeProps) => {
 const styles = StyleSheet.create({
   containerHorizontal: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   folder: {
     borderBlockColor: 'black',
