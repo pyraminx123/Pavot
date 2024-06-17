@@ -4,9 +4,9 @@ import {
   View,
   Text,
   StyleSheet,
-  Button,
   Pressable,
-  ScrollView,
+  SafeAreaView,
+  FlatList,
 } from 'react-native';
 
 import {Folder} from './components/Folder';
@@ -39,14 +39,14 @@ const HomeScreen = ({navigation}: HomeProps) => {
     folderName: string;
   }
 
-  // TODO rerender when new folder is added
+  // rerender when new folder is added
   const [allFolders, setAllFolders] = useState<allFoldersArray[]>([]);
 
   const fetchFolders = async () => {
     const folders = (await retrieveDataFromTable(
       'allFolders',
     )) as allFoldersArray[];
-    setAllFolders(folders);
+    setAllFolders([...folders, {folderID: -1, folderName: 'AddFolder'}]);
   };
 
   useEffect(() => {
@@ -54,28 +54,33 @@ const HomeScreen = ({navigation}: HomeProps) => {
   }, []);
 
   console.log(allFolders, 'all folders');
+
+  // Folder component inside a Pressable
+  // varable has to be named item
+  const renderItem = ({item}: {item: allFoldersArray}) => {
+    if (item.folderID === -1) {
+      return <AddFolder onFolderAdded={fetchFolders} />;
+    } else {
+      return (
+        <Pressable onPress={() => navigateToSetsScreen(item.folderName)}>
+          <Folder name={item.folderName} />
+        </Pressable>
+      );
+    }
+  };
+
+  // TODO add keyExtraxtor?
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{t('HELLO')}</Text>
-      <ScrollView contentContainerStyle={styles.containerHorizontal}>
-        {allFolders?.map(folder => (
-          <Pressable onPress={() => navigateToSetsScreen(folder.folderName)}>
-            <Folder name={folder.folderName} key={folder.folderID} />
-          </Pressable>
-        ))}
-      </ScrollView>
-      <AddFolder onFolderAdded={fetchFolders} />
-      <Button title="Add" onPress={() => navigation.navigate('Add')} />
+      <SafeAreaView>
+        <FlatList numColumns={2} data={allFolders} renderItem={renderItem} />
+      </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  containerHorizontal: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'center',
-  },
   folder: {
     borderBlockColor: 'black',
     borderWidth: 3,
