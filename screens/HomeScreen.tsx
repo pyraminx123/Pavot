@@ -18,7 +18,7 @@ import '../i18n.config';
 import {useTranslation} from 'react-i18next';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {AppStackParamList, folderData} from '../App';
+import {AppStackParamList, decksWithinTable} from '../App';
 
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
@@ -27,11 +27,8 @@ const HomeScreen = ({navigation}: HomeProps) => {
   const {t} = useTranslation();
 
   const navigateToSetsScreen = (tableName: string) => {
-    const decks = retrieveDataFromTable(tableName) as folderData[];
-    navigation.navigate('Set', {
-      decks,
-      tableName,
-    });
+    const tableParam: decksWithinTable = { tableName };
+    navigation.navigate('Set', tableParam);
   };
 
   interface allFoldersArray {

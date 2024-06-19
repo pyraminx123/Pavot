@@ -14,13 +14,7 @@ export interface deckData {
   definition: string;
 }
 
-export interface folderData {
-  deck: string;
-  deckID: number;
-}
-
-interface decksWithinTable {
-  decks: folderData[];
+export interface decksWithinTable {
   tableName: string;
 }
 
