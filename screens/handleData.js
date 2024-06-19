@@ -1,6 +1,6 @@
-import {open} from '@op-engineering/op-sqlite';
+import { open } from '@op-engineering/op-sqlite';
 
-const db = open({name: 'myDb.sqlite'});
+const db = open({ name: 'myDb.sqlite' });
 
 const createFoldersTable = () => {
   try {
@@ -12,80 +12,55 @@ const createFoldersTable = () => {
   }
 };
 
-const insertIntoAllFolders = folderName => {
+const deleteTable = (tableName) => {
   try {
-    db.execute('INSERT INTO allFolders (folderName) VALUES (?);', [folderName]);
+    db.execute(`DROP TABLE IF EXISTS ${tableName}`);
   } catch (error) {
-    console.error(
-      `Some error ocurred trying to insert ${folderName} into allFolders`,
-      error,
-    );
-  }
-};
-
-const deleteTable = tableName => {
-  try {
-    db.execute(`DROP TABLE ${tableName}`);
-  } catch {
     console.error(`No such table ${tableName}.`);
   }
 };
 
-// TODO also handle when input is only whitespaces
-// TODO whitespaces should be replaced with _
-// TODO the folderName can't have spaces, it can however be stored in allFolders correctly
-const createFolder = folderName => {
+const createFolder = (folderName) => {
   if (folderName.length === 0) {
     console.log('Input is empty, no folder was created');
     return;
   }
   try {
+    const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9_]/g, '');
     db.execute(
-      `CREATE TABLE ${folderName} (
+      `CREATE TABLE IF NOT EXISTS ${sanitizedFolderName} (
         deckID INTEGER PRIMARY KEY,
-        deck TEXT,
+        deckName TEXT,
         folderID INTEGER,
         FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
       );`,
     );
-    insertIntoAllFolders(folderName);
-    //console.log(
-    //  db.execute("SELECT name FROM sqlite_master WHERE type='table';").rows,
-    //);
+    insertIntoAllFolders(folderName); // Note: Pass the original name for display purposes
   } catch (error) {
     console.error(
-      `Some error occured trying to create a table ${folderName}`,
+      `Some error occurred trying to create a table ${folderName}`,
       error,
     );
   }
 };
 
-const createDeck = (deckName, folderName) => {
+const insertIntoAllFolders = (folderName) => {
   try {
-    db.execute(
-      `CREATE TABLE ${deckName} (
-        id INTEGER PRIMARY KEY,
-        term TEXT,
-        definition TEXT,
-        deckID INTEGER,
-        FOREIGN KEY (deckID) REFERENCES ${folderName}(deckID)
-      );`,
-    );
+    db.execute('INSERT INTO allFolders (folderName) VALUES (?);', [folderName]);
   } catch (error) {
     console.error(
-      `Some error occured trying to create a table ${deckName}`,
+      `Some error occurred trying to insert ${folderName} into allFolders`,
       error,
     );
   }
 };
 
-// TODO also delete decks associated with it!
-const deleteFolder = folderName => {
+const deleteFolder = (folderName) => {
   try {
     db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
   } catch (error) {
     console.error(
-      `An error ocurred trying to delete ${folderName} from allFolders.`,
+      `An error occurred trying to delete ${folderName} from allFolders.`,
       error,
     );
   }
@@ -93,36 +68,87 @@ const deleteFolder = folderName => {
     db.execute(`DROP TABLE IF EXISTS "${folderName}";`);
   } catch (error) {
     console.error(
-      `An error ocurred trying to delete the table ${folderName}.`,
+      `An error occurred trying to delete the table ${folderName}.`,
       error,
     );
   }
 };
 
-// ! it deletes a row within a folder and not the entire table!
+const createDeck = (deckName, folderName) => {
+  if (deckName.length === 0) {
+    console.log('Input is empty, no deck was created');
+    return;
+  }
+  try {
+    const sanitizedDeckName = deckName.replace(/[^a-zA-Z0-9_]/g, '');
+    const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9_]/g, '');
+
+    db.execute(
+      `CREATE TABLE IF NOT EXISTS ${sanitizedDeckName} (
+        id INTEGER PRIMARY KEY,
+        term TEXT,
+        definition TEXT,
+        deckID INTEGER,
+        FOREIGN KEY (deckID) REFERENCES ${sanitizedFolderName}(deckID)
+      );`,
+    );
+    insertIntoFolder(folderName, deckName); // Pass the original folderName for display purposes
+  } catch (error) {
+    console.log('deckName:', deckName, 'folderName:', folderName);
+    console.error(
+      `Some error occurred trying to create a table ${deckName}`,
+      error,
+    );
+  }
+};
+
+const insertIntoFolder = async (folderName, deckName) => {
+  try {
+    const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9_]/g, '');
+    const result = await db.execute(
+      'SELECT folderID FROM allFolders WHERE folderName=?',
+      [folderName],
+    );
+    console.log('Query result:', result);
+
+    const rowsArray = result.rows._array;
+
+    if (rowsArray.length > 0) {
+      const folderID = rowsArray[0].folderID;
+
+      try {
+        await db.execute(`INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`, [
+          deckName,
+          folderID,
+        ]);
+      } catch (error) {
+        console.error(
+          `Some error occurred trying to insert ${deckName} into ${sanitizedFolderName}`,
+          error,
+        );
+      }
+    } else {
+      console.error(`No folderID found for folderName: ${folderName}`);
+    }
+  } catch (error) {
+    console.error(
+      'Some error occurred trying to get the folderID from allFolders',
+      error,
+    );
+  }
+};
+
 const deleteDeck = (folderName, deckID) => {
   try {
-    db.execute(`DELETE FROM ${folderName} WHERE deckID=${deckID};`);
+    db.execute(`DELETE FROM ${folderName} WHERE deckID=?;`, [deckID]);
   } catch (error) {
     console.error(
-      `Some error ocurred trying to delete a deck from ${folderName}`,
+      `Some error occurred trying to delete a deck from ${folderName}`,
       error,
     );
   }
 };
 
-const insertIntoFolder = (folderName, deckName) => {
-  try {
-    db.execute(`INSERT INTO ${folderName} (deck) VALUES (?);`, [deckName]);
-  } catch (error) {
-    console.error(
-      `Some error occured trying to insert ${deckName} into ${folderName}`,
-      error,
-    );
-  }
-};
-
-// TODO remove deckID
 const insertIntoDeck = (deckName, term, definition, deckID) => {
   try {
     db.execute(
@@ -132,18 +158,18 @@ const insertIntoDeck = (deckName, term, definition, deckID) => {
     );
   } catch (error) {
     console.error(
-      `Some error occured trying to insert ${term} into ${deckName}`,
+      `Some error occurred trying to insert ${term} into ${deckName}`,
       error,
     );
   }
 };
 
-const retrieveDataFromTable = tableName => {
+const retrieveDataFromTable = (tableName) => {
   try {
-    const res = db.execute(`SELECT * FROM ${tableName}`).rows?._array;
+    const res = db.execute(`SELECT * FROM ${tableName}`).rows._array;
     return res;
-  } catch {
-    console.error(`No such table ${tableName} exists`);
+  } catch (error) {
+    console.error(`No such table ${tableName} exists`, error);
   }
 };
 
@@ -155,6 +181,5 @@ export {
   deleteDeck,
   deleteFolder,
   insertIntoDeck,
-  insertIntoFolder,
   retrieveDataFromTable,
 };
