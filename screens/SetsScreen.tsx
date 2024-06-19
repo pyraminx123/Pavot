@@ -1,26 +1,25 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 
-import {Text, View, StyleSheet, Pressable} from 'react-native';
+import {Text, View, StyleSheet, Pressable, FlatList, SafeAreaView} from 'react-native';
 
 import DeckContainer from './components/deckContainer';
+import AddDeck from './components/addDeck';
 import {retrieveDataFromTable} from './handleData';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {AppStackParamList, deckData} from '../App';
+import {AppStackParamList, deckData} from '../App';
 
 type SetsProps = NativeStackScreenProps<AppStackParamList, 'Set'>;
 
 const SetsScreen = ({route, navigation}: SetsProps) => {
-  const decks = route.params.decks;
   const folderName = route.params.tableName;
-  console.log(decks);
   const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
 
   interface folderData {
     deckID: number;
-    deck: string;
+    deckName: string;
   }
 
   const navigateToFlashcardsScreen = (deckName: string) => {
@@ -30,18 +29,40 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
     );
   };
 
+  const [decks, setDecks] = useState<folderData[]>([]);
+
+  const fetchDecks = async () => {
+    const decks = (await retrieveDataFromTable(
+      folderName
+    )) as folderData[];
+    setDecks([...decks, {deckID: -1, deckName: 'AddDeck'}]);
+  };
+
+  useEffect(() => {
+    fetchDecks();
+  }, []);
+
   console.log('Decks:', decks);
 
+  const renderItem = ({item}: {item: deckData}) => {
+    if (item.deckID === -1) {
+      return <AddDeck onDeckAdded={fetchDecks} />;
+    } else {
+      return (
+        <Pressable>
+          <Text>Hi</Text>
+        </Pressable>
+      );
+    }
+  };
+
+  // TODO 1: render Data 2: add Deck (see add Folder)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>
-      {decks.map((deckData: folderData) => {
-        return (
-          <Pressable onPress={() => navigateToFlashcardsScreen('Unidad1')}>
-            <DeckContainer name={deckData.deck} key={deckData.deckID} />
-          </Pressable>
-        );
-      })}
+      <SafeAreaView>
+        <Text>Hi</Text>
+      </SafeAreaView>
     </View>
   );
 };
