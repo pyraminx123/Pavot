@@ -14,13 +14,14 @@ const QuestionModal = (props: {
   question: string;
   modalVisible: boolean;
   setModalVisible: Function;
-  value: string;
-  setValue: Function;
+  deckName: string;
+  setDeckName: Function;
   onDeckAdded: Function;
+  folderName: string;
 }) => {
   const onClose = async () => {
     await props.setModalVisible(false);
-    createDeck(props.value);
+    createDeck(props.deckName, props.folderName);
     props.onDeckAdded();
   };
 
@@ -32,8 +33,8 @@ const QuestionModal = (props: {
       <View style={styles.modalView}>
         <Text>{props.question}</Text>
         <TextInput
-          value={props.value}
-          onChangeText={text => props.setValue(text)}
+          value={props.deckName}
+          onChangeText={text => props.setDeckName(text)}
           style={styles.textInput}
         />
         <Pressable onPress={() => onClose()}>
@@ -44,8 +45,8 @@ const QuestionModal = (props: {
   );
 };
 
-// Define the AddFolder component
-const AddDeck = (props: {onDeckAdded: Function}) => {
+// Define the AddDeck component
+const AddDeck = (props: {onDeckAdded: Function, folderName: string}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
 
@@ -56,30 +57,29 @@ const AddDeck = (props: {onDeckAdded: Function}) => {
 
   return (
     <View>
-      <Pressable style={styles.folder} onPress={openModal}>
+      <Pressable style={styles.container} onPress={openModal}>
         <Text style={styles.text}>+</Text>
       </Pressable>
       <QuestionModal
         question={'Deck name?'}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        value={inputValue}
-        setValue={setInputValue}
+        deckName={inputValue}
+        setDeckName={setInputValue}
         onDeckAdded={props.onDeckAdded}
+        folderName={props.folderName}
       />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  folder: {
+  container: {
     borderBlockColor: 'black',
-    borderWidth: 3,
+    borderWidth: 2.5,
     borderRadius: 15,
     padding: 10,
-    height: 130,
-    width: 150,
-    margin: 0,
+    margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },

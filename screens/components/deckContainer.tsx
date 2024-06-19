@@ -2,7 +2,7 @@ import React from 'react';
 
 import {View, Text, StyleSheet} from 'react-native';
 
-const DeckContainer = (props: {name: String}) => {
+const DeckContainer = (props: {name: string}) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{props.name}</Text>

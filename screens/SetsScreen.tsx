@@ -44,13 +44,13 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
 
   console.log('Decks:', decks);
 
-  const renderItem = ({item}: {item: deckData}) => {
+  const renderItem = ({item}: {item: folderData}) => {
     if (item.deckID === -1) {
-      return <AddDeck onDeckAdded={fetchDecks} />;
+      return <AddDeck onDeckAdded={fetchDecks} folderName={folderName} />;
     } else {
       return (
-        <Pressable>
-          <Text>Hi</Text>
+        <Pressable onPress={() => navigateToFlashcardsScreen(item.deckName)}>
+          <DeckContainer name={item.deckName} />
         </Pressable>
       );
     }
@@ -61,7 +61,7 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>
       <SafeAreaView>
-        <Text>Hi</Text>
+        <FlatList numColumns={1} data={decks} renderItem={renderItem} />
       </SafeAreaView>
     </View>
   );
