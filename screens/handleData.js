@@ -1,6 +1,6 @@
-import { open } from '@op-engineering/op-sqlite';
+import {open} from '@op-engineering/op-sqlite';
 
-const db = open({ name: 'myDb.sqlite' });
+const db = open({name: 'myDb.sqlite'});
 
 const createFoldersTable = () => {
   try {
@@ -9,38 +9,6 @@ const createFoldersTable = () => {
     );
   } catch (error) {
     console.error(error);
-  }
-};
-
-const deleteTable = (tableName) => {
-  try {
-    db.execute(`DROP TABLE IF EXISTS ${tableName}`);
-  } catch (error) {
-    console.error(`No such table ${tableName}.`);
-  }
-};
-
-const createFolder = (folderName) => {
-  if (folderName.length === 0) {
-    console.log('Input is empty, no folder was created');
-    return;
-  }
-  try {
-    const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9_]/g, '');
-    db.execute(
-      `CREATE TABLE IF NOT EXISTS ${sanitizedFolderName} (
-        deckID INTEGER PRIMARY KEY,
-        deckName TEXT,
-        folderID INTEGER,
-        FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
-      );`,
-    );
-    insertIntoAllFolders(folderName); // Note: Pass the original name for display purposes
-  } catch (error) {
-    console.error(
-      `Some error occurred trying to create a table ${folderName}`,
-      error,
-    );
   }
 };
 
@@ -55,7 +23,33 @@ const insertIntoAllFolders = (folderName) => {
   }
 };
 
-const deleteFolder = (folderName) => {
+// TODO also handle when input is only whitespaces
+// TODO whitespaces should be replaced with _?
+// TODO the folderName can't have spaces, it can however be stored in allFolders correctly
+const createFolder = folderName => {
+  if (folderName.length === 0) {
+    console.log('Input is empty, no folder was created');
+    return;
+  }
+  try {
+    db.execute(
+      `CREATE TABLE IF NOT EXISTS ${folderName} (
+        deckID INTEGER PRIMARY KEY,
+        deckName TEXT,
+        folderID INTEGER,
+        FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
+      );`,
+    );
+    insertIntoAllFolders(folderName);
+  } catch (error) {
+    console.error(
+      `Some error occurred trying to create a table ${folderName}`,
+      error,
+    );
+  }
+};
+
+const deleteFolder = folderName => {
   try {
     db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
   } catch (error) {
@@ -80,19 +74,16 @@ const createDeck = (deckName, folderName) => {
     return;
   }
   try {
-    const sanitizedDeckName = deckName.replace(/[^a-zA-Z0-9_]/g, '');
-    const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9_]/g, '');
-
     db.execute(
-      `CREATE TABLE IF NOT EXISTS ${sanitizedDeckName} (
+      `CREATE TABLE IF NOT EXISTS ${deckName} (
         id INTEGER PRIMARY KEY,
         term TEXT,
         definition TEXT,
         deckID INTEGER,
-        FOREIGN KEY (deckID) REFERENCES ${sanitizedFolderName}(deckID)
+        FOREIGN KEY (deckID) REFERENCES ${folderName}(deckID)
       );`,
     );
-    insertIntoFolder(folderName, deckName); // Pass the original folderName for display purposes
+    insertIntoFolder(folderName, deckName);
   } catch (error) {
     console.log('deckName:', deckName, 'folderName:', folderName);
     console.error(
@@ -104,26 +95,22 @@ const createDeck = (deckName, folderName) => {
 
 const insertIntoFolder = async (folderName, deckName) => {
   try {
-    const sanitizedFolderName = folderName.replace(/[^a-zA-Z0-9_]/g, '');
     const result = await db.execute(
       'SELECT folderID FROM allFolders WHERE folderName=?',
       [folderName],
     );
-    console.log('Query result:', result);
-
     const rowsArray = result.rows._array;
-
+    console.log('rows', rowsArray);
     if (rowsArray.length > 0) {
       const folderID = rowsArray[0].folderID;
-
       try {
-        await db.execute(`INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`, [
+        await db.execute(`INSERT INTO ${folderName} (deckName, folderID) VALUES (?, ?);`, [
           deckName,
           folderID,
         ]);
       } catch (error) {
         console.error(
-          `Some error occurred trying to insert ${deckName} into ${sanitizedFolderName}`,
+          `Some error occurred trying to insert ${deckName} into ${folderName}`,
           error,
         );
       }
@@ -138,6 +125,8 @@ const insertIntoFolder = async (folderName, deckName) => {
   }
 };
 
+// ! it deletes a row within a folder and not the entire table!
+// TODO expand this delete function
 const deleteDeck = (folderName, deckID) => {
   try {
     db.execute(`DELETE FROM ${folderName} WHERE deckID=?;`, [deckID]);
@@ -149,6 +138,7 @@ const deleteDeck = (folderName, deckID) => {
   }
 };
 
+// TODO remove deckID
 const insertIntoDeck = (deckName, term, definition, deckID) => {
   try {
     db.execute(
@@ -164,7 +154,7 @@ const insertIntoDeck = (deckName, term, definition, deckID) => {
   }
 };
 
-const retrieveDataFromTable = (tableName) => {
+const retrieveDataFromTable = tableName => {
   try {
     const res = db.execute(`SELECT * FROM ${tableName}`).rows._array;
     return res;
@@ -177,7 +167,6 @@ export {
   createFoldersTable,
   createFolder,
   createDeck,
-  deleteTable,
   deleteDeck,
   deleteFolder,
   insertIntoDeck,
