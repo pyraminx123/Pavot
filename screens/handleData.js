@@ -2,6 +2,10 @@ import {open} from '@op-engineering/op-sqlite';
 
 const db = open({name: 'myDb.sqlite'});
 
+const sanitizeName = (name) => {
+  return name.replace(/[^a-zA-Z0-9_]/g, '_');
+};
+
 const createFoldersTable = () => {
   try {
     db.execute(
@@ -26,21 +30,22 @@ const insertIntoAllFolders = (folderName) => {
 // TODO also handle when input is only whitespaces
 // TODO whitespaces should be replaced with _?
 // TODO the folderName can't have spaces, it can however be stored in allFolders correctly
-const createFolder = folderName => {
-  if (folderName.length === 0) {
-    console.log('Input is empty, no folder was created');
+const createFolder = async folderName => {
+  if (folderName.trim().length === 0) {
+    console.log('Input is empty or whitespace, no folder was created');
     return;
   }
+  const sanitizedFolderName = sanitizeName(folderName)
   try {
-    db.execute(
-      `CREATE TABLE IF NOT EXISTS ${folderName} (
+    await db.execute(
+      `CREATE TABLE IF NOT EXISTS ${sanitizedFolderName} (
         deckID INTEGER PRIMARY KEY,
         deckName TEXT,
         folderID INTEGER,
         FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
       );`,
     );
-    insertIntoAllFolders(folderName);
+    await insertIntoAllFolders(folderName);
   } catch (error) {
     console.error(
       `Some error occurred trying to create a table ${folderName}`,
@@ -49,9 +54,10 @@ const createFolder = folderName => {
   }
 };
 
-const deleteFolder = folderName => {
+const deleteFolder = async folderName => {
+  const sanitizedFolderName = sanitizeName(folderName);
   try {
-    db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
+    await db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
   } catch (error) {
     console.error(
       `An error occurred trying to delete ${folderName} from allFolders.`,
@@ -59,41 +65,44 @@ const deleteFolder = folderName => {
     );
   }
   try {
-    db.execute(`DROP TABLE IF EXISTS "${folderName}";`);
+    await db.execute(`DROP TABLE IF EXISTS "${sanitizedFolderName}";`);
   } catch (error) {
     console.error(
-      `An error occurred trying to delete the table ${folderName}.`,
+      `An error occurred trying to delete the table ${sanitizedFolderName}.`,
       error,
     );
   }
 };
 
-const createDeck = (deckName, folderName) => {
-  if (deckName.length === 0) {
-    console.log('Input is empty, no deck was created');
+const createDeck = async (deckName, folderName) => {
+  if (deckName.trim().length === 0) {
+    console.log('Input is empty or whitespace, no deck was created');
     return;
   }
+  const sanitizedDeckName = sanitizeName(deckName);
+  const sanitizedFolderName = sanitizeName(folderName);
   try {
-    db.execute(
-      `CREATE TABLE IF NOT EXISTS ${deckName} (
+    await db.execute(
+      `CREATE TABLE IF NOT EXISTS ${sanitizedDeckName} (
         id INTEGER PRIMARY KEY,
         term TEXT,
         definition TEXT,
         deckID INTEGER,
-        FOREIGN KEY (deckID) REFERENCES ${folderName}(deckID)
+        FOREIGN KEY (deckID) REFERENCES ${sanitizedFolderName}(deckID)
       );`,
     );
-    insertIntoFolder(folderName, deckName);
+    await insertIntoFolder(folderName, deckName);
   } catch (error) {
     console.log('deckName:', deckName, 'folderName:', folderName);
     console.error(
-      `Some error occurred trying to create a table ${deckName}`,
+      `Some error occurred trying to create a table ${sanitizedDeckName}`,
       error,
     );
   }
 };
 
 const insertIntoFolder = async (folderName, deckName) => {
+  const sanitizedFolderName = sanitizeName(folderName);
   try {
     const result = await db.execute(
       'SELECT folderID FROM allFolders WHERE folderName=?',
@@ -104,13 +113,13 @@ const insertIntoFolder = async (folderName, deckName) => {
     if (rowsArray.length > 0) {
       const folderID = rowsArray[0].folderID;
       try {
-        await db.execute(`INSERT INTO ${folderName} (deckName, folderID) VALUES (?, ?);`, [
+        await db.execute(`INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`, [
           deckName,
           folderID,
         ]);
       } catch (error) {
         console.error(
-          `Some error occurred trying to insert ${deckName} into ${folderName}`,
+          `Some error occurred trying to insert ${deckName} into ${sanitizedFolderName}`,
           error,
         );
       }
