@@ -20,7 +20,7 @@ const QuestionModal = (props: {
 }) => {
   const onClose = async () => {
     await props.setModalVisible(false);
-    createFolder(props.value);
+    await createFolder(props.value);
     props.onFolderAdded();
   };
 

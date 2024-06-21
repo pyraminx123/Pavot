@@ -4,13 +4,12 @@ import {Text, View, StyleSheet, Pressable, FlatList, SafeAreaView} from 'react-n
 
 import DeckContainer from './components/deckContainer';
 import AddDeck from './components/addDeck';
-import {retrieveDataFromTable} from './handleData';
+import {deleteFolder, retrieveDataFromTable} from './handleData';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
 
 type SetsProps = NativeStackScreenProps<AppStackParamList, 'Set'>;
-
 const SetsScreen = ({route, navigation}: SetsProps) => {
   const folderName = route.params.tableName;
   const capitalize = (word: string) => {
@@ -56,7 +55,6 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
     }
   };
 
-  // TODO 1: render Data 2: add Deck (see add Folder)
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>

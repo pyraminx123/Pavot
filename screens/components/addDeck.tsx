@@ -21,7 +21,7 @@ const QuestionModal = (props: {
 }) => {
   const onClose = async () => {
     await props.setModalVisible(false);
-    createDeck(props.deckName, props.folderName);
+    await createDeck(props.deckName, props.folderName);
     props.onDeckAdded();
   };
 
