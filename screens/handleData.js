@@ -30,14 +30,14 @@ const insertIntoAllFolders = (folderName) => {
 // TODO also handle when input is only whitespaces
 // TODO whitespaces should be replaced with _?
 // TODO the folderName can't have spaces, it can however be stored in allFolders correctly
-const createFolder = async folderName => {
+const createFolder = folderName => {
   if (folderName.trim().length === 0) {
     console.log('Input is empty or whitespace, no folder was created');
     return;
   }
   const sanitizedFolderName = sanitizeName(folderName)
   try {
-    await db.execute(
+    db.execute(
       `CREATE TABLE IF NOT EXISTS ${sanitizedFolderName} (
         deckID INTEGER PRIMARY KEY,
         deckName TEXT,
@@ -45,7 +45,7 @@ const createFolder = async folderName => {
         FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
       );`,
     );
-    await insertIntoAllFolders(folderName);
+    insertIntoAllFolders(folderName);
   } catch (error) {
     console.error(
       `Some error occurred trying to create a table ${folderName}`,
@@ -54,10 +54,10 @@ const createFolder = async folderName => {
   }
 };
 
-const deleteFolder = async folderName => {
+const deleteFolder = folderName => {
   const sanitizedFolderName = sanitizeName(folderName);
   try {
-    await db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
+    db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
   } catch (error) {
     console.error(
       `An error occurred trying to delete ${folderName} from allFolders.`,
@@ -65,7 +65,7 @@ const deleteFolder = async folderName => {
     );
   }
   try {
-    await db.execute(`DROP TABLE IF EXISTS "${sanitizedFolderName}";`);
+    db.execute(`DROP TABLE IF EXISTS "${sanitizedFolderName}";`);
   } catch (error) {
     console.error(
       `An error occurred trying to delete the table ${sanitizedFolderName}.`,
@@ -74,7 +74,7 @@ const deleteFolder = async folderName => {
   }
 };
 
-const createDeck = async (deckName, folderName) => {
+const createDeck = (deckName, folderName) => {
   if (deckName.trim().length === 0) {
     console.log('Input is empty or whitespace, no deck was created');
     return;
@@ -82,7 +82,7 @@ const createDeck = async (deckName, folderName) => {
   const sanitizedDeckName = sanitizeName(deckName);
   const sanitizedFolderName = sanitizeName(folderName);
   try {
-    await db.execute(
+    db.execute(
       `CREATE TABLE IF NOT EXISTS ${sanitizedDeckName} (
         id INTEGER PRIMARY KEY,
         term TEXT,
@@ -91,7 +91,7 @@ const createDeck = async (deckName, folderName) => {
         FOREIGN KEY (deckID) REFERENCES ${sanitizedFolderName}(deckID)
       );`,
     );
-    await insertIntoFolder(folderName, deckName);
+    insertIntoFolder(folderName, deckName);
   } catch (error) {
     console.log('deckName:', deckName, 'folderName:', folderName);
     console.error(
@@ -101,10 +101,10 @@ const createDeck = async (deckName, folderName) => {
   }
 };
 
-const insertIntoFolder = async (folderName, deckName) => {
+const insertIntoFolder = (folderName, deckName) => {
   const sanitizedFolderName = sanitizeName(folderName);
   try {
-    const result = await db.execute(
+    const result = db.execute(
       'SELECT folderID FROM allFolders WHERE folderName=?',
       [folderName],
     );
@@ -113,7 +113,7 @@ const insertIntoFolder = async (folderName, deckName) => {
     if (rowsArray.length > 0) {
       const folderID = rowsArray[0].folderID;
       try {
-        await db.execute(`INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`, [
+        db.execute(`INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`, [
           deckName,
           folderID,
         ]);
@@ -147,13 +147,13 @@ const deleteDeck = (folderName, deckID) => {
   }
 };
 
-// TODO remove deckID
 const insertIntoDeck = async (folderName, deckName, term, definition) => {
+  const sanitizedDeckName = sanitizeName(deckName)
   const deckID = await db.execute(`SELECT deckID FROM ${folderName} WHERE deckName=?`, [deckName]).rows._array[0].deckID;
   console.log(deckID, 'id');
   try {
     db.execute(
-      `INSERT INTO ${deckName} (term, definition, deckID)
+      `INSERT INTO ${sanitizedDeckName} (term, definition, deckID)
         VALUES (?, ?, ?);`,
       [term, definition, deckID],
     );

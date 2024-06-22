@@ -20,7 +20,7 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   useEffect(() => {
     const termsWithEnding = [
       ...terms,
-      {term: '', definition: '', id: initialLength + 1, deckID: data[0].deckID},
+      {term: '', definition: '', id: initialLength + 1, deckID: -1},
     ];
     setTerms(termsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
