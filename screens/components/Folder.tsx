@@ -12,13 +12,12 @@ const Folder = (props: {name: String}) => {
 
 const styles = StyleSheet.create({
   folder: {
-    borderBlockColor: 'black',
-    borderWidth: 3,
     borderRadius: 15,
     padding: 10,
     height: 130,
     width: 150,
     margin: 10,
+    backgroundColor: 'white'
   },
   text: {
     fontSize: 25,

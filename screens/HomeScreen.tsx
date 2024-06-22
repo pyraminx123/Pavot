@@ -66,29 +66,25 @@ const HomeScreen = ({navigation}: HomeProps) => {
     }
   };
 
-  // TODO add keyExtraxtor?
   return (
     <View style={styles.container}>
       <Text style={styles.text}>{t('HELLO')}</Text>
       <SafeAreaView>
-        <FlatList numColumns={2} data={allFolders} renderItem={renderItem} />
+        <FlatList numColumns={2} data={allFolders} renderItem={renderItem} contentContainerStyle={styles.list} />
       </SafeAreaView>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  folder: {
-    borderBlockColor: 'black',
-    borderWidth: 3,
-    borderRadius: 15,
-    padding: 10,
-    height: 130,
-    width: 150,
-  },
   container: {
     flex: 1,
     alignItems: 'center',
+    backgroundColor: '#EDE6C3',
+  },
+  list: {
+    alignItems: 'center',
+    paddingBottom: 50,
   },
   text: {
     color: 'black',

@@ -75,13 +75,14 @@ const AddDeck = (props: {onDeckAdded: Function, folderName: string}) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderBlockColor: 'black',
-    borderWidth: 2.5,
+    backgroundColor: 'white',
     borderRadius: 15,
     padding: 10,
     margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    width: 350,
+    height: 70,
   },
   text: {
     fontSize: 25,

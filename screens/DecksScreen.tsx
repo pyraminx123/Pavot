@@ -61,7 +61,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>
       <SafeAreaView>
-        <FlatList numColumns={1} data={decks} renderItem={renderItem} />
+        <FlatList numColumns={1} data={decks} renderItem={renderItem} contentContainerStyle={styles.list}/>
       </SafeAreaView>
     </View>
   );
@@ -71,9 +71,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
+    backgroundColor: '#EDE6C3'
   },
   title: {
     fontSize: 42,
+  },
+  list: {
+    alignItems: 'center',
+    paddingBottom: 50,
   },
 });
 

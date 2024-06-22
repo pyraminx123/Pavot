@@ -11,7 +11,6 @@ import {createFolder} from '../handleData';
 
 // Define the QuestionModal component
 const QuestionModal = (props: {
-  question: string;
   modalVisible: boolean;
   setModalVisible: Function;
   value: string;
@@ -29,16 +28,20 @@ const QuestionModal = (props: {
       visible={props.modalVisible}
       onRequestClose={() => onClose()}
       transparent={true}>
-      <View style={styles.modalView}>
-        <Text>{props.question}</Text>
-        <TextInput
-          value={props.value}
-          onChangeText={text => props.setValue(text)}
-          style={styles.textInput}
-        />
-        <Pressable onPress={() => onClose()}>
-          <Text>Close</Text>
-        </Pressable>
+      <View style={styles.modalContainer}>
+        <View style={styles.modalView}>
+          <Text style={styles.question} >Create a new Folder</Text>
+          <TextInput
+            value={props.value}
+            onChangeText={text => props.setValue(text)}
+            style={styles.textInput}
+            placeholder='Enter folder name'
+            placeholderTextColor='rgba(0, 0, 0, 0.5)'
+          />
+          <Pressable onPress={() => onClose()} style={styles.closeBtn} >
+            <Text>Close</Text>
+          </Pressable>
+        </View>
       </View>
     </Modal>
   );
@@ -60,7 +63,6 @@ const AddFolder = (props: {onFolderAdded: Function}) => {
         <Text style={styles.text}>+</Text>
       </Pressable>
       <QuestionModal
-        question={'Folder name?'}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         value={inputValue}
@@ -73,28 +75,49 @@ const AddFolder = (props: {onFolderAdded: Function}) => {
 
 const styles = StyleSheet.create({
   folder: {
-    borderBlockColor: 'black',
-    borderWidth: 3,
     borderRadius: 15,
     height: 130,
     width: 150,
     margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: 'white',
   },
   text: {
     fontSize: 25,
   },
+  question: {
+    fontSize: 20,
+    margin: 20,
+  },
   textInput: {
+    height: 50,
+    width: 300,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    padding: 10,
+  },
+  closeBtn: {
+    margin: 20,
+    backgroundColor: 'white',
+    width: 120,
     height: 30,
-    width: 100,
+    borderRadius: 25,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   modalView: {
-    margin: 50,
-    backgroundColor: 'green',
+    backgroundColor: '#83B4E1',
     alignItems: 'center',
-    padding: 50,
     borderRadius: 25,
+    width: 345,
+    height: 200,
   },
 });
 

@@ -12,11 +12,13 @@ const DeckContainer = (props: {name: string}) => {
 
 const styles = StyleSheet.create({
   container: {
-    borderBlockColor: 'black',
-    borderWidth: 2.5,
     borderRadius: 15,
     padding: 10,
     margin: 10,
+    backgroundColor: 'white',
+    width: 350,
+    height: 70,
+    justifyContent: 'center',
   },
   text: {
     fontSize: 25,
