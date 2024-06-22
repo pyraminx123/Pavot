@@ -27,8 +27,8 @@ const HomeScreen = ({navigation}: HomeProps) => {
   const {t} = useTranslation();
 
   const navigateToSetsScreen = (tableName: string) => {
-    const tableParam: decksWithinTable = { tableName };
-    navigation.navigate('Set', tableParam);
+    const tableParam: decksWithinTable = {tableName};
+    navigation.navigate('Deck', tableParam);
   };
 
   interface allFoldersArray {

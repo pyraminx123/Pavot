@@ -4,17 +4,19 @@ import {Text, View, StyleSheet, Pressable, FlatList, SafeAreaView} from 'react-n
 
 import DeckContainer from './components/deckContainer';
 import AddDeck from './components/addDeck';
-import {deleteFolder, retrieveDataFromTable} from './handleData';
+import {insertIntoDeck, retrieveDataFromTable} from './handleData';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
 
-type SetsProps = NativeStackScreenProps<AppStackParamList, 'Set'>;
-const SetsScreen = ({route, navigation}: SetsProps) => {
+type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
+const DecksScreen = ({route, navigation}: DecksProps) => {
   const folderName = route.params.tableName;
   const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
+
+  //insertIntoDeck('Test', 'First', 'hello', 'bonjour')
 
   interface folderData {
     deckID: number;
@@ -30,10 +32,10 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
 
   const [decks, setDecks] = useState<folderData[]>([]);
 
-  const fetchDecks = async () => {
-    const decks = (await retrieveDataFromTable(
+  const fetchDecks = () => {
+    const decks = retrieveDataFromTable(
       folderName
-    )) as folderData[];
+    ) as folderData[];
     setDecks([...decks, {deckID: -1, deckName: 'AddDeck'}]);
   };
 
@@ -41,7 +43,7 @@ const SetsScreen = ({route, navigation}: SetsProps) => {
     fetchDecks();
   }, []);
 
-  console.log('Decks:', decks);
+  //console.log('Decks:', decks);
 
   const renderItem = ({item}: {item: folderData}) => {
     if (item.deckID === -1) {
@@ -75,4 +77,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SetsScreen;
+export default DecksScreen;
