@@ -148,7 +148,9 @@ const deleteDeck = (folderName, deckID) => {
 };
 
 // TODO remove deckID
-const insertIntoDeck = (deckName, term, definition, deckID) => {
+const insertIntoDeck = async (folderName, deckName, term, definition) => {
+  const deckID = await db.execute(`SELECT deckID FROM ${folderName} WHERE deckName=?`, [deckName]).rows._array[0].deckID;
+  console.log(deckID, 'id');
   try {
     db.execute(
       `INSERT INTO ${deckName} (term, definition, deckID)
