@@ -70,7 +70,12 @@ const HomeScreen = ({navigation}: HomeProps) => {
     <View style={styles.container}>
       <Text style={styles.text}>{t('HELLO')}</Text>
       <SafeAreaView>
-        <FlatList numColumns={2} data={allFolders} renderItem={renderItem} contentContainerStyle={styles.list} />
+        <FlatList
+          numColumns={2}
+          data={allFolders}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
       </SafeAreaView>
     </View>
   );

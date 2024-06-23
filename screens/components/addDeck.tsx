@@ -1,17 +1,10 @@
 import React, {useState} from 'react';
-import {
-  Pressable,
-  Text,
-  StyleSheet,
-  Modal,
-  View,
-  TextInput,
-} from 'react-native';
+import {Pressable, Text, StyleSheet, View} from 'react-native';
 import {createDeck} from '../handleData';
 import QuestionModal from './QuestionModal';
 
 // Define the AddDeck component
-const AddDeck = (props: {onDeckAdded: Function, folderName: string}) => {
+const AddDeck = (props: {onDeckAdded: Function; folderName: string}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
 

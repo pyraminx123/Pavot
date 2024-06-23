@@ -1,10 +1,5 @@
 import React, {useState} from 'react';
-import {
-  Pressable,
-  Text,
-  StyleSheet,
-  View,
-} from 'react-native';
+import {Pressable, Text, StyleSheet, View} from 'react-native';
 import QuestionModal from './QuestionModal';
 import {createFolder} from '../handleData';
 
