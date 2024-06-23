@@ -3,12 +3,16 @@ import React from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import AddWord from './addWord';
 
-const DeckContainer = (props: {name: string}) => {
+const DeckContainer = (props: {deckName: string; folderName: string}) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerLeft}>
-        <Text style={styles.text}>{props.name}</Text>
-        <AddWord />
+        <Text style={styles.text}>{props.deckName}</Text>
+        <AddWord
+          deckName={props.deckName}
+          folderName={props.folderName}
+          onWordAdded={() => console.log('Word added')}
+        />
       </View>
       {/* here comes the chart pie */}
     </View>

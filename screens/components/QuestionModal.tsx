@@ -56,6 +56,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderRadius: 15,
     padding: 10,
+    marginBottom: 10,
   },
   closeBtn: {
     margin: 20,
@@ -77,7 +78,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 25,
     width: 345,
-    height: 200,
   },
 });
 

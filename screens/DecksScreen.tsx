@@ -18,6 +18,7 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
 
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
+
 const DecksScreen = ({route, navigation}: DecksProps) => {
   const folderName = route.params.tableName;
   const capitalize = (word: string) => {
@@ -56,7 +57,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     } else {
       return (
         <Pressable onPress={() => navigateToFlashcardsScreen(item.deckName)}>
-          <DeckContainer name={item.deckName} />
+          <DeckContainer deckName={item.deckName} folderName={folderName} />
         </Pressable>
       );
     }

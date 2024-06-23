@@ -149,12 +149,10 @@ const Flashcard = (props: {
 
 const styles = StyleSheet.create({
   card: {
-    width: 300,
-    height: 200,
+    width: 320,
+    height: 180,
     backgroundColor: 'lightblue',
-    borderRadius: 25,
-    borderBlockColor: 'black',
-    borderWidth: 3,
+    borderRadius: 15,
     backfaceVisibility: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',

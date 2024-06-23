@@ -1,70 +1,13 @@
 import React, {useState} from 'react';
-import {
-  Pressable,
-  Text,
-  StyleSheet,
-  Modal,
-  View,
-  TextInput,
-} from 'react-native';
+import {Pressable, Text, StyleSheet, View} from 'react-native';
 import {insertIntoDeck} from '../handleData';
-
-// Define the QuestionModal component
-const QuestionModal = (props: {
-  modalVisible: boolean;
-  setModalVisible: Function;
-  deckName: string;
-  setTerm: Function;
-  setDefinition: Function;
-  onWordAdded: Function;
-  folderName: string;
-  term: string;
-  definition: string;
-}) => {
-  const onClose = async () => {
-    await props.setModalVisible(false);
-    await insertIntoDeck(
-      props.folderName,
-      props.deckName,
-      props.term,
-      props.definition,
-    );
-    props.onWordAdded();
-  };
-
-  return (
-    <Modal
-      visible={props.modalVisible}
-      onRequestClose={() => onClose()}
-      transparent={true}>
-      <View style={styles.modalView}>
-        <Text>Term?</Text>
-        <TextInput
-          value={props.term}
-          onChangeText={text => props.setTerm(text)}
-          style={styles.textInput}
-        />
-        <Text>Definition?</Text>
-        <TextInput
-          value={props.definition}
-          onChangeText={text => props.setDefinition(text)}
-          style={styles.textInput}
-        />
-        <Pressable onPress={() => onClose()}>
-          <Text>Close</Text>
-        </Pressable>
-      </View>
-    </Modal>
-  );
-};
+import QuestionModal from './QuestionModal';
 
 // Define the AddWord component
 const AddWord = (props: {
   onWordAdded: Function;
   folderName: string;
   deckName: string;
-  term: string;
-  definition: string;
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue1, setInputValue1] = useState('');
@@ -76,21 +19,30 @@ const AddWord = (props: {
     setModalVisible(true);
   };
 
+  const onClose = async () => {
+    await setModalVisible(false);
+    await insertIntoDeck(
+      props.folderName,
+      props.deckName,
+      inputValue1,
+      inputValue2,
+    );
+    props.onWordAdded();
+  };
+
   return (
     <View>
       <Pressable style={styles.container} onPress={openModal}>
         <Text style={styles.text}>+</Text>
       </Pressable>
       <QuestionModal
+        question={'Add a new word'}
+        placeholers={['Enter term', 'Enter definition']}
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
-        deckName={props.deckName}
-        setTerm={setInputValue1}
-        setDefinition={setInputValue2}
-        onWordAdded={props.onWordAdded}
-        folderName={props.folderName}
-        term={props.term}
-        definition={props.definition}
+        values={[inputValue1, inputValue2]}
+        setValues={[setInputValue1, setInputValue2]}
+        onClose={onClose}
       />
     </View>
   );
@@ -107,17 +59,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 20,
-  },
-  textInput: {
-    height: 30,
-    width: 100,
-  },
-  modalView: {
-    margin: 50,
-    backgroundColor: 'green',
-    alignItems: 'center',
-    padding: 50,
-    borderRadius: 25,
   },
 });
 
