@@ -18,7 +18,6 @@ const QuestionModal = (props: {
   placeholers: Array<string>;
   onClose: Function;
 }) => {
-
   return (
     <Modal
       visible={props.modalVisible}
@@ -28,16 +27,16 @@ const QuestionModal = (props: {
         <View style={styles.modalView}>
           <Text style={styles.question}>{props.question}</Text>
           {props.values.map((value, index) => (
-            <TextInput 
-              value={value} 
-              onChangeText={text => props.setValues[index](text)} 
+            <TextInput
+              value={value}
+              onChangeText={text => props.setValues[index](text)}
               style={styles.textInput}
               placeholder={props.placeholers[index]}
               placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
               key={index}
             />
           ))}
-          <Pressable onPress={() => props.onClose()} style={styles.closeBtn} >
+          <Pressable onPress={() => props.onClose()} style={styles.closeBtn}>
             <Text>Close</Text>
           </Pressable>
         </View>
