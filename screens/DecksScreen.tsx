@@ -1,10 +1,18 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 
-import {Text, View, StyleSheet, Pressable, FlatList, SafeAreaView} from 'react-native';
+import {
+  Text,
+  View,
+  StyleSheet,
+  Pressable,
+  FlatList,
+  SafeAreaView,
+} from 'react-native';
 
 import DeckContainer from './components/deckContainer';
 import AddDeck from './components/addDeck';
-import {insertIntoDeck, retrieveDataFromTable} from './handleData';
+import {retrieveDataFromTable} from './handleData';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
@@ -21,6 +29,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   interface folderData {
     deckID: number;
     deckName: string;
+    folderID: number;
   }
 
   const navigateToFlashcardsScreen = (deckName: string) => {
@@ -30,20 +39,16 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     );
   };
 
-  const [decks, setDecks] = useState<folderData[]>([]);
+  const [decks, setDecks] = useState<folderData[]>();
 
   const fetchDecks = () => {
-    const decks = retrieveDataFromTable(
-      folderName
-    ) as folderData[];
-    setDecks([...decks, {deckID: -1, deckName: 'AddDeck'}]);
+    const getDecks = retrieveDataFromTable(folderName) as folderData[];
+    setDecks([...getDecks, {deckID: -1, deckName: 'AddDeck', folderID: -1}]);
   };
 
   useEffect(() => {
     fetchDecks();
   }, []);
-
-  //console.log('Decks:', decks);
 
   const renderItem = ({item}: {item: folderData}) => {
     if (item.deckID === -1) {
@@ -61,7 +66,12 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(folderName)}</Text>
       <SafeAreaView>
-        <FlatList numColumns={1} data={decks} renderItem={renderItem} contentContainerStyle={styles.list}/>
+        <FlatList
+          numColumns={1}
+          data={decks}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
       </SafeAreaView>
     </View>
   );
@@ -71,7 +81,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#EDE6C3'
+    backgroundColor: '#EDE6C3',
   },
   title: {
     fontSize: 42,

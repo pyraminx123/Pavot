@@ -18,12 +18,17 @@ const QuestionModal = (props: {
   setDefinition: Function;
   onWordAdded: Function;
   folderName: string;
-  term: string,
-  definition: string
+  term: string;
+  definition: string;
 }) => {
   const onClose = async () => {
     await props.setModalVisible(false);
-    await insertIntoDeck(props.folderName, props.deckName, props.term, props.definition);
+    await insertIntoDeck(
+      props.folderName,
+      props.deckName,
+      props.term,
+      props.definition,
+    );
     props.onWordAdded();
   };
 
@@ -54,14 +59,20 @@ const QuestionModal = (props: {
 };
 
 // Define the AddWord component
-const AddWord = (props: {onWordAdded: Function, folderName: string, deckName: string, term: string, definition: string}) => {
+const AddWord = (props: {
+  onWordAdded: Function;
+  folderName: string;
+  deckName: string;
+  term: string;
+  definition: string;
+}) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [input1Value, setInput1Value] = useState('');
-  const [input2Value, setInput2Value] = useState('');
+  const [inputValue1, setInputValue1] = useState('');
+  const [inputValue2, setInputValue2] = useState('');
 
   const openModal = () => {
-    setInput1Value('');
-    setInput2Value('');
+    setInputValue1('');
+    setInputValue2('');
     setModalVisible(true);
   };
 
@@ -74,8 +85,8 @@ const AddWord = (props: {onWordAdded: Function, folderName: string, deckName: st
         modalVisible={modalVisible}
         setModalVisible={setModalVisible}
         deckName={props.deckName}
-        setTerm={setInput1Value}
-        setDefinition={setInput2Value}
+        setTerm={setInputValue1}
+        setDefinition={setInputValue2}
         onWordAdded={props.onWordAdded}
         folderName={props.folderName}
         term={props.term}
@@ -87,16 +98,15 @@ const AddWord = (props: {onWordAdded: Function, folderName: string, deckName: st
 
 const styles = StyleSheet.create({
   container: {
-    borderBlockColor: 'black',
-    borderWidth: 2.5,
+    backgroundColor: '#83B4E1',
+    width: 40,
+    height: 40,
     borderRadius: 15,
-    padding: 10,
-    margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   text: {
-    fontSize: 25,
+    fontSize: 20,
   },
   textInput: {
     height: 30,

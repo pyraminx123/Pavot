@@ -1,11 +1,16 @@
 import React from 'react';
 
 import {View, Text, StyleSheet} from 'react-native';
+import AddWord from './addWord';
 
 const DeckContainer = (props: {name: string}) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{props.name}</Text>
+      <View style={styles.containerLeft}>
+        <Text style={styles.text}>{props.name}</Text>
+        <AddWord />
+      </View>
+      {/* here comes the chart pie */}
     </View>
   );
 };
@@ -13,15 +18,19 @@ const DeckContainer = (props: {name: string}) => {
 const styles = StyleSheet.create({
   container: {
     borderRadius: 15,
-    padding: 10,
     margin: 10,
     backgroundColor: 'white',
     width: 350,
     height: 70,
     justifyContent: 'center',
   },
+  containerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   text: {
     fontSize: 25,
+    margin: 15,
   },
 });
 
