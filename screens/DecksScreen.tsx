@@ -34,10 +34,8 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   }
 
   const navigateToFlashcardsScreen = (deckName: string) => {
-    navigation.navigate(
-      'Flashcards',
-      retrieveDataFromTable(deckName) as deckData[],
-    );
+    const data = retrieveDataFromTable(deckName) as deckData[];
+    navigation.navigate('Flashcards', {data, deckName});
   };
 
   const [decks, setDecks] = useState<folderData[]>();

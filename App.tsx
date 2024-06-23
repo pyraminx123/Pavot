@@ -18,10 +18,15 @@ export interface decksWithinTable {
   tableName: string;
 }
 
+interface flashcardParams {
+  data: deckData[];
+  deckName: string;
+}
+
 // parameters that are passed
 export type AppStackParamList = {
   Home: undefined;
-  Flashcards: deckData[];
+  Flashcards: flashcardParams;
   Deck: decksWithinTable;
 };
 
