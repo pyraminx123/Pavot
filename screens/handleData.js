@@ -2,7 +2,7 @@ import {open} from '@op-engineering/op-sqlite';
 
 const db = open({name: 'myDb.sqlite'});
 
-const sanitizeName = (name) => {
+const sanitizeName = name => {
   return name.replace(/[^a-zA-Z0-9_]/g, '_');
 };
 
@@ -16,7 +16,7 @@ const createFoldersTable = () => {
   }
 };
 
-const insertIntoAllFolders = (folderName) => {
+const insertIntoAllFolders = folderName => {
   try {
     db.execute('INSERT INTO allFolders (folderName) VALUES (?);', [folderName]);
   } catch (error) {
@@ -35,7 +35,7 @@ const createFolder = folderName => {
     console.log('Input is empty or whitespace, no folder was created');
     return;
   }
-  const sanitizedFolderName = sanitizeName(folderName)
+  const sanitizedFolderName = sanitizeName(folderName);
   try {
     db.execute(
       `CREATE TABLE IF NOT EXISTS ${sanitizedFolderName} (
@@ -57,21 +57,39 @@ const createFolder = folderName => {
 const deleteFolder = folderName => {
   const sanitizedFolderName = sanitizeName(folderName);
   try {
+    // delete row inside allFolders
     db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
+
+    try {
+      // deletes associated decks
+      const decks = retrieveDataFromTable(sanitizedFolderName);
+      console.log('decks inside folder (delete function)', decks);
+      for (let index = 0; index < decks.length; index++) {
+        const deckName = decks[index].deckName;
+        db.execute(`DROP TABLE IF EXISTS "${sanitizeName(deckName)}";`);
+      }
+      try {
+        // deletes table
+        db.execute(`DROP TABLE IF EXISTS "${sanitizedFolderName}";`);
+      } catch (error) {
+        console.error(
+          `An error occurred trying to delete the table ${sanitizedFolderName}.`,
+          error,
+        );
+      }
+    } catch (error) {
+      console.error(`Couldn't delete decks inside ${folderName}`, error);
+    }
   } catch (error) {
     console.error(
       `An error occurred trying to delete ${folderName} from allFolders.`,
       error,
     );
   }
-  try {
-    db.execute(`DROP TABLE IF EXISTS "${sanitizedFolderName}";`);
-  } catch (error) {
-    console.error(
-      `An error occurred trying to delete the table ${sanitizedFolderName}.`,
-      error,
-    );
-  }
+  // just to check if it works
+  console.log(
+    db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows,
+  );
 };
 
 const createDeck = (deckName, folderName) => {
@@ -113,10 +131,10 @@ const insertIntoFolder = (folderName, deckName) => {
     if (rowsArray.length > 0) {
       const folderID = rowsArray[0].folderID;
       try {
-        db.execute(`INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`, [
-          deckName,
-          folderID,
-        ]);
+        db.execute(
+          `INSERT INTO ${sanitizedFolderName} (deckName, folderID) VALUES (?, ?);`,
+          [deckName, folderID],
+        );
       } catch (error) {
         console.error(
           `Some error occurred trying to insert ${deckName} into ${sanitizedFolderName}`,
@@ -134,34 +152,49 @@ const insertIntoFolder = (folderName, deckName) => {
   }
 };
 
-// ! it deletes a row within a folder and not the entire table!
-// TODO expand this delete function
-const deleteDeck = (folderName, deckID) => {
+const deleteDeck = (folderName, deckName) => {
+  // deletes row inside folder
   try {
-    db.execute(`DELETE FROM ${folderName} WHERE deckID=?;`, [deckID]);
+    db.execute(`DELETE FROM ${folderName} WHERE deckName=?;`, [deckName]);
+    // deletes deck
+    try {
+      db.execute(`DROP TABLE IF EXISTS "${deckName}";`);
+    } catch (error) {
+      console.error(`Couldn't delete ${deckName}`, error);
+    }
   } catch (error) {
     console.error(
       `Some error occurred trying to delete a deck from ${folderName}`,
       error,
     );
   }
+  // just to check if it works
+  console.log(
+    db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows,
+  );
 };
 
 const insertIntoDeck = async (folderName, deckName, term, definition) => {
-  const sanitizedDeckName = sanitizeName(deckName)
-  const deckID = await db.execute(`SELECT deckID FROM ${folderName} WHERE deckName=?`, [deckName]).rows._array[0].deckID;
+  const sanitizedDeckName = sanitizeName(deckName);
+  const deckID = await db.execute(
+    `SELECT deckID FROM ${folderName} WHERE deckName=?`,
+    [deckName],
+  ).rows._array[0].deckID;
   console.log(deckID, 'id');
-  try {
-    db.execute(
-      `INSERT INTO ${sanitizedDeckName} (term, definition, deckID)
-        VALUES (?, ?, ?);`,
-      [term, definition, deckID],
-    );
-  } catch (error) {
-    console.error(
-      `Some error occurred trying to insert ${term} into ${deckName}`,
-      error,
-    );
+
+  if (term.length > 0 || definition.length > 0) {
+    try {
+      db.execute(
+        `INSERT INTO ${sanitizedDeckName} (term, definition, deckID)
+          VALUES (?, ?, ?);`,
+        [term, definition, deckID],
+      );
+    } catch (error) {
+      console.error(
+        `Some error occurred trying to insert ${term} into ${deckName}`,
+        error,
+      );
+    }
   }
 };
 
