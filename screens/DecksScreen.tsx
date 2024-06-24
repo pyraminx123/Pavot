@@ -55,7 +55,11 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     } else {
       return (
         <Pressable onPress={() => navigateToFlashcardsScreen(item.deckName)}>
-          <DeckContainer deckName={item.deckName} folderName={folderName} />
+          <DeckContainer
+            deckName={item.deckName}
+            folderName={folderName}
+            fetchDecks={fetchDecks}
+          />
         </Pressable>
       );
     }

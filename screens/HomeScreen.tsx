@@ -60,7 +60,7 @@ const HomeScreen = ({navigation}: HomeProps) => {
     } else {
       return (
         <Pressable onPress={() => navigateToSetsScreen(item.folderName)}>
-          <Folder name={item.folderName} />
+          <Folder name={item.folderName} fetchFolders={fetchFolders} />
         </Pressable>
       );
     }

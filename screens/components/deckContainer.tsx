@@ -2,8 +2,14 @@ import React from 'react';
 
 import {View, Text, StyleSheet} from 'react-native';
 import AddWord from './addWord';
+import DeleteButton from './deleteButton';
+import {deleteDeck} from '../handleData';
 
-const DeckContainer = (props: {deckName: string; folderName: string}) => {
+const DeckContainer = (props: {
+  deckName: string;
+  folderName: string;
+  fetchDecks: Function;
+}) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerLeft}>
@@ -15,6 +21,13 @@ const DeckContainer = (props: {deckName: string; folderName: string}) => {
         />
       </View>
       {/* here comes the chart pie */}
+      <View style={styles.containerRight}>
+        <DeleteButton
+          deleteFunction={() =>
+            deleteDeck(props.folderName, props.deckName, props.fetchDecks)
+          }
+        />
+      </View>
     </View>
   );
 };
@@ -31,6 +44,11 @@ const styles = StyleSheet.create({
   containerLeft: {
     flexDirection: 'row',
     alignItems: 'center',
+  },
+  containerRight: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
   text: {
     fontSize: 25,

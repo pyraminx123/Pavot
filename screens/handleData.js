@@ -54,7 +54,7 @@ const createFolder = folderName => {
   }
 };
 
-const deleteFolder = folderName => {
+const deleteFolder = (folderName, fetchFolders) => {
   const sanitizedFolderName = sanitizeName(folderName);
   try {
     // delete row inside allFolders
@@ -90,6 +90,8 @@ const deleteFolder = folderName => {
   console.log(
     db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows,
   );
+  // soo that it rerenders
+  fetchFolders();
 };
 
 const createDeck = (deckName, folderName) => {
@@ -152,7 +154,7 @@ const insertIntoFolder = (folderName, deckName) => {
   }
 };
 
-const deleteDeck = (folderName, deckName) => {
+const deleteDeck = (folderName, deckName, fetchDecks) => {
   // deletes row inside folder
   try {
     db.execute(`DELETE FROM ${folderName} WHERE deckName=?;`, [deckName]);
@@ -172,6 +174,8 @@ const deleteDeck = (folderName, deckName) => {
   console.log(
     db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows,
   );
+  // so that it rerenders
+  fetchDecks();
 };
 
 const insertIntoDeck = async (folderName, deckName, term, definition) => {

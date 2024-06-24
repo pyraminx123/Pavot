@@ -1,11 +1,18 @@
 import React from 'react';
 
 import {View, Text, StyleSheet} from 'react-native';
+import DeleteButton from './deleteButton';
+import {deleteFolder} from '../handleData';
 
-const Folder = (props: {name: String}) => {
+const Folder = (props: {name: string; fetchFolders: Function}) => {
   return (
     <View style={styles.folder}>
       <Text style={styles.text}>{props.name}</Text>
+      <View style={styles.containerRight}>
+        <DeleteButton
+          deleteFunction={() => deleteFolder(props.name, props.fetchFolders)}
+        />
+      </View>
     </View>
   );
 };
@@ -17,7 +24,12 @@ const styles = StyleSheet.create({
     height: 130,
     width: 150,
     margin: 10,
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+  },
+  containerRight: {
+    position: 'absolute',
+    right: 10,
+    top: 10,
   },
   text: {
     fontSize: 25,
