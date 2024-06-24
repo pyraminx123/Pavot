@@ -186,7 +186,7 @@ const insertIntoDeck = async (folderName, deckName, term, definition) => {
   ).rows._array[0].deckID;
   console.log(deckID, 'id');
 
-  if (term.length > 0 || definition.length > 0) {
+  if (term.trim().length > 0 && definition.trim().length > 0) {
     try {
       db.execute(
         `INSERT INTO ${sanitizedDeckName} (term, definition, deckID)
