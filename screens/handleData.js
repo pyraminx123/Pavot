@@ -1,9 +1,46 @@
 import {open} from '@op-engineering/op-sqlite';
+import {v4 as uuidv4} from 'uuid'; // to generate random values
 
 const db = open({name: 'myDb.sqlite'});
 
 const sanitizeName = name => {
   return name.replace(/[^a-zA-Z0-9_]/g, '_');
+};
+
+const createMetaTable = () => {
+  try {
+    db.execute(
+      `CREATE TABLE IF NOT EXISTS metaTable (
+        id INTEGER PRIMARY KEY,
+        originalName TEXT,
+        tableName TEXT UNIQUE
+      );`,
+    );
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+const removeWhiteSpace = name => {
+  return name.replace(/\W+/g, '_'); // some random regex that replaces ' ' with _
+};
+
+const generateUniqueTableName = name => {
+  const nameWithoutSpaces = removeWhiteSpace(name);
+  const uniqueID = uuidv4().replace(/-/g, ''); // regex removes -
+  return `${nameWithoutSpaces}_${uniqueID}`;
+};
+
+const insertIntoMetaTable = name => {
+  const uniqueName = generateUniqueTableName(name);
+  try {
+    db.execute(
+      'INSERT INTO metaTable (originalName, tableName) VALUES (?, ?);',
+      [name, uniqueName],
+    );
+  } catch (error) {
+    console.error(error);
+  }
 };
 
 const createFoldersTable = () => {
@@ -212,6 +249,7 @@ const retrieveDataFromTable = tableName => {
 };
 
 export {
+  createMetaTable,
   createFoldersTable,
   createFolder,
   createDeck,

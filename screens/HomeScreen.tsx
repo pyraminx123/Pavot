@@ -11,7 +11,11 @@ import {
 
 import {Folder} from './components/Folder';
 import AddFolder from './components/addFolder';
-import {retrieveDataFromTable, createFoldersTable} from './handleData';
+import {
+  retrieveDataFromTable,
+  createFoldersTable,
+  createMetaTable,
+} from './handleData';
 
 // for translation
 import '../i18n.config';
@@ -23,6 +27,7 @@ import {AppStackParamList, decksWithinTable} from '../App';
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
+  createMetaTable();
   createFoldersTable();
   const {t} = useTranslation();
 
