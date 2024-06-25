@@ -7,22 +7,8 @@ const sanitizeName = name => {
   return name.replace(/[^a-zA-Z0-9_]/g, '_');
 };
 
-const createMetaTable = () => {
-  try {
-    db.execute(
-      `CREATE TABLE IF NOT EXISTS metaTable (
-        id INTEGER PRIMARY KEY,
-        originalName TEXT,
-        tableName TEXT UNIQUE
-      );`,
-    );
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const removeWhiteSpace = name => {
-  return name.replace(/\W+/g, '_'); // some random regex that replaces ' ' with _
+  return name.replace(/\W+/g, '_'); // some random regex that replaces ' ' & numbers with _
 };
 
 const generateUniqueTableName = name => {
@@ -31,22 +17,14 @@ const generateUniqueTableName = name => {
   return `${nameWithoutSpaces}_${uniqueID}`;
 };
 
-const insertIntoMetaTable = name => {
-  const uniqueName = generateUniqueTableName(name);
-  try {
-    db.execute(
-      'INSERT INTO metaTable (originalName, tableName) VALUES (?, ?);',
-      [name, uniqueName],
-    );
-  } catch (error) {
-    console.error(error);
-  }
-};
-
 const createFoldersTable = () => {
   try {
     db.execute(
-      'CREATE TABLE IF NOT EXISTS allFolders (folderID INTEGER PRIMARY KEY, folderName TEXT);',
+      `CREATE TABLE IF NOT EXISTS allFolders (
+        folderID INTEGER PRIMARY KEY,
+        originalFolderName TEXT,
+        uniqueFolderName TEXT UNIQUE
+      );`,
     );
   } catch (error) {
     console.error(error);
@@ -55,7 +33,12 @@ const createFoldersTable = () => {
 
 const insertIntoAllFolders = folderName => {
   try {
-    db.execute('INSERT INTO allFolders (folderName) VALUES (?);', [folderName]);
+    const uniqueFolderName = generateUniqueTableName(folderName);
+    db.execute(
+      'INSERT INTO allFolders (originalFolderName, uniqueFolderName) VALUES (?, ?);',
+      [folderName, uniqueFolderName],
+    );
+    return {uniqueFolderName};
   } catch (error) {
     console.error(
       `Some error occurred trying to insert ${folderName} into allFolders`,
@@ -64,25 +47,21 @@ const insertIntoAllFolders = folderName => {
   }
 };
 
-// TODO also handle when input is only whitespaces
-// TODO whitespaces should be replaced with _?
-// TODO the folderName can't have spaces, it can however be stored in allFolders correctly
 const createFolder = folderName => {
   if (folderName.trim().length === 0) {
     console.log('Input is empty or whitespace, no folder was created');
     return;
   }
-  const sanitizedFolderName = sanitizeName(folderName);
   try {
+    const uniqueFolderName = insertIntoAllFolders(folderName).uniqueFolderName;
     db.execute(
-      `CREATE TABLE IF NOT EXISTS ${sanitizedFolderName} (
+      `CREATE TABLE IF NOT EXISTS ${uniqueFolderName} (
         deckID INTEGER PRIMARY KEY,
         deckName TEXT,
         folderID INTEGER,
-        FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
+        FOREIGN KEY (folderID) REFERENCES allFolders(folderID),
       );`,
     );
-    insertIntoAllFolders(folderName);
   } catch (error) {
     console.error(
       `Some error occurred trying to create a table ${folderName}`,
@@ -91,15 +70,17 @@ const createFolder = folderName => {
   }
 };
 
-const deleteFolder = (folderName, fetchFolders) => {
-  const sanitizedFolderName = sanitizeName(folderName);
+const deleteFolder = (folderID, fetchFolders) => {
   try {
+    const uniqueFolderName = db.execute(
+      'SELECT uniqueFolderName FROM allFolders WHERE folderID=?',
+      [folderID],
+    );
     // delete row inside allFolders
-    db.execute('DELETE FROM allFolders WHERE folderName=?;', [folderName]);
-
+    db.execute('DELETE FROM allFolders WHERE folderID=?;', [folderID]);
     try {
       // deletes associated decks
-      const decks = retrieveDataFromTable(sanitizedFolderName);
+      const decks = retrieveDataFromTable(uniqueFolderName);
       console.log('decks inside folder (delete function)', decks);
       for (let index = 0; index < decks.length; index++) {
         const deckName = decks[index].deckName;
@@ -107,19 +88,19 @@ const deleteFolder = (folderName, fetchFolders) => {
       }
       try {
         // deletes table
-        db.execute(`DROP TABLE IF EXISTS "${sanitizedFolderName}";`);
+        db.execute(`DROP TABLE IF EXISTS "${uniqueFolderName}";`);
       } catch (error) {
         console.error(
-          `An error occurred trying to delete the table ${sanitizedFolderName}.`,
+          `An error occurred trying to delete the table ${uniqueFolderName}.`,
           error,
         );
       }
     } catch (error) {
-      console.error(`Couldn't delete decks inside ${folderName}`, error);
+      console.error(`Couldn't delete decks inside ${uniqueFolderName}`, error);
     }
   } catch (error) {
     console.error(
-      `An error occurred trying to delete ${folderName} from allFolders.`,
+      `An error occurred trying to delete ${folderID} from allFolders.`,
       error,
     );
   }
@@ -249,7 +230,7 @@ const retrieveDataFromTable = tableName => {
 };
 
 export {
-  createMetaTable,
+  generateUniqueTableName,
   createFoldersTable,
   createFolder,
   createDeck,

@@ -14,7 +14,7 @@ import AddFolder from './components/addFolder';
 import {
   retrieveDataFromTable,
   createFoldersTable,
-  createMetaTable,
+  generateUniqueTableName,
 } from './handleData';
 
 // for translation
@@ -27,7 +27,6 @@ import {AppStackParamList, decksWithinTable} from '../App';
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
-  createMetaTable();
   createFoldersTable();
   const {t} = useTranslation();
 
@@ -38,7 +37,8 @@ const HomeScreen = ({navigation}: HomeProps) => {
 
   interface allFoldersArray {
     folderID: number;
-    folderName: string;
+    originalFolderName: string;
+    uniqueFolderName: string;
   }
 
   // rerender when new folder is added
@@ -48,7 +48,14 @@ const HomeScreen = ({navigation}: HomeProps) => {
     const folders = (await retrieveDataFromTable(
       'allFolders',
     )) as allFoldersArray[];
-    setAllFolders([...folders, {folderID: -1, folderName: 'AddFolder'}]);
+    setAllFolders([
+      ...folders,
+      {
+        folderID: -1,
+        originalFolderName: 'AddFolder',
+        uniqueFolderName: generateUniqueTableName('AddFolder'),
+      },
+    ]);
   };
 
   useEffect(() => {
@@ -64,8 +71,9 @@ const HomeScreen = ({navigation}: HomeProps) => {
       return <AddFolder onFolderAdded={fetchFolders} />;
     } else {
       return (
-        <Pressable onPress={() => navigateToSetsScreen(item.folderName)}>
-          <Folder name={item.folderName} fetchFolders={fetchFolders} />
+        <Pressable
+          onPress={() => navigateToSetsScreen(item.originalFolderName)}>
+          <Folder name={item.originalFolderName} fetchFolders={fetchFolders} />
         </Pressable>
       );
     }
