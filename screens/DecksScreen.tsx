@@ -12,7 +12,7 @@ import {
 
 import DeckContainer from './components/deckContainer';
 import AddDeck from './components/addDeck';
-import {retrieveDataFromTable} from './handleData';
+import {retrieveDataFromTable, generateUniqueTableName} from './handleData';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
@@ -20,29 +20,43 @@ import {AppStackParamList, deckData} from '../App';
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
 
 const DecksScreen = ({route, navigation}: DecksProps) => {
-  const folderName = route.params.tableName;
+  const uniqueFolderName = route.params.uniqueFolderName;
+  const originalFolderName = route.params.originalFolderName;
   const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
 
-  //insertIntoDeck('Test', 'First', 'hello', 'bonjour')
-
   interface folderData {
     deckID: number;
-    deckName: string;
+    originalDeckName: string;
+    uniqueDeckName: string;
     folderID: number;
   }
 
-  const navigateToFlashcardsScreen = (deckName: string) => {
-    const data = retrieveDataFromTable(deckName) as deckData[];
-    navigation.navigate('Flashcards', {data, deckName});
+  const navigateToFlashcardsScreen = (uniqueDeckName: string) => {
+    const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
+    navigation.navigate('Flashcards', {data, uniqueDeckName});
   };
 
   const [decks, setDecks] = useState<folderData[]>();
 
-  const fetchDecks = () => {
-    const getDecks = retrieveDataFromTable(folderName) as folderData[];
-    setDecks([...getDecks, {deckID: -1, deckName: 'AddDeck', folderID: -1}]);
+  const fetchDecks = async () => {
+    try {
+      const getDecks = (await retrieveDataFromTable(
+        uniqueFolderName,
+      )) as folderData[];
+      setDecks([
+        ...getDecks,
+        {
+          deckID: -1,
+          originalDeckName: 'AddDeck',
+          uniqueDeckName: generateUniqueTableName('AddDeck'),
+          folderID: -1,
+        },
+      ]);
+    } catch (error) {
+      console.error('Error fetching decks', error);
+    }
   };
 
   useEffect(() => {
@@ -51,13 +65,15 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
 
   const renderItem = ({item}: {item: folderData}) => {
     if (item.deckID === -1) {
-      return <AddDeck onDeckAdded={fetchDecks} folderName={folderName} />;
+      return <AddDeck onDeckAdded={fetchDecks} folderName={uniqueFolderName} />;
     } else {
       return (
-        <Pressable onPress={() => navigateToFlashcardsScreen(item.deckName)}>
+        <Pressable
+          onPress={() => navigateToFlashcardsScreen(item.uniqueDeckName)}>
           <DeckContainer
-            deckName={item.deckName}
-            folderName={folderName}
+            originalDeckName={item.originalDeckName}
+            uniqueDeckName={item.uniqueDeckName}
+            folderName={uniqueFolderName}
             fetchDecks={fetchDecks}
           />
         </Pressable>
@@ -67,7 +83,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{capitalize(folderName)}</Text>
+      <Text style={styles.title}>{capitalize(originalFolderName)}</Text>
       <SafeAreaView>
         <FlatList
           numColumns={1}

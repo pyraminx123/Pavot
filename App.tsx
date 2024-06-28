@@ -14,20 +14,22 @@ export interface deckData {
   definition: string;
 }
 
-export interface decksWithinTable {
-  tableName: string;
+export interface folderInfo {
+  folderID: number;
+  originalFolderName: string;
+  uniqueFolderName: string;
 }
 
 interface flashcardParams {
   data: deckData[];
-  deckName: string;
+  uniqueDeckName: string;
 }
 
 // parameters that are passed
 export type AppStackParamList = {
   Home: undefined;
   Flashcards: flashcardParams;
-  Deck: decksWithinTable;
+  Deck: folderInfo;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();

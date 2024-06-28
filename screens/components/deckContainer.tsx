@@ -6,16 +6,17 @@ import DeleteButton from './deleteButton';
 import {deleteDeck} from '../handleData';
 
 const DeckContainer = (props: {
-  deckName: string;
+  originalDeckName: string;
+  uniqueDeckName: string;
   folderName: string;
   fetchDecks: Function;
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerLeft}>
-        <Text style={styles.text}>{props.deckName}</Text>
+        <Text style={styles.text}>{props.originalDeckName}</Text>
         <AddWord
-          deckName={props.deckName}
+          deckName={props.uniqueDeckName}
           folderName={props.folderName}
           onWordAdded={() => console.log('Word added')}
         />
@@ -24,7 +25,7 @@ const DeckContainer = (props: {
       <View style={styles.containerRight}>
         <DeleteButton
           deleteFunction={() =>
-            deleteDeck(props.folderName, props.deckName, props.fetchDecks)
+            deleteDeck(props.folderName, props.uniqueDeckName, props.fetchDecks)
           }
         />
       </View>

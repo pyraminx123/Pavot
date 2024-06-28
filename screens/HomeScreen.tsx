@@ -22,7 +22,7 @@ import '../i18n.config';
 import {useTranslation} from 'react-i18next';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {AppStackParamList, decksWithinTable} from '../App';
+import {AppStackParamList, folderInfo} from '../App';
 
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
@@ -31,9 +31,8 @@ const HomeScreen = ({navigation}: HomeProps) => {
   //insertIntoAllFolders('test');
   const {t} = useTranslation();
 
-  const navigateToSetsScreen = (tableName: string) => {
-    const tableParam: decksWithinTable = {tableName};
-    navigation.navigate('Deck', tableParam);
+  const navigateToDecksScreen = (folder: folderInfo) => {
+    navigation.navigate('Deck', folder);
   };
 
   interface allFoldersArray {
@@ -75,9 +74,9 @@ const HomeScreen = ({navigation}: HomeProps) => {
     if (item.folderID === -1) {
       return <AddFolder onFolderAdded={fetchFolders} />;
     } else {
+      console.log('tem', item);
       return (
-        <Pressable
-          onPress={() => navigateToSetsScreen(item.originalFolderName)}>
+        <Pressable onPress={() => navigateToDecksScreen(item)}>
           <Folder
             name={item.originalFolderName}
             fetchFolders={fetchFolders}
