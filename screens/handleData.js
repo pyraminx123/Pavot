@@ -1,4 +1,5 @@
 import {open} from '@op-engineering/op-sqlite';
+import 'react-native-get-random-values';
 import {v4 as uuidv4} from 'uuid'; // to generate random values
 
 const db = open({name: 'myDb.sqlite'});
@@ -17,9 +18,9 @@ const generateUniqueTableName = name => {
   return `${nameWithoutSpaces}_${uniqueID}`;
 };
 
-const createFoldersTable = () => {
+const createFoldersTable = async () => {
   try {
-    db.execute(
+    await db.execute(
       `CREATE TABLE IF NOT EXISTS allFolders (
         folderID INTEGER PRIMARY KEY,
         originalFolderName TEXT,
@@ -27,14 +28,14 @@ const createFoldersTable = () => {
       );`,
     );
   } catch (error) {
-    console.error(error);
+    console.error('Error creating allFolders table', error);
   }
 };
 
-const insertIntoAllFolders = folderName => {
+const insertIntoAllFolders = async folderName => {
   try {
     const uniqueFolderName = generateUniqueTableName(folderName);
-    db.execute(
+    await db.execute(
       'INSERT INTO allFolders (originalFolderName, uniqueFolderName) VALUES (?, ?);',
       [folderName, uniqueFolderName],
     );
@@ -47,21 +48,22 @@ const insertIntoAllFolders = folderName => {
   }
 };
 
-const createFolder = folderName => {
+const createFolder = async folderName => {
   if (folderName.trim().length === 0) {
     console.log('Input is empty or whitespace, no folder was created');
     return;
   }
   try {
-    const uniqueFolderName = insertIntoAllFolders(folderName).uniqueFolderName;
+    const {uniqueFolderName} = await insertIntoAllFolders(folderName);
     db.execute(
-      `CREATE TABLE IF NOT EXISTS ${uniqueFolderName} (
+      `CREATE TABLE ${uniqueFolderName} (
         deckID INTEGER PRIMARY KEY,
         deckName TEXT,
         folderID INTEGER,
-        FOREIGN KEY (folderID) REFERENCES allFolders(folderID),
+        FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
       );`,
     );
+    //console.log(`Table ${uniqueFolderName} created successfully`);
   } catch (error) {
     console.error(
       `Some error occurred trying to create a table ${folderName}`,
@@ -70,25 +72,26 @@ const createFolder = folderName => {
   }
 };
 
-const deleteFolder = (folderID, fetchFolders) => {
+const deleteFolder = async (folderID, fetchFolders) => {
   try {
-    const uniqueFolderName = db.execute(
+    const uniqueFolderName = await db.execute(
       'SELECT uniqueFolderName FROM allFolders WHERE folderID=?',
       [folderID],
-    );
+    ).rows._array;
     // delete row inside allFolders
     db.execute('DELETE FROM allFolders WHERE folderID=?;', [folderID]);
     try {
       // deletes associated decks
-      const decks = retrieveDataFromTable(uniqueFolderName);
-      console.log('decks inside folder (delete function)', decks);
-      for (let index = 0; index < decks.length; index++) {
-        const deckName = decks[index].deckName;
-        db.execute(`DROP TABLE IF EXISTS "${sanitizeName(deckName)}";`);
-      }
+      //const decks = retrieveDataFromTable(uniqueFolderName);
+      //console.log('decks inside folder (delete function)', decks);
+      //for (let index = 0; index < decks.length; index++) {
+      //  const deckName = decks[index].deckName;
+      //  await db.execute(`DROP TABLE IF EXISTS "${sanitizeName(deckName)}";`);
+      //}
       try {
+        console.log('Folder name:', uniqueFolderName);
         // deletes table
-        db.execute(`DROP TABLE IF EXISTS "${uniqueFolderName}";`);
+        await db.execute(`DROP TABLE "${uniqueFolderName}";`);
       } catch (error) {
         console.error(
           `An error occurred trying to delete the table ${uniqueFolderName}.`,
@@ -106,7 +109,8 @@ const deleteFolder = (folderID, fetchFolders) => {
   }
   // just to check if it works
   console.log(
-    db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows,
+    db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows
+      ._array,
   );
   // soo that it rerenders
   fetchFolders();

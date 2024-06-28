@@ -4,13 +4,19 @@ import {View, Text, StyleSheet} from 'react-native';
 import DeleteButton from './deleteButton';
 import {deleteFolder} from '../handleData';
 
-const Folder = (props: {name: string; fetchFolders: Function}) => {
+const Folder = (props: {
+  name: string;
+  fetchFolders: Function;
+  folderID: number;
+}) => {
   return (
     <View style={styles.folder}>
       <Text style={styles.text}>{props.name}</Text>
       <View style={styles.containerRight}>
         <DeleteButton
-          deleteFunction={() => deleteFolder(props.name, props.fetchFolders)}
+          deleteFunction={() =>
+            deleteFolder(props.folderID, props.fetchFolders)
+          }
         />
       </View>
     </View>

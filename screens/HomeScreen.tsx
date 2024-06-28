@@ -28,6 +28,7 @@ type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
   createFoldersTable();
+  //insertIntoAllFolders('test');
   const {t} = useTranslation();
 
   const navigateToSetsScreen = (tableName: string) => {
@@ -45,17 +46,21 @@ const HomeScreen = ({navigation}: HomeProps) => {
   const [allFolders, setAllFolders] = useState<allFoldersArray[]>([]);
 
   const fetchFolders = async () => {
-    const folders = (await retrieveDataFromTable(
-      'allFolders',
-    )) as allFoldersArray[];
-    setAllFolders([
-      ...folders,
-      {
-        folderID: -1,
-        originalFolderName: 'AddFolder',
-        uniqueFolderName: generateUniqueTableName('AddFolder'),
-      },
-    ]);
+    try {
+      const folders = (await retrieveDataFromTable(
+        'allFolders',
+      )) as allFoldersArray[];
+      setAllFolders([
+        ...folders,
+        {
+          folderID: -1,
+          originalFolderName: 'AddFolder',
+          uniqueFolderName: generateUniqueTableName('AddFolder'),
+        },
+      ]);
+    } catch (error) {
+      console.error('Error fetching folders', error);
+    }
   };
 
   useEffect(() => {
@@ -73,7 +78,11 @@ const HomeScreen = ({navigation}: HomeProps) => {
       return (
         <Pressable
           onPress={() => navigateToSetsScreen(item.originalFolderName)}>
-          <Folder name={item.originalFolderName} fetchFolders={fetchFolders} />
+          <Folder
+            name={item.originalFolderName}
+            fetchFolders={fetchFolders}
+            folderID={item.folderID}
+          />
         </Pressable>
       );
     }
