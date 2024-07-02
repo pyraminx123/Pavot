@@ -6,8 +6,8 @@ import QuestionModal from './QuestionModal';
 // Define the AddWord component
 const AddWord = (props: {
   onWordAdded: Function;
-  folderName: string;
-  deckName: string;
+  uniqueFolderName: string;
+  uniqueDeckName: string;
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue1, setInputValue1] = useState('');
@@ -22,8 +22,8 @@ const AddWord = (props: {
   const onClose = async () => {
     await setModalVisible(false);
     await insertIntoDeck(
-      props.folderName,
-      props.deckName,
+      props.uniqueFolderName,
+      props.uniqueDeckName,
       inputValue1,
       inputValue2,
     );

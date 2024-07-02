@@ -4,10 +4,6 @@ import {v4 as uuidv4} from 'uuid'; // to generate random values
 
 const db = open({name: 'myDb.sqlite'});
 
-const sanitizeName = name => {
-  return name.replace(/[^a-zA-Z0-9_]/g, '_');
-};
-
 const removeWhiteSpace = name => {
   return name.replace(/\W+/g, '_'); // some random regex that replaces ' ' & special characters with _
 };
@@ -84,7 +80,6 @@ const deleteFolder = async (folderID, fetchFolders) => {
     try {
       // deletes associated decks
       const decks = retrieveDataFromTable(uniqueFolderName);
-      console.log('decks inside folder (delete function)', decks);
       for (let index = 0; index < decks.length; index++) {
         const uniqueDeckName = decks[index].uniqueDeckName;
         await db.execute(`DROP TABLE IF EXISTS "${uniqueDeckName}";`);
@@ -129,7 +124,6 @@ const createDeck = (originalDeckName, uniqueFolderName) => {
     );
     insertIntoFolder(uniqueFolderName, originalDeckName, uniqueDeckName);
   } catch (error) {
-    console.log('deckName:', originalDeckName, 'folderName:', uniqueFolderName);
     console.error(
       `Some error occurred trying to create a table ${uniqueDeckName}`,
       error,
@@ -168,38 +162,37 @@ const deleteDeck = (uniqueFolderName, uniqueDeckName, fetchDecks) => {
       console.error(`Couldn't delete ${uniqueDeckName}`, error);
     }
   } catch (error) {
-    console.log(uniqueDeckName);
+    //console.log(uniqueDeckName);
     console.error(
       `Some error occurred trying to delete a deck from ${uniqueFolderName}`,
       error,
     );
   }
-  // just to check if it works
-  console.log(
-    db.execute('SELECT name FROM sqlite_master WHERE type="table";').rows,
-  );
   // so that it rerenders
   fetchDecks();
 };
 
-const insertIntoDeck = async (folderName, deckName, term, definition) => {
-  const sanitizedDeckName = sanitizeName(deckName);
-  const deckID = await db.execute(
-    `SELECT deckID FROM ${folderName} WHERE deckName=?`,
-    [deckName],
-  ).rows._array[0].deckID;
-  console.log(deckID, 'id');
-
+const insertIntoDeck = async (
+  uniqueFolderName,
+  uniqueDeckName,
+  term,
+  definition,
+) => {
   if (term.trim().length > 0 && definition.trim().length > 0) {
     try {
+      const deckID = db.execute(
+        `SELECT deckID FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
+        [uniqueDeckName],
+      ).rows._array[0].deckID;
       db.execute(
-        `INSERT INTO ${sanitizedDeckName} (term, definition, deckID)
+        `INSERT INTO ${uniqueDeckName} (term, definition, deckID)
           VALUES (?, ?, ?);`,
         [term, definition, deckID],
       );
+      console.log(retrieveDataFromTable(uniqueDeckName));
     } catch (error) {
       console.error(
-        `Some error occurred trying to insert ${term} into ${deckName}`,
+        `Some error occurred trying to insert ${term} into ${uniqueDeckName}`,
         error,
       );
     }

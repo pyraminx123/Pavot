@@ -66,7 +66,7 @@ const HomeScreen = ({navigation}: HomeProps) => {
     fetchFolders();
   }, []);
 
-  console.log(allFolders, 'all folders');
+  //console.log(allFolders, 'all folders');
 
   // Folder component inside a Pressable
   // varable has to be named item
@@ -74,7 +74,6 @@ const HomeScreen = ({navigation}: HomeProps) => {
     if (item.folderID === -1) {
       return <AddFolder onFolderAdded={fetchFolders} />;
     } else {
-      console.log('tem', item);
       return (
         <Pressable onPress={() => navigateToDecksScreen(item)}>
           <Folder

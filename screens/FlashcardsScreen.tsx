@@ -13,10 +13,10 @@ type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 // use useState and useEffect to update props
 const FlashcardsScreen = ({route}: FlashcardsProps) => {
   const data = route.params.data as wordObj[];
-  const deckName = route.params.deckName;
+  const deckName = route.params.originalDeckName;
 
   const [terms, setTerms] = useState(data);
-
+  //console.log('terms', route.params.data);
   const initialLength = terms.length;
 
   useEffect(() => {

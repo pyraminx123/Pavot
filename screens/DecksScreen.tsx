@@ -33,9 +33,12 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     folderID: number;
   }
 
-  const navigateToFlashcardsScreen = (uniqueDeckName: string) => {
+  const navigateToFlashcardsScreen = (
+    uniqueDeckName: string,
+    originalDeckName: string,
+  ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
-    navigation.navigate('Flashcards', {data, uniqueDeckName});
+    navigation.navigate('Flashcards', {data, originalDeckName});
   };
 
   const [decks, setDecks] = useState<folderData[]>();
@@ -69,11 +72,16 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     } else {
       return (
         <Pressable
-          onPress={() => navigateToFlashcardsScreen(item.uniqueDeckName)}>
+          onPress={() =>
+            navigateToFlashcardsScreen(
+              item.uniqueDeckName,
+              item.originalDeckName,
+            )
+          }>
           <DeckContainer
             originalDeckName={item.originalDeckName}
             uniqueDeckName={item.uniqueDeckName}
-            folderName={uniqueFolderName}
+            uniqueFolderName={uniqueFolderName}
             fetchDecks={fetchDecks}
           />
         </Pressable>

@@ -22,7 +22,7 @@ export interface folderInfo {
 
 interface flashcardParams {
   data: deckData[];
-  uniqueDeckName: string;
+  originalDeckName: string;
 }
 
 // parameters that are passed
