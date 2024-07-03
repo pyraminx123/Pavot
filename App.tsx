@@ -6,6 +6,7 @@ import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import HomeScreen from './screens/HomeScreen.tsx';
 import FlashcardsScreen from './screens/FlashcardsScreen.tsx';
 import DecksScreen from './screens/DecksScreen.tsx';
+import WordScreen from './screens/WordScreen.tsx';
 
 export interface deckData {
   deckID: number;
@@ -30,6 +31,7 @@ export type AppStackParamList = {
   Home: undefined;
   Flashcards: flashcardParams;
   Deck: folderInfo;
+  Words: flashcardParams;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -41,6 +43,7 @@ const MyStack = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
         <Stack.Screen name="Deck" component={DecksScreen} />
+        <Stack.Screen name="Words" component={WordScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
