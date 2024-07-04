@@ -16,7 +16,7 @@ const DeckContainer = (props: {
     <View style={styles.container}>
       <View style={styles.containerLeft}>
         <Text style={styles.text}>{props.originalDeckName}</Text>
-        <AddWord onPressed={() => props.navigateToWordsScreen} />
+        <AddWord onPressed={() => props.navigateToWordsScreen()} />
       </View>
       {/* here comes the chart pie */}
       <View style={styles.containerRight}>

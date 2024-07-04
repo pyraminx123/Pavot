@@ -6,7 +6,7 @@ import {Pressable, Text, StyleSheet, View} from 'react-native';
 const AddWord = (props: {onPressed: Function}) => {
   return (
     <View>
-      <Pressable style={styles.container} onPress={() => props.onPressed}>
+      <Pressable style={styles.container} onPress={() => props.onPressed()}>
         <Text style={styles.text}>+</Text>
       </Pressable>
     </View>
