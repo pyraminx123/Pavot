@@ -26,12 +26,19 @@ interface flashcardParams {
   originalDeckName: string;
 }
 
+interface wordScreenParams {
+  data: deckData[];
+  originalDeckName: string;
+  uniqueDeckName: string;
+  uniqueFolderName: string;
+}
+
 // parameters that are passed
 export type AppStackParamList = {
   Home: undefined;
   Flashcards: flashcardParams;
   Deck: folderInfo;
-  Words: flashcardParams;
+  Words: wordScreenParams;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();

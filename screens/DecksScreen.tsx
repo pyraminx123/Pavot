@@ -46,7 +46,12 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     originalDeckName: string,
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
-    navigation.navigate('Words', {data, originalDeckName});
+    navigation.navigate('Words', {
+      data,
+      originalDeckName,
+      uniqueDeckName,
+      uniqueFolderName,
+    });
   };
 
   const [decks, setDecks] = useState<folderData[]>();

@@ -1,26 +1,52 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useState, useEffect} from 'react';
 import {TextInput, View, StyleSheet} from 'react-native';
 import DeleteButton from './deleteButton';
+import {updateEntryInDeck, insertIntoDeck} from '../handleData';
 
-const Card = () => {
+const Card = (props: {
+  term: string;
+  definition: string;
+  id: number;
+  uniqueDeckName: string;
+  uniqueFolderName: string;
+  deleteFunction: Function;
+}) => {
+  const [termInput, setTermInput] = useState(props.term);
+  const [definitionInput, setDefinitionInput] = useState(props.definition);
+  useEffect(() => {
+    if (props.id !== -1) {
+      updateEntryInDeck(
+        props.uniqueDeckName,
+        props.id,
+        termInput,
+        definitionInput,
+      );
+    } else {
+      insertIntoDeck(
+        props.uniqueFolderName,
+        props.uniqueDeckName,
+        termInput,
+        definitionInput,
+      );
+    }
+  }, [termInput, definitionInput]);
   return (
     <View style={styles.card}>
       <View style={styles.containerRight}>
-        <DeleteButton
-          deleteFunction={() => console.log('I have to make a delete function')}
-        />
+        <DeleteButton deleteFunction={() => props.deleteFunction()} />
       </View>
       <View style={styles.content}>
         <TextInput
-          value={''}
-          onChangeText={() => console.log('changed text')}
+          value={termInput}
+          onChangeText={text => setTermInput(text)}
           style={styles.textInput}
           placeholder={'term'}
           placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
         />
         <TextInput
-          value={''}
-          onChangeText={() => console.log('changed text')}
+          value={definitionInput}
+          onChangeText={text => setDefinitionInput(text)}
           style={styles.textInput}
           placeholder={'definition'}
           placeholderTextColor={'rgba(0, 0, 0, 0.5)'}

@@ -199,6 +199,39 @@ const insertIntoDeck = async (
   }
 };
 
+const updateEntryInDeck = async (
+  uniqueDeckName,
+  id,
+  newTerm,
+  newDefinition,
+) => {
+  if (newTerm.trim().length > 0 && newDefinition.trim().length > 0) {
+    try {
+      await db.execute(
+        `UPDATE ${uniqueDeckName} SET term=?, definition=? WHERE id=?;`,
+        [newTerm, newDefinition, id],
+      );
+      //console.log(`Updated entry with id ${id} in ${uniqueDeckName}`);
+    } catch (error) {
+      console.error(
+        `Some error occurred trying to update entry with id ${id} in ${uniqueDeckName}`,
+        error,
+      );
+    }
+  }
+};
+
+const deleteEntryInDeck = async (uniqueDeckName, id) => {
+  try {
+    db.execute(`DELETE FROM ${uniqueDeckName} WHERE id=?;`, [id]);
+  } catch (error) {
+    console.error(
+      `Some error occurred trying to delete entry with id ${id} in ${uniqueDeckName}`,
+      error,
+    );
+  }
+};
+
 const retrieveDataFromTable = tableName => {
   try {
     const res = db.execute(`SELECT * FROM ${tableName}`).rows._array;
@@ -216,5 +249,7 @@ export {
   deleteDeck,
   deleteFolder,
   insertIntoDeck,
+  updateEntryInDeck,
+  deleteEntryInDeck,
   retrieveDataFromTable,
 };

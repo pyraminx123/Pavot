@@ -1,31 +1,52 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {View, Text, FlatList, SafeAreaView, StyleSheet} from 'react-native';
 import Card from './components/Card';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
+import {deleteEntryInDeck, retrieveDataFromTable} from './handleData';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
 const WordScreen = ({route}: WordsProps) => {
-  // TODO update deckID
-  const data = [
+  const initialData = [
     ...route.params.data,
     {id: -1, term: '', definition: '', deckID: -1},
   ];
   const deckName = route.params.originalDeckName;
-  console.log(data);
+  //console.log(data);
+  const [data, setData] = useState(initialData);
 
-  // TODO make a component card so trhat it is reusable and append one after flatlist
-  // TODO field should be TextInput, useSate(), be able to make changes to database, append empty card regardless if data is empty or not
+  const deleteCard = async (id: number) => {
+    await deleteEntryInDeck(route.params.uniqueDeckName, id);
+    const newData = retrieveDataFromTable(
+      route.params.uniqueDeckName,
+    ) as deckData[];
+    setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
+  };
+
   const renderItem = ({item}: {item: deckData}) => {
-    return <Card />;
+    return (
+      <Card
+        term={item.term}
+        definition={item.definition}
+        id={item.id}
+        uniqueDeckName={route.params.uniqueDeckName}
+        uniqueFolderName={route.params.uniqueFolderName}
+        deleteFunction={() => deleteCard(item.id)}
+      />
+    );
   };
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{deckName}</Text>
-      <SafeAreaView style={styles.list}>
-        <FlatList numColumns={1} data={data} renderItem={renderItem} />
+      <SafeAreaView>
+        <FlatList
+          numColumns={1}
+          data={data}
+          renderItem={renderItem}
+          contentContainerStyle={styles.list}
+        />
       </SafeAreaView>
     </View>
   );
@@ -42,6 +63,7 @@ const styles = StyleSheet.create({
   },
   list: {
     alignItems: 'center',
+    paddingBottom: 50,
   },
 });
 
