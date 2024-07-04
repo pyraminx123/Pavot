@@ -2,7 +2,12 @@
 import React, {useState, useEffect} from 'react';
 import {TextInput, View, StyleSheet} from 'react-native';
 import DeleteButton from './deleteButton';
-import {updateEntryInDeck, insertIntoDeck} from '../handleData';
+import {
+  updateEntryInDeck,
+  insertIntoDeck,
+  retrieveDataFromTable,
+} from '../handleData';
+import {deckData} from '../../App';
 
 const Card = (props: {
   term: string;
@@ -10,18 +15,26 @@ const Card = (props: {
   id: number;
   uniqueDeckName: string;
   uniqueFolderName: string;
+  setData: Function;
+  data: deckData[];
   deleteFunction: Function;
 }) => {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
+  const [cardId, setCardId] = useState(props.id);
   useEffect(() => {
-    if (props.id !== -1) {
+    if (cardId !== -1) {
       updateEntryInDeck(
         props.uniqueDeckName,
-        props.id,
+        cardId,
         termInput,
         definitionInput,
       );
+      const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
+      props.setData([
+        ...newData,
+        {id: -1, term: '', definition: '', deckID: -1},
+      ]);
     } else {
       insertIntoDeck(
         props.uniqueFolderName,
@@ -29,6 +42,18 @@ const Card = (props: {
         termInput,
         definitionInput,
       );
+      const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
+      props.setData([
+        ...newData,
+        {id: -1, term: '', definition: '', deckID: -1},
+      ]);
+      console.log('newData:', props.data);
+      // only runs if newData != undefined and newData is not empty (it has at least one item with id=-1)
+      if (props.data && props.data.length > 1) {
+        const newId = newData[newData?.length - 1].id;
+        console.log('newId:', newId);
+        setCardId(newId);
+      }
     }
   }, [termInput, definitionInput]);
   return (

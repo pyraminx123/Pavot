@@ -14,8 +14,8 @@ const WordScreen = ({route}: WordsProps) => {
     {id: -1, term: '', definition: '', deckID: -1},
   ];
   const deckName = route.params.originalDeckName;
-  //console.log(data);
   const [data, setData] = useState(initialData);
+  //console.log(data);
 
   const deleteCard = async (id: number) => {
     await deleteEntryInDeck(route.params.uniqueDeckName, id);
@@ -24,7 +24,7 @@ const WordScreen = ({route}: WordsProps) => {
     ) as deckData[];
     setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
   };
-
+  //console.log(data);
   const renderItem = ({item}: {item: deckData}) => {
     return (
       <Card
@@ -34,6 +34,8 @@ const WordScreen = ({route}: WordsProps) => {
         uniqueDeckName={route.params.uniqueDeckName}
         uniqueFolderName={route.params.uniqueFolderName}
         deleteFunction={() => deleteCard(item.id)}
+        setData={setData}
+        data={data}
       />
     );
   };

@@ -189,7 +189,7 @@ const insertIntoDeck = async (
           VALUES (?, ?, ?);`,
         [term, definition, deckID],
       );
-      console.log(retrieveDataFromTable(uniqueDeckName));
+      //console.log(retrieveDataFromTable(uniqueDeckName));
     } catch (error) {
       console.error(
         `Some error occurred trying to insert ${term} into ${uniqueDeckName}`,
