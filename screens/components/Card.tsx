@@ -22,39 +22,36 @@ const Card = (props: {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
   const [cardId, setCardId] = useState(props.id);
-  useEffect(() => {
+  const [isNew, setIsNew] = useState(false);
+
+  const addCardToDatabase = async (term: string, definition: string) => {
     if (cardId !== -1) {
-      updateEntryInDeck(
-        props.uniqueDeckName,
-        cardId,
-        termInput,
-        definitionInput,
-      );
-      const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
-      props.setData([
-        ...newData,
-        {id: -1, term: '', definition: '', deckID: -1},
-      ]);
+      await updateEntryInDeck(props.uniqueDeckName, cardId, term, definition);
     } else {
-      insertIntoDeck(
+      await insertIntoDeck(
         props.uniqueFolderName,
         props.uniqueDeckName,
-        termInput,
-        definitionInput,
+        term,
+        definition,
       );
-      const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
-      props.setData([
-        ...newData,
-        {id: -1, term: '', definition: '', deckID: -1},
-      ]);
-      console.log('newData:', props.data);
-      // only runs if newData != undefined and newData is not empty (it has at least one item with id=-1)
-      if (props.data && props.data.length > 1) {
-        const newId = newData[newData?.length - 1].id;
-        console.log('newId:', newId);
-        setCardId(newId);
-      }
+      console.log('data', props.data);
+      setIsNew(true);
     }
+    const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
+    props.setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
+    console.log(props.data);
+  };
+  useEffect(() => {
+    if (isNew) {
+      const newId = props.data[props.data.length - 2].id;
+      console.log('newId:', newId);
+      setCardId(newId);
+      setIsNew(false);
+    }
+  }, [isNew]);
+
+  useEffect(() => {
+    addCardToDatabase(termInput, definitionInput);
   }, [termInput, definitionInput]);
   return (
     <View style={styles.card}>
