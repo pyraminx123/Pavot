@@ -46,6 +46,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     originalDeckName: string,
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
+    //console.log('from decks', data);
     navigation.navigate('Words', {
       data: data,
       originalDeckName: originalDeckName,

@@ -17,6 +17,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   ];
   const deckName = route.params.originalDeckName;
   const [data, setData] = useState(initialData);
+  //console.log('initial', data);
 
   useEffect(() => {
     navigation.setOptions({
@@ -34,9 +35,10 @@ const WordScreen = ({route, navigation}: WordsProps) => {
 
   const updateCard = (index: number, term: string, definition: string) => {
     setData(prevData => {
-      const newData = [...prevData];
-      newData[index] = {...newData[index], term, definition};
-      return newData;
+      console.log('prev', prevData, prevData[index]);
+      prevData[index].term = term;
+      prevData[index].definition = definition;
+      return prevData;
     });
   };
 
