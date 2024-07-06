@@ -1,7 +1,6 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import {Button} from 'react-native';
 
 // screens
 import HomeScreen from './screens/HomeScreen.tsx';
@@ -32,6 +31,8 @@ interface wordScreenParams {
   originalDeckName: string;
   uniqueDeckName: string;
   uniqueFolderName: string;
+  folderID: number;
+  originalFolderName: string;
 }
 
 // parameters that are passed
@@ -40,10 +41,6 @@ export type AppStackParamList = {
   Flashcards: flashcardParams;
   Deck: folderInfo;
   Words: wordScreenParams;
-};
-
-const SaveButton = () => {
-  return <Button title={'Save'} onPress={() => console.log('pressed')} />;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -61,7 +58,6 @@ const MyStack = () => {
           options={{
             gestureEnabled: false,
             headerBackVisible: false,
-            headerRight: SaveButton,
           }}
         />
       </Stack.Navigator>

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {TextInput, View, StyleSheet} from 'react-native';
+import {TextInput, View, StyleSheet, Button} from 'react-native';
 import DeleteButton from './deleteButton';
 import {
   updateEntryInDeck,
@@ -50,7 +50,7 @@ const Card = (props: {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
 
-  useEffect(() => {
+  const onSave = () => {
     const cardInfo = {
       term: termInput,
       definition: definitionInput,
@@ -59,8 +59,8 @@ const Card = (props: {
       uniqueFolderName: props.uniqueFolderName,
     };
     addCardToDatabase(cardInfo);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [termInput, definitionInput]);
+  };
+
   return (
     <View style={styles.card}>
       <View style={styles.containerRight}>
