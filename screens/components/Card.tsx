@@ -21,12 +21,10 @@ const Card = (props: {
 }) => {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
-  const [cardId, setCardId] = useState(props.id);
-  const [isNew, setIsNew] = useState(false);
 
   const addCardToDatabase = async (term: string, definition: string) => {
-    if (cardId !== -1) {
-      await updateEntryInDeck(props.uniqueDeckName, cardId, term, definition);
+    if (props.id !== -1) {
+      await updateEntryInDeck(props.uniqueDeckName, props.id, term, definition);
     } else {
       await insertIntoDeck(
         props.uniqueFolderName,
@@ -34,21 +32,11 @@ const Card = (props: {
         term,
         definition,
       );
-      console.log('data', props.data);
-      setIsNew(true);
     }
     const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
     props.setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
-    console.log(props.data);
+    console.log('normal', props.data);
   };
-  useEffect(() => {
-    if (isNew) {
-      const newId = props.data[props.data.length - 2].id;
-      console.log('newId:', newId);
-      setCardId(newId);
-      setIsNew(false);
-    }
-  }, [isNew]);
 
   useEffect(() => {
     addCardToDatabase(termInput, definitionInput);
