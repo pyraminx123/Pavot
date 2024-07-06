@@ -1,6 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {Button} from 'react-native';
 
 // screens
 import HomeScreen from './screens/HomeScreen.tsx';
@@ -41,6 +42,10 @@ export type AppStackParamList = {
   Words: wordScreenParams;
 };
 
+const SaveButton = () => {
+  return <Button title={'Save'} onPress={() => console.log('pressed')} />;
+};
+
 const Stack = createNativeStackNavigator<AppStackParamList>();
 
 const MyStack = () => {
@@ -50,7 +55,15 @@ const MyStack = () => {
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
         <Stack.Screen name="Deck" component={DecksScreen} />
-        <Stack.Screen name="Words" component={WordScreen} />
+        <Stack.Screen
+          name="Words"
+          component={WordScreen}
+          options={{
+            gestureEnabled: false,
+            headerBackVisible: false,
+            headerRight: SaveButton,
+          }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
