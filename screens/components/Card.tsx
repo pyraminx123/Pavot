@@ -1,13 +1,41 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
 import {TextInput, View, StyleSheet} from 'react-native';
 import DeleteButton from './deleteButton';
 import {
   updateEntryInDeck,
   insertIntoDeck,
-  retrieveDataFromTable,
+  //retrieveDataFromTable,
 } from '../handleData';
 import {deckData} from '../../App';
+
+interface cardInfo {
+  term: string;
+  definition: string;
+  id: number;
+  uniqueDeckName: string;
+  uniqueFolderName: string;
+}
+
+const addCardToDatabase = async (cardProps: cardInfo) => {
+  if (cardProps.id !== -1) {
+    await updateEntryInDeck(
+      cardProps.uniqueDeckName,
+      cardProps.id,
+      cardProps.term,
+      cardProps.definition,
+    );
+  } else {
+    await insertIntoDeck(
+      cardProps.uniqueFolderName,
+      cardProps.uniqueDeckName,
+      cardProps.term,
+      cardProps.definition,
+    );
+  }
+  //const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
+  //props.setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
+  //console.log('normal', props.data);
+};
 
 const Card = (props: {
   term: string;
@@ -22,24 +50,16 @@ const Card = (props: {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
 
-  const addCardToDatabase = async (term: string, definition: string) => {
-    if (props.id !== -1) {
-      await updateEntryInDeck(props.uniqueDeckName, props.id, term, definition);
-    } else {
-      await insertIntoDeck(
-        props.uniqueFolderName,
-        props.uniqueDeckName,
-        term,
-        definition,
-      );
-    }
-    const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
-    props.setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
-    console.log('normal', props.data);
-  };
-
   useEffect(() => {
-    addCardToDatabase(termInput, definitionInput);
+    const cardInfo = {
+      term: termInput,
+      definition: definitionInput,
+      id: props.id,
+      uniqueDeckName: props.uniqueDeckName,
+      uniqueFolderName: props.uniqueFolderName,
+    };
+    addCardToDatabase(cardInfo);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [termInput, definitionInput]);
   return (
     <View style={styles.card}>
@@ -94,3 +114,4 @@ const styles = StyleSheet.create({
 });
 
 export default Card;
+export {addCardToDatabase};
