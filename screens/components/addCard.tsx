@@ -14,7 +14,7 @@ const AddCard = (props: addCardProps) => {
       onPress={() =>
         props.setData([
           ...props.data,
-          {id: -1, term: '', definition: '', deckID: -1},
+          {id: Math.random(), term: '', definition: '', deckID: -1},
         ])
       }>
       <Text>+</Text>

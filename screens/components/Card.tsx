@@ -8,12 +8,13 @@ interface cardInfo {
   term: string;
   definition: string;
   id: number;
+  deckId: number;
   uniqueDeckName: string;
   uniqueFolderName: string;
 }
 
 const addCardToDatabase = async (cardProps: cardInfo) => {
-  if (cardProps.id !== -1) {
+  if (cardProps.deckId !== -1) {
     await updateEntryInDeck(
       cardProps.uniqueDeckName,
       cardProps.id,

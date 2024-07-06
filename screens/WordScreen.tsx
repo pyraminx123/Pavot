@@ -12,6 +12,8 @@ import AddCard from './components/addCard';
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
 const WordScreen = ({route, navigation}: WordsProps) => {
+  //const currentUsedIds = route.params.data.map(card => card.id);
+  //console.log(currentUsedIds);
   const initialData = [
     ...route.params.data,
     {id: -1, term: '', definition: '', deckID: -1},
@@ -31,7 +33,10 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     const newData = retrieveDataFromTable(
       route.params.uniqueDeckName,
     ) as deckData[];
-    setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
+    setData([
+      ...newData,
+      {id: Math.random(), term: '', definition: '', deckID: -1},
+    ]);
   };
 
   const updateCard = (index: number, term: string, definition: string) => {
@@ -50,6 +55,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
           term: item.term,
           definition: item.definition,
           id: item.id,
+          deckId: item.deckID,
           uniqueDeckName: route.params.uniqueDeckName,
           uniqueFolderName: route.params.uniqueFolderName,
         });
