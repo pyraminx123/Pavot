@@ -1,12 +1,8 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {TextInput, View, StyleSheet, Button} from 'react-native';
+import {TextInput, View, StyleSheet} from 'react-native';
 import DeleteButton from './deleteButton';
-import {
-  updateEntryInDeck,
-  insertIntoDeck,
-  //retrieveDataFromTable,
-} from '../handleData';
-import {deckData} from '../../App';
+import {updateEntryInDeck, insertIntoDeck} from '../handleData';
 
 interface cardInfo {
   term: string;
@@ -32,34 +28,24 @@ const addCardToDatabase = async (cardProps: cardInfo) => {
       cardProps.definition,
     );
   }
-  //const newData = retrieveDataFromTable(props.uniqueDeckName) as deckData[];
-  //props.setData([...newData, {id: -1, term: '', definition: '', deckID: -1}]);
-  //console.log('normal', props.data);
 };
 
 const Card = (props: {
+  index: number;
   term: string;
   definition: string;
   id: number;
   uniqueDeckName: string;
   uniqueFolderName: string;
-  setData: Function;
-  data: deckData[];
   deleteFunction: Function;
+  updateCard: Function;
 }) => {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
 
-  const onSave = () => {
-    const cardInfo = {
-      term: termInput,
-      definition: definitionInput,
-      id: props.id,
-      uniqueDeckName: props.uniqueDeckName,
-      uniqueFolderName: props.uniqueFolderName,
-    };
-    addCardToDatabase(cardInfo);
-  };
+  useEffect(() => {
+    props.updateCard(props.index, termInput, definitionInput);
+  }, [termInput, definitionInput]);
 
   return (
     <View style={styles.card}>
