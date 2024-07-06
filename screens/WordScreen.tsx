@@ -7,6 +7,7 @@ import SaveButton from './components/SaveButton';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
 import {deleteEntryInDeck, retrieveDataFromTable} from './handleData';
+import AddCard from './components/addCard';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
@@ -35,7 +36,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
 
   const updateCard = (index: number, term: string, definition: string) => {
     setData(prevData => {
-      console.log('prev', prevData, prevData[index]);
+      //console.log('prev', prevData, prevData[index]);
       prevData[index].term = term;
       prevData[index].definition = definition;
       return prevData;
@@ -85,6 +86,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
           data={data}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
+          ListFooterComponent={AddCard({data: data, setData: setData})}
         />
       </SafeAreaView>
     </View>
