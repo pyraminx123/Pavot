@@ -17,7 +17,7 @@ const AddCard = (props: addCardProps) => {
           {id: Math.random(), term: '', definition: '', deckID: -1},
         ])
       }>
-      <Text>+</Text>
+      <Text style={styles.plus}>+</Text>
     </Pressable>
   );
 };
@@ -31,6 +31,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 70,
     margin: 10,
+  },
+  plus: {
+    fontSize: 40,
+    fontWeight: '200',
   },
 });
 
