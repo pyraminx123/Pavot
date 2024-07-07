@@ -10,16 +10,13 @@ const DeckContainer = (props: {
   uniqueDeckName: string;
   uniqueFolderName: string;
   fetchDecks: Function;
+  navigateToWordsScreen: Function;
 }) => {
   return (
     <View style={styles.container}>
       <View style={styles.containerLeft}>
         <Text style={styles.text}>{props.originalDeckName}</Text>
-        <AddWord
-          uniqueDeckName={props.uniqueDeckName}
-          uniqueFolderName={props.uniqueFolderName}
-          onWordAdded={() => console.log('Word added')}
-        />
+        <AddWord onPressed={() => props.navigateToWordsScreen()} />
       </View>
       {/* here comes the chart pie */}
       <View style={styles.containerRight}>

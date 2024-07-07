@@ -1,49 +1,14 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Pressable, Text, StyleSheet, View} from 'react-native';
-import {insertIntoDeck} from '../handleData';
-import QuestionModal from './QuestionModal';
 
+// TODO change file name
 // Define the AddWord component
-const AddWord = (props: {
-  onWordAdded: Function;
-  uniqueFolderName: string;
-  uniqueDeckName: string;
-}) => {
-  const [modalVisible, setModalVisible] = useState(false);
-  const [inputValue1, setInputValue1] = useState('');
-  const [inputValue2, setInputValue2] = useState('');
-
-  const openModal = () => {
-    setInputValue1('');
-    setInputValue2('');
-    setModalVisible(true);
-  };
-
-  const onClose = async () => {
-    await setModalVisible(false);
-    await insertIntoDeck(
-      props.uniqueFolderName,
-      props.uniqueDeckName,
-      inputValue1,
-      inputValue2,
-    );
-    props.onWordAdded();
-  };
-
+const AddWord = (props: {onPressed: Function}) => {
   return (
     <View>
-      <Pressable style={styles.container} onPress={openModal}>
+      <Pressable style={styles.container} onPress={() => props.onPressed()}>
         <Text style={styles.text}>+</Text>
       </Pressable>
-      <QuestionModal
-        question={'Add a new word'}
-        placeholers={['Enter term', 'Enter definition']}
-        modalVisible={modalVisible}
-        setModalVisible={setModalVisible}
-        values={[inputValue1, inputValue2]}
-        setValues={[setInputValue1, setInputValue2]}
-        onClose={onClose}
-      />
     </View>
   );
 };

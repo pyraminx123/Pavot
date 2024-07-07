@@ -41,6 +41,22 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     navigation.navigate('Flashcards', {data, originalDeckName});
   };
 
+  const navigateToWordsScreen = (
+    uniqueDeckName: string,
+    originalDeckName: string,
+  ) => {
+    const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
+    //console.log('from decks', data);
+    navigation.navigate('Words', {
+      data: data,
+      originalDeckName: originalDeckName,
+      uniqueDeckName: uniqueDeckName,
+      uniqueFolderName: uniqueFolderName,
+      folderID: route.params.folderID,
+      originalFolderName: route.params.originalFolderName,
+    });
+  };
+
   const [decks, setDecks] = useState<folderData[]>();
 
   const fetchDecks = async () => {
@@ -83,6 +99,9 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
             uniqueDeckName={item.uniqueDeckName}
             uniqueFolderName={uniqueFolderName}
             fetchDecks={fetchDecks}
+            navigateToWordsScreen={() =>
+              navigateToWordsScreen(item.uniqueDeckName, item.originalDeckName)
+            }
           />
         </Pressable>
       );
