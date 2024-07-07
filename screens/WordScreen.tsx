@@ -6,7 +6,7 @@ import SaveButton from './components/SaveButton';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
-import {deleteEntryInDeck, retrieveDataFromTable} from './handleData';
+import {deleteEntryInDeck} from './handleData';
 import AddCard from './components/addCard';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
@@ -28,15 +28,17 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     });
   }, [data]);
 
-  const deleteCard = async (id: number) => {
-    await deleteEntryInDeck(route.params.uniqueDeckName, id);
-    const newData = retrieveDataFromTable(
-      route.params.uniqueDeckName,
-    ) as deckData[];
-    setData([
-      ...newData,
-      {id: Math.random(), term: '', definition: '', deckID: -1},
-    ]);
+  const deleteCard = async (id: number, deckId: number) => {
+    console.log(data);
+    if (deckId !== -1) {
+      await deleteEntryInDeck(route.params.uniqueDeckName, id);
+      const newData = data.filter(card => card.id !== id);
+      setData(newData);
+      // delete empty card
+    } else {
+      const newData = data.filter(card => card.id !== id);
+      setData(newData);
+    }
   };
 
   const updateCard = (index: number, term: string, definition: string) => {
@@ -77,7 +79,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         id={item.id}
         uniqueDeckName={route.params.uniqueDeckName}
         uniqueFolderName={route.params.uniqueFolderName}
-        deleteFunction={() => deleteCard(item.id)}
+        deleteFunction={() => deleteCard(item.id, item.deckID)}
         updateCard={updateCard}
       />
     );
