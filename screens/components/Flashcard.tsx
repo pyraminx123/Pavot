@@ -61,6 +61,7 @@ const Flashcard = (props: {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({x: 0, y: 0});
   const goBackDuration = useSharedValue(0);
+  const borderColor = useSharedValue('#FFFFFF');
 
   const swipeStyle = useAnimatedStyle(() => {
     return {
@@ -107,12 +108,21 @@ const Flashcard = (props: {
         x: e.translationX,
         y: e.translationY,
       };
+      if (offset.value.x > threshold) {
+        borderColor.value = '#00FF00';
+      } else if (offset.value.x < -threshold) {
+        borderColor.value = '#FF0000';
+      } else {
+        borderColor.value = '#FFFFFF';
+      }
     })
     .onFinalize(() => {
       if (offset.value.x > threshold) {
+        console.log('word known');
         handleSwipedWord();
         return null;
       } else if (offset.value.x < -threshold) {
+        console.log('word unkown');
         handleSwipedWord();
         return null;
       } else {
@@ -136,10 +146,12 @@ const Flashcard = (props: {
           }
         }}
         style={[styles.pressBtn, !disableGesture ? swipeStyle : null]}>
-        <Animated.View style={[frontStyle, styles.card]}>
+        <Animated.View
+          style={[frontStyle, styles.card, {borderColor: borderColor}]}>
           <Text style={styles.text}>{props.term}</Text>
         </Animated.View>
-        <Animated.View style={[backStyle, styles.card]}>
+        <Animated.View
+          style={[backStyle, styles.card, {borderColor: borderColor}]}>
           <Text style={styles.text}>{props.definition}</Text>
         </Animated.View>
       </AnimatedPressable>
@@ -153,6 +165,7 @@ const styles = StyleSheet.create({
     height: 200,
     backgroundColor: 'white',
     borderRadius: 15,
+    borderWidth: 3,
     backfaceVisibility: 'hidden',
     justifyContent: 'center',
     alignItems: 'center',
