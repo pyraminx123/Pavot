@@ -38,7 +38,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     originalDeckName: string,
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
-    navigation.navigate('Flashcards', {data, originalDeckName});
+    navigation.navigate('Flashcards', {data, originalDeckName, uniqueDeckName});
   };
 
   const navigateToWordsScreen = (

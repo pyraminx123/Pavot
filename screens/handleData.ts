@@ -81,6 +81,7 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
     try {
       // deletes associated decks
       const decks = retrieveDataFromTable(uniqueFolderName);
+      console.log(decks);
       if (decks) {
         for (let index = 0; index < decks.length; index++) {
           const uniqueDeckName = decks[index].uniqueDeckName;
@@ -124,7 +125,6 @@ const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
         definition TEXT,
         deckID INTEGER,
         wordStats TEXT,
-
         FOREIGN KEY (deckID) REFERENCES ${uniqueFolderName}(deckID)
       );`,
     );
@@ -187,7 +187,7 @@ const insertIntoDeck = async (
   uniqueDeckName: string,
   term: string,
   definition: string,
-  wordStats: JSON,
+  wordStats: string,
 ) => {
   if (term.trim().length > 0 && definition.trim().length > 0) {
     try {
@@ -244,12 +244,15 @@ const deleteEntryInDeck = async (uniqueDeckName: string, id: number) => {
   }
 };
 
-const retrieveDataFromTable = (tableName: string) => {
+const retrieveDataFromTable = (tableName: string): object => {
   try {
-    const res = db.execute(`SELECT * FROM ${tableName}`)?.rows?._array;
+    const res = db.execute(`SELECT * FROM ${tableName}`)?.rows
+      ?._array as object;
+    console.log(typeof res);
     return res;
   } catch (error) {
     console.error(`No such table ${tableName} exists`, error);
+    return {};
   }
 };
 

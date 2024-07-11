@@ -6,6 +6,8 @@ import Flashcard from './components/Flashcard';
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
+import {retrieveDataFromTable} from './handleData';
+import {runOnJS} from 'react-native-reanimated';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -13,12 +15,13 @@ type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 // use useState and useEffect to update props
 const FlashcardsScreen = ({route}: FlashcardsProps) => {
   const data = route.params.data as wordObj[];
-  const deckName = route.params.originalDeckName;
+  const originalDeckName = route.params.originalDeckName;
+  const uniqueDeckName = route.params.uniqueDeckName;
 
   const [terms, setTerms] = useState(data);
   //console.log('terms', route.params.data);
   const initialLength = terms.length;
-
+  // TODO this has to be updated I believe (with wordStats)
   useEffect(() => {
     const termsWithEnding = [
       ...terms,
@@ -35,12 +38,25 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     id: number;
   }
 
+  const changeWordStats = (isWordCorrect: boolean) => {
+    'worklet'; // very important, without this reanimated has a problem
+    const fetchWordInfo = () => {
+      try {
+        const wordInfo = runOnJS(retrieveDataFromTable(uniqueDeckName));
+        console.log(isWordCorrect, wordInfo);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchWordInfo();
+  };
+
   return (
     // TODO handle case where no words are added yet
     // TODO after make card before already appear but text just not visible
     // TODO there could be a problem when the id is the same
     <View style={styles.container}>
-      <Text style={styles.title}>{deckName}</Text>
+      <Text style={styles.title}>{originalDeckName}</Text>
       <GestureHandlerRootView style={styles.gestureContainer}>
         {terms.map((wordObj: wordObj, index: number) => {
           if (index === 0) {
@@ -53,6 +69,7 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
                   terms={terms}
                   setTerms={setTerms}
                   disableGesture={true}
+                  changeWordStats={changeWordStats}
                 />
               );
             } else {
@@ -65,12 +82,14 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
                     definition={nextWordObj.definition}
                     terms={terms}
                     setTerms={setTerms}
+                    changeWordStats={changeWordStats}
                   />
                   <Flashcard
                     term={wordObj.term}
                     definition={wordObj.definition}
                     terms={terms}
                     setTerms={setTerms}
+                    changeWordStats={changeWordStats}
                   />
                 </React.Fragment>
               );

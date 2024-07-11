@@ -22,6 +22,7 @@ const Flashcard = (props: {
   definition: string;
   terms: Array<wordObj>;
   setTerms: React.Dispatch<React.SetStateAction<Array<wordObj>>>;
+  changeWordStats: Function;
   disableGesture?: boolean; // optional
 }) => {
   const disableGesture = props.disableGesture ?? false;
@@ -120,10 +121,12 @@ const Flashcard = (props: {
       if (offset.value.x > threshold) {
         console.log('word known');
         handleSwipedWord();
+        props.changeWordStats(true);
         return null;
       } else if (offset.value.x < -threshold) {
         console.log('word unkown');
         handleSwipedWord();
+        props.changeWordStats(false);
         return null;
       } else {
         goBackDuration.value = 300;

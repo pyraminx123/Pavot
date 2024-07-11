@@ -24,6 +24,7 @@ export interface folderInfo {
 interface flashcardParams {
   data: deckData[];
   originalDeckName: string;
+  uniqueDeckName: string;
 }
 
 interface wordScreenParams {
