@@ -35,7 +35,7 @@ const insertIntoAllFolders = async (folderName: string) => {
       'INSERT INTO allFolders (originalFolderName, uniqueFolderName) VALUES (?, ?);',
       [folderName, uniqueFolderName],
     );
-    return {uniqueFolderName};
+    return uniqueFolderName;
   } catch (error) {
     console.error(
       `Some error occurred trying to insert ${folderName} into allFolders`,
@@ -50,7 +50,7 @@ const createFolder = async (folderName: string) => {
     return;
   }
   try {
-    const {uniqueFolderName} = await insertIntoAllFolders(folderName);
+    const uniqueFolderName = await insertIntoAllFolders(folderName);
     db.execute(
       `CREATE TABLE ${uniqueFolderName} (
         deckID INTEGER PRIMARY KEY,
@@ -81,9 +81,11 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
     try {
       // deletes associated decks
       const decks = retrieveDataFromTable(uniqueFolderName);
-      for (let index = 0; index < decks.length; index++) {
-        const uniqueDeckName = decks[index].uniqueDeckName;
-        await db.execute(`DROP TABLE IF EXISTS "${uniqueDeckName}";`);
+      if (decks) {
+        for (let index = 0; index < decks.length; index++) {
+          const uniqueDeckName = decks[index].uniqueDeckName;
+          await db.execute(`DROP TABLE IF EXISTS "${uniqueDeckName}";`);
+        }
       }
       try {
         // deletes table
