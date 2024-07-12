@@ -22,8 +22,8 @@ const addCardToDatabase = async (cardProps: cardInfo) => {
       cardProps.definition,
     );
   } else {
-    const wordStats = JSON.stringify({Attemps: [0, 0, 0, 1]});
-    console.log(wordStats);
+    const wordStats = JSON.stringify({Attemps: [0, 0, 0, 0]});
+    //console.log(wordStats);
     await insertIntoDeck(
       cardProps.uniqueFolderName,
       cardProps.uniqueDeckName,

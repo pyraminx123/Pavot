@@ -81,7 +81,7 @@ const Flashcard = (props: {
     };
   });
 
-  const handleSwipedWord = () => {
+  const handleSwipedWord = (isWordCorrect: boolean) => {
     'worklet';
     if (props.terms.length > 2) {
       runOnJS(props.setTerms)(props.terms.slice(1));
@@ -97,6 +97,7 @@ const Flashcard = (props: {
       x: 0,
       y: 0,
     };
+    runOnJS(props.changeWordStats(isWordCorrect));
   };
 
   const pan = Gesture.Pan()
@@ -120,13 +121,11 @@ const Flashcard = (props: {
     .onFinalize(() => {
       if (offset.value.x > threshold) {
         console.log('word known');
-        handleSwipedWord();
-        runOnJS(props.changeWordStats(true));
+        handleSwipedWord(true);
         return null;
       } else if (offset.value.x < -threshold) {
         console.log('word unkown');
-        handleSwipedWord();
-        runOnJS(props.changeWordStats(false));
+        handleSwipedWord(false);
         return null;
       } else {
         goBackDuration.value = 300;

@@ -256,6 +256,21 @@ const retrieveDataFromTable = (tableName: string): object => {
   }
 };
 
+const retrieveDataFromTable2 = async (tableName: string): Promise<object[]> => {
+  try {
+    const res = await db.execute(`SELECT * FROM ${tableName}`);
+    if (res && res.rows && res.rows._array) {
+      return res.rows._array as object[];
+    } else {
+      console.error(`No data returned from table ${tableName}`);
+      return [];
+    }
+  } catch (error) {
+    console.error(`Error executing query on table ${tableName}`, error);
+    return [];
+  }
+};
+
 export {
   generateUniqueTableName,
   createFoldersTable,
@@ -267,4 +282,5 @@ export {
   updateEntryInDeck,
   deleteEntryInDeck,
   retrieveDataFromTable,
+  retrieveDataFromTable2,
 };

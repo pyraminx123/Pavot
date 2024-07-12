@@ -6,7 +6,8 @@ import Flashcard from './components/Flashcard';
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
-import {retrieveDataFromTable} from './handleData';
+import {retrieveDataFromTable2} from './handleData';
+import {runOnJS} from 'react-native-reanimated';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -37,22 +38,36 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     id: number;
   }
 
+  const fetchWordInfo = async () => {
+    try {
+      const wordInfo = await retrieveDataFromTable2(uniqueDeckName);
+      console.log('wordInfo:', wordInfo);
+      return wordInfo;
+    } catch (error) {
+      console.error('Some error ocurred trying to fetch wordInfo', error);
+      return null;
+    }
+  };
+
+  const handleWordInfo = async () => {
+    const wordInfo = await fetchWordInfo();
+    console.log('wordInfo:', wordInfo);
+    // Process wordInfo here
+    if (wordInfo) {
+      // Perform some operation on wordInfo if needed
+    }
+    return 'null';
+  };
+
   const changeWordStats = (isWordCorrect: boolean) => {
-    const fetchWordInfo = () => {
-      try {
-        const wordInfo = retrieveDataFromTable(uniqueDeckName);
-        console.log(isWordCorrect, wordInfo);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-    fetchWordInfo();
+    'worklet';
+    console.log(isWordCorrect);
+    runOnJS(handleWordInfo)();
   };
 
   return (
     // TODO handle case where no words are added yet
     // TODO after make card before already appear but text just not visible
-    // TODO there could be a problem when the id is the same
     <View style={styles.container}>
       <Text style={styles.title}>{originalDeckName}</Text>
       <GestureHandlerRootView style={styles.gestureContainer}>
