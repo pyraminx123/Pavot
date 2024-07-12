@@ -7,7 +7,6 @@ import Flashcard from './components/Flashcard';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
 import {retrieveDataFromTable} from './handleData';
-import {runOnJS} from 'react-native-reanimated';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -39,10 +38,9 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   }
 
   const changeWordStats = (isWordCorrect: boolean) => {
-    'worklet'; // very important, without this reanimated has a problem
     const fetchWordInfo = () => {
       try {
-        const wordInfo = runOnJS(retrieveDataFromTable(uniqueDeckName));
+        const wordInfo = retrieveDataFromTable(uniqueDeckName);
         console.log(isWordCorrect, wordInfo);
       } catch (error) {
         console.error(error);

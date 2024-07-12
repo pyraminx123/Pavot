@@ -121,12 +121,12 @@ const Flashcard = (props: {
       if (offset.value.x > threshold) {
         console.log('word known');
         handleSwipedWord();
-        props.changeWordStats(true);
+        runOnJS(props.changeWordStats(true));
         return null;
       } else if (offset.value.x < -threshold) {
         console.log('word unkown');
         handleSwipedWord();
-        props.changeWordStats(false);
+        runOnJS(props.changeWordStats(false));
         return null;
       } else {
         goBackDuration.value = 300;

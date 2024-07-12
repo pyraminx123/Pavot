@@ -81,10 +81,9 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
     try {
       // deletes associated decks
       const decks = retrieveDataFromTable(uniqueFolderName);
-      console.log(decks);
       if (decks) {
-        for (let index = 0; index < decks.length; index++) {
-          const uniqueDeckName = decks[index].uniqueDeckName;
+        for (let index = 0; index < Object.keys(decks).length; index++) {
+          const uniqueDeckName = Object(decks)[index].uniqueDeckName;
           await db.execute(`DROP TABLE IF EXISTS "${uniqueDeckName}";`);
         }
       }
@@ -110,6 +109,7 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
   fetchFolders();
 };
 
+// TODO folderID is currently = null
 const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
   if (originalDeckName.trim().length === 0) {
     console.log('Input is empty or whitespace, no deck was created');
@@ -248,8 +248,8 @@ const retrieveDataFromTable = (tableName: string): object => {
   try {
     const res = db.execute(`SELECT * FROM ${tableName}`)?.rows
       ?._array as object;
-    console.log(typeof res);
-    return res;
+    //console.log(typeof res);
+    return res as object;
   } catch (error) {
     console.error(`No such table ${tableName} exists`, error);
     return {};
