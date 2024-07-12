@@ -211,6 +211,21 @@ const insertIntoDeck = async (
   }
 };
 
+const updateWordStats = async (
+  uniqueDeckName: string,
+  id: number,
+  wordStats: string,
+) => {
+  try {
+    await db.execute(`UPDATE ${uniqueDeckName} SET wordStats=? WHERE id=?;`, [
+      wordStats,
+      id,
+    ]);
+  } catch (error) {
+    console.error('An error ocurred trying to update the wordStats.', error);
+  }
+};
+
 const updateEntryInDeck = async (
   uniqueDeckName: string,
   id: number,
@@ -256,21 +271,6 @@ const retrieveDataFromTable = (tableName: string): object => {
   }
 };
 
-const retrieveDataFromTable2 = async (tableName: string): Promise<object[]> => {
-  try {
-    const res = await db.execute(`SELECT * FROM ${tableName}`);
-    if (res && res.rows && res.rows._array) {
-      return res.rows._array as object[];
-    } else {
-      console.error(`No data returned from table ${tableName}`);
-      return [];
-    }
-  } catch (error) {
-    console.error(`Error executing query on table ${tableName}`, error);
-    return [];
-  }
-};
-
 export {
   generateUniqueTableName,
   createFoldersTable,
@@ -280,7 +280,7 @@ export {
   deleteFolder,
   insertIntoDeck,
   updateEntryInDeck,
+  updateWordStats,
   deleteEntryInDeck,
   retrieveDataFromTable,
-  retrieveDataFromTable2,
 };

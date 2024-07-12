@@ -15,16 +15,19 @@ interface wordObj {
   definition: string;
   term: string;
   id: number;
+  wordStats: string;
 }
 
 const Flashcard = (props: {
-  term: string;
-  definition: string;
-  terms: Array<wordObj>;
-  setTerms: React.Dispatch<React.SetStateAction<Array<wordObj>>>;
+  currentWordObj: wordObj;
+  terms: wordObj[];
+  setTerms: React.Dispatch<React.SetStateAction<wordObj[]>>;
   changeWordStats: Function;
   disableGesture?: boolean; // optional
 }) => {
+  const term = props.currentWordObj.term;
+  const definition = props.currentWordObj.definition;
+
   const disableGesture = props.disableGesture ?? false;
 
   // Animation, turn card
@@ -97,7 +100,7 @@ const Flashcard = (props: {
       x: 0,
       y: 0,
     };
-    runOnJS(props.changeWordStats(isWordCorrect));
+    runOnJS(props.changeWordStats(isWordCorrect, props.currentWordObj));
   };
 
   const pan = Gesture.Pan()
@@ -150,11 +153,11 @@ const Flashcard = (props: {
         style={[styles.pressBtn, !disableGesture ? swipeStyle : null]}>
         <Animated.View
           style={[frontStyle, styles.card, {borderColor: borderColor}]}>
-          <Text style={styles.text}>{props.term}</Text>
+          <Text style={styles.text}>{term}</Text>
         </Animated.View>
         <Animated.View
           style={[backStyle, styles.card, {borderColor: borderColor}]}>
-          <Text style={styles.text}>{props.definition}</Text>
+          <Text style={styles.text}>{definition}</Text>
         </Animated.View>
       </AnimatedPressable>
     </GestureDetector>

@@ -6,8 +6,8 @@ import Flashcard from './components/Flashcard';
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
-import {retrieveDataFromTable2} from './handleData';
 import {runOnJS} from 'react-native-reanimated';
+import {updateWordStats} from './handleData';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -21,11 +21,16 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   const [terms, setTerms] = useState(data);
   //console.log('terms', route.params.data);
   const initialLength = terms.length;
-  // TODO this has to be updated I believe (with wordStats)
   useEffect(() => {
     const termsWithEnding = [
       ...terms,
-      {term: '', definition: '', id: initialLength + 1, deckID: -1},
+      {
+        term: '',
+        definition: '',
+        id: initialLength + 1,
+        deckID: -1,
+        wordStats: '{"Attemps":[0,0,0,0]}',
+      },
     ];
     setTerms(termsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -36,33 +41,43 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     definition: string;
     term: string;
     id: number;
+    wordStats: string;
   }
 
-  const fetchWordInfo = async () => {
+  interface wordStats {
+    Attemps: number[];
+  }
+
+  const changeWordStats = async (
+    isWordCorrect: boolean,
+    wordObj: wordObj[],
+  ) => {
     try {
-      const wordInfo = await retrieveDataFromTable2(uniqueDeckName);
-      console.log('wordInfo:', wordInfo);
-      return wordInfo;
+      const wordStats = JSON.parse(Object(wordObj).wordStats) as wordStats[];
+      //console.log('stats', Object(wordStats).Attemps);
+      const attemps = Object(wordStats).Attemps;
+      attemps.shift(); // removes first item
+      attemps.push(isWordCorrect ? 1 : 0);
+      Object(wordStats).Attemps = attemps;
+      updateWordStats(
+        uniqueDeckName,
+        Object(wordObj).id,
+        JSON.stringify(wordStats),
+      );
+      return '';
     } catch (error) {
-      console.error('Some error ocurred trying to fetch wordInfo', error);
-      return null;
+      console.error('Some error ocurred trying to update wordStats', error);
+      return '';
     }
   };
 
-  const handleWordInfo = async () => {
-    const wordInfo = await fetchWordInfo();
-    console.log('wordInfo:', wordInfo);
-    // Process wordInfo here
-    if (wordInfo) {
-      // Perform some operation on wordInfo if needed
-    }
-    return 'null';
-  };
-
-  const changeWordStats = (isWordCorrect: boolean) => {
+  // here the async/await are very important
+  const triggerChangeWordStats = async (
+    isWordCorrect: boolean,
+    wordObj: wordObj[],
+  ) => {
     'worklet';
-    console.log(isWordCorrect);
-    runOnJS(handleWordInfo)();
+    await runOnJS(changeWordStats)(isWordCorrect, wordObj);
   };
 
   return (
@@ -76,13 +91,12 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
             if (terms.length === 1) {
               return (
                 <Flashcard
+                  currentWordObj={wordObj}
                   key={wordObj.id}
-                  term={wordObj.term}
-                  definition={wordObj.definition}
                   terms={terms}
                   setTerms={setTerms}
                   disableGesture={true}
-                  changeWordStats={changeWordStats}
+                  changeWordStats={triggerChangeWordStats}
                 />
               );
             } else {
@@ -91,18 +105,16 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
                 // each object, even if not rendered has to have an unique key
                 <React.Fragment key={wordObj.id}>
                   <Flashcard
-                    term={nextWordObj.term}
-                    definition={nextWordObj.definition}
+                    currentWordObj={nextWordObj}
                     terms={terms}
                     setTerms={setTerms}
-                    changeWordStats={changeWordStats}
+                    changeWordStats={triggerChangeWordStats}
                   />
                   <Flashcard
-                    term={wordObj.term}
-                    definition={wordObj.definition}
+                    currentWordObj={wordObj}
                     terms={terms}
                     setTerms={setTerms}
-                    changeWordStats={changeWordStats}
+                    changeWordStats={triggerChangeWordStats}
                   />
                 </React.Fragment>
               );
