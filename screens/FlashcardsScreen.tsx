@@ -7,7 +7,7 @@ import Flashcard from './components/Flashcard';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
 import {runOnJS} from 'react-native-reanimated';
-import {updateWordStats} from './handleData';
+import {retrieveWordFromDeck, updateWordStats} from './handleData';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -19,20 +19,21 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   const uniqueDeckName = route.params.uniqueDeckName;
 
   const [terms, setTerms] = useState(data);
+  const [termsStack, setTermsStack] = useState([] as wordObj[]);
   //console.log('terms', route.params.data);
-  const initialLength = terms.length;
   useEffect(() => {
     const termsWithEnding = [
       ...terms,
       {
         term: '',
         definition: '',
-        id: initialLength + 1,
+        id: Math.random(),
         deckID: -1,
         wordStats: '{"Attemps":[0,0,0,0]}',
       },
-    ];
+    ] as wordObj[];
     setTerms(termsWithEnding);
+    setTermsStack(termsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -59,11 +60,22 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
       attemps.shift(); // removes first item
       attemps.push(isWordCorrect ? 1 : 0);
       Object(wordStats).Attemps = attemps;
-      updateWordStats(
+      await updateWordStats(
         uniqueDeckName,
         Object(wordObj).id,
         JSON.stringify(wordStats),
       );
+      //console.log(wordStats);
+      const updatedWordObject = retrieveWordFromDeck(
+        uniqueDeckName,
+        Object(wordObj).id,
+      );
+      setTerms(prevTerms => {
+        prevTerms.map(term => {
+          Object(terms).id === Object(wordObj).id ? updatedWordObject : term;
+        });
+        return prevTerms;
+      });
       return '';
     } catch (error) {
       console.error('Some error ocurred trying to update wordStats', error);
@@ -80,6 +92,26 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     await runOnJS(changeWordStats)(isWordCorrect, wordObj);
   };
 
+  // useEffect(() => {
+  //   terms.map(term => {
+  //     if (term.deckID !== -1) {
+  //       const wordAttemps = Object(
+  //         JSON.parse(Object(term).wordStats) as wordStats[],
+  //       ).Attemps;
+  //       console.log(wordAttemps);
+  //       if (wordAttemps.includes(0)) {
+  //         setTermsStack(prevData => {
+  //           return [...prevData, term];
+  //         });
+  //       } else {
+  //         return term;
+  //       }
+  //     } else {
+  //       return term;
+  //     }
+  //   });
+  // }, [terms]);
+
   return (
     // TODO handle case where no words are added yet
     // TODO after make card before already appear but text just not visible
@@ -88,13 +120,14 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
       <GestureHandlerRootView style={styles.gestureContainer}>
         {terms.map((wordObj: wordObj, index: number) => {
           if (index === 0) {
+            // simply change te code in the if close it I want to change the screen where no card is added
             if (terms.length === 1) {
               return (
                 <Flashcard
                   currentWordObj={wordObj}
                   key={wordObj.id}
-                  terms={terms}
-                  setTerms={setTerms}
+                  termsStack={termsStack}
+                  setTermsStack={setTermsStack}
                   disableGesture={true}
                   changeWordStats={triggerChangeWordStats}
                 />
@@ -106,14 +139,14 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
                 <React.Fragment key={wordObj.id}>
                   <Flashcard
                     currentWordObj={nextWordObj}
-                    terms={terms}
-                    setTerms={setTerms}
+                    termsStack={termsStack}
+                    setTermsStack={setTermsStack}
                     changeWordStats={triggerChangeWordStats}
                   />
                   <Flashcard
                     currentWordObj={wordObj}
-                    terms={terms}
-                    setTerms={setTerms}
+                    termsStack={termsStack}
+                    setTermsStack={setTermsStack}
                     changeWordStats={triggerChangeWordStats}
                   />
                 </React.Fragment>

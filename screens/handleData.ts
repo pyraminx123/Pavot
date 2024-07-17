@@ -261,12 +261,26 @@ const deleteEntryInDeck = async (uniqueDeckName: string, id: number) => {
 
 const retrieveDataFromTable = (tableName: string): object => {
   try {
-    const res = db.execute(`SELECT * FROM ${tableName}`)?.rows
+    const res = db.execute(`SELECT * FROM ${tableName};`)?.rows
       ?._array as object;
     //console.log(typeof res);
     return res as object;
   } catch (error) {
     console.error(`No such table ${tableName} exists`, error);
+    return {};
+  }
+};
+
+const retrieveWordFromDeck = (uniqueDeckName: string, id: number): object => {
+  try {
+    const res = db.execute(`SELECT * FROM ${uniqueDeckName} WHERE id=?;`, [id])
+      ?.rows?._array;
+    return res as object;
+  } catch (error) {
+    console.log(
+      `Couldn't retrieve word with id ${id} from ${uniqueDeckName}`,
+      error,
+    );
     return {};
   }
 };
@@ -283,4 +297,5 @@ export {
   updateWordStats,
   deleteEntryInDeck,
   retrieveDataFromTable,
+  retrieveWordFromDeck,
 };

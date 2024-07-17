@@ -20,11 +20,13 @@ interface wordObj {
 
 const Flashcard = (props: {
   currentWordObj: wordObj;
-  terms: wordObj[];
-  setTerms: React.Dispatch<React.SetStateAction<wordObj[]>>;
+  termsStack: wordObj[];
+  setTermsStack: Function;
   changeWordStats: Function;
   disableGesture?: boolean; // optional
 }) => {
+  console.log('here', props.termsStack);
+
   const term = props.currentWordObj.term;
   const definition = props.currentWordObj.definition;
 
@@ -86,13 +88,14 @@ const Flashcard = (props: {
 
   const handleSwipedWord = (isWordCorrect: boolean) => {
     'worklet';
-    if (props.terms.length > 2) {
-      runOnJS(props.setTerms)(props.terms.slice(1));
-    } else if (props.terms.length === 2) {
-      runOnJS(props.setTerms)(props.terms.slice(1));
+    if (props.termsStack.length > 2) {
+      runOnJS(props.setTermsStack)(props.termsStack.slice(1));
+    } else if (props.termsStack.length === 2) {
+      runOnJS(props.setTermsStack)(props.termsStack.slice(1));
       // make function for end of set
       console.log('You just finished this set');
     }
+    console.log(props.termsStack);
     // handle ending, so that last card also comes back to correct position
     // eventually update
     goBackDuration.value = 300;
@@ -113,20 +116,20 @@ const Flashcard = (props: {
         x: e.translationX,
         y: e.translationY,
       };
-      if (offset.value.x > threshold) {
+      if (offset.value.x > threshold && !disableGesture) {
         borderColor.value = '#00FF00';
-      } else if (offset.value.x < -threshold) {
+      } else if (offset.value.x < -threshold && !disableGesture) {
         borderColor.value = '#FF0000';
       } else {
         borderColor.value = '#FFFFFF';
       }
     })
     .onFinalize(() => {
-      if (offset.value.x > threshold) {
+      if (offset.value.x > threshold && !disableGesture) {
         console.log('word known');
         handleSwipedWord(true);
         return null;
-      } else if (offset.value.x < -threshold) {
+      } else if (offset.value.x < -threshold && !disableGesture) {
         console.log('word unkown');
         handleSwipedWord(false);
         return null;
