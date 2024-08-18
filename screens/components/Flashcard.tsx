@@ -18,14 +18,16 @@ interface wordObj {
   wordStats: string;
 }
 
+type SetTermsStackType = (newStack: wordObj[]) => void;
+
 const Flashcard = (props: {
   currentWordObj: wordObj;
   termsStack: wordObj[];
-  setTermsStack: Function;
+  setTermsStack: SetTermsStackType;
   changeWordStats: Function;
   disableGesture?: boolean; // optional
 }) => {
-  console.log('here', props.termsStack);
+  //console.log('here', props.termsStack);
 
   const term = props.currentWordObj.term;
   const definition = props.currentWordObj.definition;
@@ -86,24 +88,36 @@ const Flashcard = (props: {
     };
   });
 
-  const handleSwipedWord = (isWordCorrect: boolean) => {
-    'worklet';
+  const updateTermsStack = () => {
     if (props.termsStack.length > 2) {
-      runOnJS(props.setTermsStack)(props.termsStack.slice(1));
+      const newTerms = props.termsStack.slice(1);
+      console.log(newTerms);
+      props.setTermsStack(newTerms);
     } else if (props.termsStack.length === 2) {
-      runOnJS(props.setTermsStack)(props.termsStack.slice(1));
+      const newTerms = props.termsStack.slice(1);
+      props.setTermsStack(newTerms);
       // make function for end of set
       console.log('You just finished this set');
     }
-    console.log(props.termsStack);
-    // handle ending, so that last card also comes back to correct position
-    // eventually update
+  };
+
+  // handle ending, so that last card also comes back to correct position
+  // eventually update
+  const setValuesOfAnimation = () => {
+    'worklet';
     goBackDuration.value = 300;
     offset.value = {
       x: 0,
       y: 0,
     };
-    runOnJS(props.changeWordStats(isWordCorrect, props.currentWordObj));
+  };
+
+  const handleSwipedWord = (isWordCorrect: boolean) => {
+    'worklet';
+    runOnJS(updateTermsStack)();
+    setValuesOfAnimation();
+    props.changeWordStats(isWordCorrect, props.currentWordObj);
+    console.log(props.termsStack);
   };
 
   const pan = Gesture.Pan()
@@ -127,7 +141,9 @@ const Flashcard = (props: {
     .onFinalize(() => {
       if (offset.value.x > threshold && !disableGesture) {
         console.log('word known');
+        console.log('before', props.termsStack);
         handleSwipedWord(true);
+        console.log('after', props.termsStack);
         return null;
       } else if (offset.value.x < -threshold && !disableGesture) {
         console.log('word unkown');

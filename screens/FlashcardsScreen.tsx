@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text} from 'react-native';
+import {View, StyleSheet, Text, Pressable} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 
 import Flashcard from './components/Flashcard';
@@ -19,7 +19,7 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   const uniqueDeckName = route.params.uniqueDeckName;
 
   const [terms, setTerms] = useState(data);
-  const [termsStack, setTermsStack] = useState([] as wordObj[]);
+  const [termsStack, setTermsStack] = useState(terms as wordObj[]);
   //console.log('terms', route.params.data);
   useEffect(() => {
     const termsWithEnding = [
@@ -118,42 +118,19 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     <View style={styles.container}>
       <Text style={styles.title}>{originalDeckName}</Text>
       <GestureHandlerRootView style={styles.gestureContainer}>
-        {terms.map((wordObj: wordObj, index: number) => {
-          if (index === 0) {
-            // simply change te code in the if close it I want to change the screen where no card is added
-            if (terms.length === 1) {
-              return (
-                <Flashcard
-                  currentWordObj={wordObj}
-                  key={wordObj.id}
-                  termsStack={termsStack}
-                  setTermsStack={setTermsStack}
-                  disableGesture={true}
-                  changeWordStats={triggerChangeWordStats}
-                />
-              );
-            } else {
-              const nextWordObj = terms[index + 1];
-              return (
-                // each object, even if not rendered has to have an unique key
-                <React.Fragment key={wordObj.id}>
-                  <Flashcard
-                    currentWordObj={nextWordObj}
-                    termsStack={termsStack}
-                    setTermsStack={setTermsStack}
-                    changeWordStats={triggerChangeWordStats}
-                  />
-                  <Flashcard
-                    currentWordObj={wordObj}
-                    termsStack={termsStack}
-                    setTermsStack={setTermsStack}
-                    changeWordStats={triggerChangeWordStats}
-                  />
-                </React.Fragment>
-              );
-            }
-          }
-        })}
+        {termsStack.length > 0 && (
+          <>
+            <Pressable style={styles.card} />
+            <Flashcard
+              currentWordObj={termsStack[0]}
+              key={termsStack[0].id}
+              termsStack={termsStack}
+              setTermsStack={setTermsStack}
+              disableGesture={termsStack.length === 1}
+              changeWordStats={triggerChangeWordStats}
+            />
+          </>
+        )}
       </GestureHandlerRootView>
     </View>
   );
@@ -170,6 +147,17 @@ const styles = StyleSheet.create({
   },
   gestureContainer: {
     flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  card: {
+    width: 320,
+    height: 200,
+    backgroundColor: 'white',
+    borderRadius: 15,
+    borderWidth: 3,
+    backfaceVisibility: 'hidden',
+    borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
   },
