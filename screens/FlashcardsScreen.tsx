@@ -8,6 +8,7 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
 import {runOnJS} from 'react-native-reanimated';
 import {retrieveWordFromDeck, updateWordStats} from './handleData';
+import type {wordObj, wordStats} from './types';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -20,7 +21,6 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
 
   const [terms, setTerms] = useState(data);
   const [termsStack, setTermsStack] = useState(terms as wordObj[]);
-  //console.log('terms', route.params.data);
   useEffect(() => {
     const termsWithEnding = [
       ...terms,
@@ -36,18 +36,6 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     setTermsStack(termsWithEnding);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  interface wordObj {
-    deckID: number;
-    definition: string;
-    term: string;
-    id: number;
-    wordStats: string;
-  }
-
-  interface wordStats {
-    Attemps: number[];
-  }
 
   const changeWordStats = async (
     isWordCorrect: boolean,

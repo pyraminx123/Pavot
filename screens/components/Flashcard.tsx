@@ -141,9 +141,7 @@ const Flashcard = (props: {
     .onFinalize(() => {
       if (offset.value.x > threshold && !disableGesture) {
         console.log('word known');
-        console.log('before', props.termsStack);
         handleSwipedWord(true);
-        console.log('after', props.termsStack);
         return null;
       } else if (offset.value.x < -threshold && !disableGesture) {
         console.log('word unkown');
