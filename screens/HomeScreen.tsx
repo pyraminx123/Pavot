@@ -1,13 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Pressable,
-  SafeAreaView,
-  FlatList,
-} from 'react-native';
+import {View, Text, Pressable, SafeAreaView, FlatList} from 'react-native';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Folder} from './components/Folder';
 import AddFolder from './components/addFolder';
@@ -19,7 +13,7 @@ import {
 
 // for translation
 import '../i18n.config';
-import {useTranslation} from 'react-i18next';
+//import {useTranslation} from 'react-i18next';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, folderInfo} from '../App';
@@ -27,9 +21,10 @@ import {AppStackParamList, folderInfo} from '../App';
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
+  const {styles} = useStyles(stylesheet);
   createFoldersTable();
   //insertIntoAllFolders('test');
-  const {t} = useTranslation();
+  //const {t} = useTranslation() eg {t('HELLO')};
 
   const navigateToDecksScreen = (folder: folderInfo) => {
     navigation.navigate('Deck', folder);
@@ -88,7 +83,7 @@ const HomeScreen = ({navigation}: HomeProps) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{t('HELLO')}</Text>
+      <Text style={styles.text}>Vocabulum</Text>
       <SafeAreaView>
         <FlatList
           numColumns={2}
@@ -101,21 +96,21 @@ const HomeScreen = ({navigation}: HomeProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
     alignItems: 'center',
-    backgroundColor: '#EDE6C3',
+    backgroundColor: '#FFFFFF',
   },
   list: {
     alignItems: 'center',
     paddingBottom: 50,
   },
   text: {
-    color: 'black',
-    fontSize: 50,
+    color: theme.colors.dark,
+    fontSize: 40,
     textAlign: 'center',
   },
-});
+}));
 
 export default HomeScreen;

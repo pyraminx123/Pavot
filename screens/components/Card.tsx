@@ -1,8 +1,10 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {TextInput, View, StyleSheet} from 'react-native';
+import {TextInput, View} from 'react-native';
 import DeleteButton from './deleteButton';
 import {updateEntryInDeck, insertIntoDeck} from '../handleData';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
+import {hexToRgba} from '../style/hexToRGBA';
 
 interface cardInfo {
   term: string;
@@ -46,6 +48,7 @@ const Card = (props: {
 }) => {
   const [termInput, setTermInput] = useState(props.term);
   const [definitionInput, setDefinitionInput] = useState(props.definition);
+  const {styles, theme} = useStyles(stylesheet);
 
   useEffect(() => {
     props.updateCard(props.index, termInput, definitionInput);
@@ -62,46 +65,48 @@ const Card = (props: {
           onChangeText={text => setTermInput(text)}
           style={styles.textInput}
           placeholder={'term'}
-          placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
+          placeholderTextColor={hexToRgba(theme.colors.dark, 0.5)}
         />
         <TextInput
           value={definitionInput}
           onChangeText={text => setDefinitionInput(text)}
           style={styles.textInput}
           placeholder={'definition'}
-          placeholderTextColor={'rgba(0, 0, 0, 0.5)'}
+          placeholderTextColor={hexToRgba(theme.colors.dark, 0.4)}
         />
       </View>
     </View>
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   card: {
-    backgroundColor: '#83B4E1',
-    borderRadius: 25,
-    width: 345,
+    backgroundColor: theme.colors.light,
+    borderRadius: 10,
     alignItems: 'center',
-    margin: 10,
+    marginTop: 20,
+    padding: 20,
   },
   content: {
-    marginTop: 40,
+    marginTop: 20,
   },
   textInput: {
-    height: 50,
-    width: 300,
-    backgroundColor: 'white',
-    borderRadius: 15,
-    padding: 10,
+    height: 35,
+    width: 293,
     marginBottom: 10,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.sizes.text,
+    fontWeight: '300',
+    color: theme.colors.dark,
+    borderBottomWidth: 1.5,
+    borderColor: theme.colors.dark,
   },
   containerRight: {
     position: 'absolute',
     right: 10,
     top: 10,
-    marginBottom: 100,
   },
-});
+}));
 
 export default Card;
 export {addCardToDatabase};

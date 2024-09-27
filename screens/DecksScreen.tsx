@@ -1,13 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+import React, {useState, useCallback, useRef} from 'react';
 
 import {
   Text,
   View,
-  StyleSheet,
   Pressable,
   FlatList,
   SafeAreaView,
+  NativeSyntheticEvent,
+  NativeScrollEvent,
 } from 'react-native';
 
 import DeckContainer from './components/deckContainer';
@@ -15,13 +16,32 @@ import AddDeck from './components/addDeck';
 import {retrieveDataFromTable, generateUniqueTableName} from './handleData';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
+import {useFocusEffect} from '@react-navigation/native';
 import {AppStackParamList, deckData} from '../App';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
 
 const DecksScreen = ({route, navigation}: DecksProps) => {
   const uniqueFolderName = route.params.uniqueFolderName;
   const originalFolderName = route.params.originalFolderName;
+  const [scrollY, setScrollY] = useState(0);
+  const flatlistRef = useRef<View>(null);
+  const [flatlistPositionY, setFlatlistPositionY] = useState(0);
+
+  const measureFlatlistPosition = () => {
+    if (flatlistRef.current) {
+      flatlistRef.current.measureInWindow((x, y, width, height) => {
+        setFlatlistPositionY(y - height);
+      });
+    }
+  };
+
+  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    console.log(flatlistPositionY, event.nativeEvent.contentOffset.y);
+    setScrollY(event.nativeEvent.contentOffset.y + flatlistPositionY);
+  };
+
   const capitalize = (word: string) => {
     return word.charAt(0).toUpperCase() + word.slice(1);
   };
@@ -32,6 +52,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     uniqueDeckName: string;
     folderID: number;
   }
+  //console.log('folder', retrieveDataFromTable(uniqueFolderName));
 
   const navigateToFlashcardsScreen = (
     uniqueDeckName: string,
@@ -78,9 +99,11 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     }
   };
 
-  useEffect(() => {
-    fetchDecks();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchDecks();
+    }, [uniqueFolderName]),
+  );
 
   const renderItem = ({item}: {item: folderData}) => {
     if (item.deckID === -1) {
@@ -102,17 +125,22 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
             navigateToWordsScreen={() =>
               navigateToWordsScreen(item.uniqueDeckName, item.originalDeckName)
             }
+            scrollY={scrollY}
           />
         </Pressable>
       );
     }
   };
 
+  const {styles} = useStyles(stylesheet);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{capitalize(originalFolderName)}</Text>
-      <SafeAreaView>
+      <SafeAreaView ref={flatlistRef} onLayout={measureFlatlistPosition}>
         <FlatList
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
           numColumns={1}
           data={decks}
           renderItem={renderItem}
@@ -123,19 +151,22 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#EDE6C3',
+    backgroundColor: '#FFFFFF',
   },
   title: {
-    fontSize: 42,
+    fontSize: theme.typography.sizes.title,
+    color: theme.colors.dark,
+    fontWeight: '400',
+    fontFamily: theme.typography.fontFamily,
   },
   list: {
     alignItems: 'center',
     paddingBottom: 50,
   },
-});
+}));
 
 export default DecksScreen;

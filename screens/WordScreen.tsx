@@ -1,13 +1,15 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {View, Text, FlatList, SafeAreaView, StyleSheet} from 'react-native';
+import {View, FlatList, SafeAreaView, TextInput} from 'react-native';
 import Card, {addCardToDatabase} from './components/Card';
 import SaveButton from './components/SaveButton';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, deckData} from '../App';
-import {deleteEntryInDeck} from './handleData';
+import {deleteEntryInDeck, changeDeckName} from './handleData';
 import AddCard from './components/addCard';
+import {hexToRgba} from './style/hexToRGBA';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
@@ -20,13 +22,14 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   ];
   const deckName = route.params.originalDeckName;
   const [data, setData] = useState(initialData);
+  const [text, onChangeText] = useState(deckName);
   //console.log('initial', data);
 
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => SaveButton(onSave),
     });
-  }, [data]);
+  }, [text, data]);
 
   const deleteCard = async (id: number, deckId: number) => {
     console.log(data);
@@ -46,7 +49,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
       //console.log('prev', prevData, prevData[index]);
       prevData[index].term = term;
       prevData[index].definition = definition;
-      return prevData;
+      return [...prevData];
     });
   };
 
@@ -63,6 +66,11 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         });
       }
     }
+    await changeDeckName(
+      route.params.uniqueFolderName,
+      text,
+      route.params.uniqueDeckName,
+    );
     navigation.navigate('Deck', {
       folderID: route.params.folderID,
       uniqueFolderName: route.params.uniqueFolderName,
@@ -85,9 +93,17 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     );
   };
 
+  const {styles, theme} = useStyles(stylesheet);
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{deckName}</Text>
+      <TextInput
+        style={styles.title}
+        value={text}
+        onChangeText={txt => onChangeText(txt)}
+        placeholder="Deck name"
+        placeholderTextColor={hexToRgba(theme.colors.dark, 0.5)}
+      />
       <SafeAreaView>
         <FlatList
           numColumns={1}
@@ -101,19 +117,24 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
-    padding: 10,
-    backgroundColor: '#EDE6C3',
+    padding: 30,
+    backgroundColor: '#FFFFFF',
   },
   title: {
-    fontSize: 42,
+    fontSize: theme.typography.sizes.title,
+    fontFamily: theme.typography.fontFamily,
+    color: theme.colors.dark,
+    fontWeight: '400',
+    borderBottomWidth: 1.5,
+    borderColor: theme.colors.dark,
   },
   list: {
     alignItems: 'center',
-    paddingBottom: 50,
+    paddingBottom: 300,
   },
-});
+}));
 
 export default WordScreen;

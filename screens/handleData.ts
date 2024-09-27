@@ -137,6 +137,28 @@ const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
   }
 };
 
+const changeDeckName = async (
+  uniqueFolderName: string,
+  newDeckName: string,
+  uniqueDeckName: string,
+) => {
+  if (newDeckName.trim().length === 0) {
+    newDeckName = 'Unnamed deck';
+  }
+
+  try {
+    await db.execute(
+      `UPDATE ${uniqueFolderName} SET originalDeckName=? WHERE uniqueDeckName=?;`,
+      [newDeckName, uniqueDeckName],
+    );
+  } catch (error) {
+    console.error(
+      'Some error occurred trying to change the name of the deck',
+      error,
+    );
+  }
+};
+
 const insertIntoFolder = (
   uniqueFolderName: string,
   originalDeckName: string,
@@ -290,6 +312,7 @@ export {
   createFoldersTable,
   createFolder,
   createDeck,
+  changeDeckName,
   deleteDeck,
   deleteFolder,
   insertIntoDeck,

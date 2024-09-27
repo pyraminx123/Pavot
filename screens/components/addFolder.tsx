@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
-import {Pressable, Text, StyleSheet, View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 import QuestionModal from './QuestionModal';
 import {createFolder} from '../handleData';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 // Define the AddFolder component
 const AddFolder = (props: {onFolderAdded: Function}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const {styles} = useStyles(stylesheet);
 
   const openModal = () => {
     setInputValue('');
@@ -37,19 +39,21 @@ const AddFolder = (props: {onFolderAdded: Function}) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   folder: {
-    borderRadius: 15,
+    borderRadius: 10,
     height: 130,
     width: 150,
     margin: 10,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.light,
   },
   text: {
-    fontSize: 25,
+    fontSize: 24,
+    fontWeight: '300',
+    color: theme.colors.dark,
   },
-});
+}));
 
 export default AddFolder;

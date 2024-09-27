@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, Text, Pressable} from 'react-native';
+import {View, Text, Pressable} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import Flashcard from './components/Flashcard';
 
@@ -18,6 +19,7 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   const data = route.params.data as wordObj[];
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
+  const {styles} = useStyles(stylesheet);
 
   const [terms, setTerms] = useState(data);
   const [termsStack, setTermsStack] = useState(terms as wordObj[]);
@@ -124,14 +126,15 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   title: {
-    fontSize: 42,
+    fontSize: theme.typography.sizes.title,
+    color: theme.colors.dark,
   },
   container: {
     flex: 1,
     padding: 10,
-    backgroundColor: '#EDE6C3',
+    backgroundColor: '#FFFFFF',
   },
   gestureContainer: {
     flex: 1,
@@ -141,14 +144,14 @@ const styles = StyleSheet.create({
   card: {
     width: 320,
     height: 200,
-    backgroundColor: 'white',
-    borderRadius: 15,
+    backgroundColor: theme.colors.light,
+    borderRadius: 10,
     borderWidth: 3,
+    borderColor: theme.colors.light,
     backfaceVisibility: 'hidden',
-    borderColor: 'white',
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
+}));
 
 export default FlashcardsScreen;

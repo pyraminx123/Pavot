@@ -1,12 +1,14 @@
 import React, {useState} from 'react';
-import {Pressable, Text, StyleSheet, View} from 'react-native';
+import {Pressable, Text, View} from 'react-native';
 import {createDeck} from '../handleData';
 import QuestionModal from './QuestionModal';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 // Define the AddDeck component
 const AddDeck = (props: {onDeckAdded: Function; folderName: string}) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const {styles} = useStyles(stylesheet);
 
   const openModal = () => {
     setInputValue('');
@@ -37,10 +39,10 @@ const AddDeck = (props: {onDeckAdded: Function; folderName: string}) => {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   container: {
-    backgroundColor: 'white',
-    borderRadius: 15,
+    backgroundColor: theme.colors.light,
+    borderRadius: 10,
     padding: 10,
     margin: 10,
     justifyContent: 'center',
@@ -49,8 +51,11 @@ const styles = StyleSheet.create({
     height: 70,
   },
   text: {
-    fontSize: 25,
+    fontSize: theme.typography.sizes.text,
+    color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: '400',
   },
-});
+}));
 
 export default AddDeck;

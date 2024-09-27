@@ -1,14 +1,16 @@
 import React from 'react';
 
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text} from 'react-native';
 import DeleteButton from './deleteButton';
 import {deleteFolder} from '../handleData';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 const Folder = (props: {
   name: string;
   fetchFolders: Function;
   folderID: number;
 }) => {
+  const {styles} = useStyles(stylesheet);
   return (
     <View style={styles.folder}>
       <Text style={styles.text}>{props.name}</Text>
@@ -23,14 +25,14 @@ const Folder = (props: {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   folder: {
-    borderRadius: 15,
+    borderRadius: 10,
     padding: 10,
     height: 130,
     width: 150,
     margin: 10,
-    backgroundColor: 'white',
+    backgroundColor: theme.colors.light,
   },
   containerRight: {
     position: 'absolute',
@@ -38,8 +40,11 @@ const styles = StyleSheet.create({
     top: 10,
   },
   text: {
-    fontSize: 25,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: 24,
+    fontWeight: '300',
+    color: theme.colors.dark,
   },
-});
+}));
 
 export {Folder};

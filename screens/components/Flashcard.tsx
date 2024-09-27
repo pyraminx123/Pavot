@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {Text, Pressable, StyleSheet, Dimensions} from 'react-native';
+import {Text, Pressable, Dimensions} from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,7 @@ import Animated, {
   runOnJS,
 } from 'react-native-reanimated';
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 interface wordObj {
   deckID: number;
@@ -28,6 +29,7 @@ const Flashcard = (props: {
   disableGesture?: boolean; // optional
 }) => {
   //console.log('here', props.termsStack);
+  const {styles, theme} = useStyles(stylesheet);
 
   const term = props.currentWordObj.term;
   const definition = props.currentWordObj.definition;
@@ -69,7 +71,8 @@ const Flashcard = (props: {
   const isPressed = useSharedValue(false);
   const offset = useSharedValue({x: 0, y: 0});
   const goBackDuration = useSharedValue(0);
-  const borderColor = useSharedValue('#FFFFFF');
+  const defaultBorderColor = theme.colors.light;
+  const borderColor = useSharedValue<string>(defaultBorderColor);
 
   const swipeStyle = useAnimatedStyle(() => {
     return {
@@ -135,7 +138,7 @@ const Flashcard = (props: {
       } else if (offset.value.x < -threshold && !disableGesture) {
         borderColor.value = '#FF0000';
       } else {
-        borderColor.value = '#FFFFFF';
+        borderColor.value = defaultBorderColor;
       }
     })
     .onFinalize(() => {
@@ -181,12 +184,12 @@ const Flashcard = (props: {
   );
 };
 
-const styles = StyleSheet.create({
+const stylesheet = createStyleSheet(theme => ({
   card: {
     width: 320,
     height: 200,
-    backgroundColor: 'white',
-    borderRadius: 15,
+    backgroundColor: theme.colors.light,
+    borderRadius: 10,
     borderWidth: 3,
     backfaceVisibility: 'hidden',
     justifyContent: 'center',
@@ -198,9 +201,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
   },
   text: {
-    fontSize: 36,
-    color: 'black',
+    fontSize: theme.typography.sizes.title,
+    fontWeight: '300',
+    color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamily,
   },
-});
+}));
 
 export default Flashcard;
