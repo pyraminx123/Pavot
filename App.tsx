@@ -1,6 +1,7 @@
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
 import './screens/style/unistyles';
 
@@ -9,6 +10,8 @@ import HomeScreen from './screens/HomeScreen.tsx';
 import FlashcardsScreen from './screens/FlashcardsScreen.tsx';
 import DecksScreen from './screens/DecksScreen.tsx';
 import WordScreen from './screens/WordScreen.tsx';
+import SettingsScreen from './screens/SettingsScreen.tsx';
+import DeckHomeScreen from './screens/DeckHomeScreen.tsx';
 
 export interface deckData {
   deckID: number;
@@ -44,28 +47,46 @@ export type AppStackParamList = {
   Flashcards: flashcardParams;
   Deck: folderInfo;
   Words: wordScreenParams;
+  DeckHome: flashcardParams;
+};
+
+type AppTabParamList = {
+  bigHome: undefined;
+  settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
+const Tab = createBottomTabNavigator<AppTabParamList>();
 
-const MyStack = () => {
+const HomeStackScreen = () => {
+  return (
+    <Stack.Navigator>
+      <Stack.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
+      <Stack.Screen name="Deck" component={DecksScreen} />
+      <Stack.Screen
+        name="Words"
+        component={WordScreen}
+        options={{gestureEnabled: false, headerBackVisible: false}}
+      />
+      <Stack.Screen name="DeckHome" component={DeckHomeScreen} />
+    </Stack.Navigator>
+  );
+};
+
+const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
-        <Stack.Screen name="Deck" component={DecksScreen} />
-        <Stack.Screen
-          name="Words"
-          component={WordScreen}
-          options={{
-            gestureEnabled: false,
-            headerBackVisible: false,
-          }}
-        />
-      </Stack.Navigator>
+      <Tab.Navigator screenOptions={{headerShown: false}}>
+        <Tab.Screen name="bigHome" component={HomeStackScreen} />
+        <Tab.Screen name="settings" component={SettingsScreen} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 };
 
-export default MyStack;
+export default App;

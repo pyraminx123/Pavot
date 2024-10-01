@@ -13,7 +13,14 @@ const Folder = (props: {
   const {styles} = useStyles(stylesheet);
   return (
     <View style={styles.folder}>
-      <Text style={styles.text}>{props.name}</Text>
+      <Text
+        style={styles.text}
+        numberOfLines={2}
+        adjustsFontSizeToFit={true}
+        allowFontScaling={false}
+        ellipsizeMode="tail">
+        {props.name}
+      </Text>
       <View style={styles.containerRight}>
         <DeleteButton
           deleteFunction={() =>

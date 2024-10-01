@@ -1,5 +1,7 @@
-import React, {useEffect, useState} from 'react';
-import {View, Text, Pressable} from 'react-native';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-unstable-nested-components */
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {View, Pressable} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -10,16 +12,33 @@ import type {AppStackParamList} from '../App';
 import {runOnJS} from 'react-native-reanimated';
 import {retrieveWordFromDeck, updateWordStats} from './handleData';
 import type {wordObj, wordStats} from './types';
+import {LeftIcon} from './components/icons';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
 // ?? props need to be updated, maybe in the future add example sentences
 // use useState and useEffect to update props
-const FlashcardsScreen = ({route}: FlashcardsProps) => {
+const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
+  const capitalize = (word: string) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  };
   const data = route.params.data as wordObj[];
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
   const {styles} = useStyles(stylesheet);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: capitalize(originalDeckName),
+      headerTitleStyle: styles.title,
+      headerTitleAlign: 'center',
+      headerLeft: () => (
+        <Pressable onPress={() => navigation.goBack()}>
+          <LeftIcon />
+        </Pressable>
+      ),
+    });
+  }, [navigation, originalDeckName]);
 
   const [terms, setTerms] = useState(data);
   const [termsStack, setTermsStack] = useState(terms as wordObj[]);
@@ -36,7 +55,6 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     ] as wordObj[];
     setTerms(termsWithEnding);
     setTermsStack(termsWithEnding);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const changeWordStats = async (
@@ -106,7 +124,6 @@ const FlashcardsScreen = ({route}: FlashcardsProps) => {
     // TODO handle case where no words are added yet
     // TODO after make card before already appear but text just not visible
     <View style={styles.container}>
-      <Text style={styles.title}>{originalDeckName}</Text>
       <GestureHandlerRootView style={styles.gestureContainer}>
         {termsStack.length > 0 && (
           <>
@@ -130,6 +147,8 @@ const stylesheet = createStyleSheet(theme => ({
   title: {
     fontSize: theme.typography.sizes.title,
     color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: '400',
   },
   container: {
     flex: 1,

@@ -84,12 +84,13 @@ const HomeScreen = ({navigation}: HomeProps) => {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Vocabulum</Text>
-      <SafeAreaView>
+      <SafeAreaView style={styles.listContainer}>
         <FlatList
           numColumns={2}
           data={allFolders}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
+          showsVerticalScrollIndicator={false}
         />
       </SafeAreaView>
     </View>
@@ -102,11 +103,15 @@ const stylesheet = createStyleSheet(theme => ({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
+  listContainer: {
+    marginTop: 60,
+  },
   list: {
     alignItems: 'center',
     paddingBottom: 50,
   },
   text: {
+    top: 50,
     color: theme.colors.dark,
     fontSize: 40,
     textAlign: 'center',

@@ -1,8 +1,8 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useState, useCallback, useRef} from 'react';
+import React, {useState, useCallback, useRef, useLayoutEffect} from 'react';
 
 import {
-  Text,
   View,
   Pressable,
   FlatList,
@@ -14,6 +14,7 @@ import {
 import DeckContainer from './components/deckContainer';
 import AddDeck from './components/addDeck';
 import {retrieveDataFromTable, generateUniqueTableName} from './handleData';
+import {LeftIcon} from './components/icons';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useFocusEffect} from '@react-navigation/native';
@@ -23,11 +24,28 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
 
 const DecksScreen = ({route, navigation}: DecksProps) => {
+  const capitalize = (word: string) => {
+    return word.charAt(0).toUpperCase() + word.slice(1);
+  };
+  const {styles} = useStyles(stylesheet);
   const uniqueFolderName = route.params.uniqueFolderName;
   const originalFolderName = route.params.originalFolderName;
   const [scrollY, setScrollY] = useState(0);
   const flatlistRef = useRef<View>(null);
   const [flatlistPositionY, setFlatlistPositionY] = useState(0);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: capitalize(originalFolderName),
+      headerTitleStyle: styles.title,
+      headerTitleAlign: 'center',
+      headerLeft: () => (
+        <Pressable onPress={() => navigation.goBack()}>
+          <LeftIcon />
+        </Pressable>
+      ),
+    });
+  }, [navigation, originalFolderName]);
 
   const measureFlatlistPosition = () => {
     if (flatlistRef.current) {
@@ -38,12 +56,8 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   };
 
   const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    console.log(flatlistPositionY, event.nativeEvent.contentOffset.y);
+    //console.log(flatlistPositionY, event.nativeEvent.contentOffset.y);
     setScrollY(event.nativeEvent.contentOffset.y + flatlistPositionY);
-  };
-
-  const capitalize = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
   };
 
   interface folderData {
@@ -54,12 +68,12 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   }
   //console.log('folder', retrieveDataFromTable(uniqueFolderName));
 
-  const navigateToFlashcardsScreen = (
+  const navigateToDeckHomeScreen = (
     uniqueDeckName: string,
     originalDeckName: string,
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
-    navigation.navigate('Flashcards', {data, originalDeckName, uniqueDeckName});
+    navigation.navigate('DeckHome', {data, originalDeckName, uniqueDeckName});
   };
 
   const navigateToWordsScreen = (
@@ -112,10 +126,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
       return (
         <Pressable
           onPress={() =>
-            navigateToFlashcardsScreen(
-              item.uniqueDeckName,
-              item.originalDeckName,
-            )
+            navigateToDeckHomeScreen(item.uniqueDeckName, item.originalDeckName)
           }>
           <DeckContainer
             originalDeckName={item.originalDeckName}
@@ -132,11 +143,8 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     }
   };
 
-  const {styles} = useStyles(stylesheet);
-
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{capitalize(originalFolderName)}</Text>
+    <SafeAreaView style={styles.container}>
       <SafeAreaView ref={flatlistRef} onLayout={measureFlatlistPosition}>
         <FlatList
           onScroll={handleScroll}
@@ -147,7 +155,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
           contentContainerStyle={styles.list}
         />
       </SafeAreaView>
-    </View>
+    </SafeAreaView>
   );
 };
 

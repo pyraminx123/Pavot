@@ -44,3 +44,18 @@ export const VerticalIcon = () => {
     </View>
   );
 };
+
+export const LeftIcon = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="25" height="25">
+        <Path
+          d="M10 14L3 7.5 10 1"
+          stroke={theme.colors.dark}
+          stroke-linecap="square"
+        />
+      </Svg>
+    </View>
+  );
+};
