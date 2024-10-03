@@ -10,9 +10,8 @@ import Flashcard from './components/Flashcard';
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
 import {runOnJS} from 'react-native-reanimated';
-import {retrieveWordFromDeck, updateWordStats} from './handleData';
-import type {wordObj, wordStats} from './types';
-import {CrossIcon} from './components/icons';
+import type {wordObj} from './types';
+import {CloseHeader} from './components/headers';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -24,7 +23,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
   };
   const data = route.params.data as wordObj[];
   const originalDeckName = route.params.originalDeckName;
-  const uniqueDeckName = route.params.uniqueDeckName;
+  //const uniqueDeckName = route.params.uniqueDeckName;
   const {styles} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -40,16 +39,13 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
   useLayoutEffect(() => {
     //console.log('exiter', isExiting);
     navigation.setOptions({
-      headerTitle: capitalize(originalDeckName),
-      headerTitleStyle: styles.title,
-      headerTitleAlign: 'center',
-      headerRight: () => (
-        <Pressable
+      header: () => (
+        <CloseHeader
+          title={capitalize(originalDeckName)}
           onPress={() => {
             setIsExiting(true);
-          }}>
-          <CrossIcon />
-        </Pressable>
+          }}
+        />
       ),
       gestureEnabled: false,
       headerBackVisible: false,
@@ -88,72 +84,14 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
     setTermsStack(termsWithEnding);
   }, []);
 
-  const changeWordStats = async (
-    isWordCorrect: boolean,
-    wordObj: wordObj[],
-  ) => {
-    try {
-      const wordStats = JSON.parse(Object(wordObj).wordStats) as wordStats[];
-      //console.log('stats', Object(wordStats).Attemps);
-      const attemps = Object(wordStats).Attemps;
-      attemps.shift(); // removes first item
-      attemps.push(isWordCorrect ? 1 : 0);
-      Object(wordStats).Attemps = attemps;
-      await updateWordStats(
-        uniqueDeckName,
-        Object(wordObj).id,
-        JSON.stringify(wordStats),
-      );
-      //console.log(wordStats);
-      const updatedWordObject = retrieveWordFromDeck(
-        uniqueDeckName,
-        Object(wordObj).id,
-      );
-      setTerms(prevTerms => {
-        prevTerms.map(term => {
-          Object(terms).id === Object(wordObj).id ? updatedWordObject : term;
-        });
-        return prevTerms;
-      });
-      return '';
-    } catch (error) {
-      console.error('Some error ocurred trying to update wordStats', error);
-      return '';
-    }
-  };
-
   // here the async/await are very important
-  const triggerChangeWordStats = async (
-    isWordCorrect: boolean,
-    wordObj: wordObj[],
-  ) => {
+  const triggerChangeWordStats = async () => {
     'worklet';
-    await runOnJS(changeWordStats)(isWordCorrect, wordObj);
+    await runOnJS(() => console.log('does nothing'));
   };
-
-  // useEffect(() => {
-  //   terms.map(term => {
-  //     if (term.deckID !== -1) {
-  //       const wordAttemps = Object(
-  //         JSON.parse(Object(term).wordStats) as wordStats[],
-  //       ).Attemps;
-  //       console.log(wordAttemps);
-  //       if (wordAttemps.includes(0)) {
-  //         setTermsStack(prevData => {
-  //           return [...prevData, term];
-  //         });
-  //       } else {
-  //         return term;
-  //       }
-  //     } else {
-  //       return term;
-  //     }
-  //   });
-  // }, [terms]);
 
   return (
-    // TODO handle case where no words are added yet
-    // TODO after make card before already appear but text just not visible
+    // TODO handle case where no words are added yet bzw screen doesn't open when no words are added
     <View style={styles.container}>
       <GestureHandlerRootView style={styles.gestureContainer}>
         {termsStack.length > 0 && (
@@ -165,7 +103,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
               termsStack={termsStack}
               setTermsStack={setTermsStack}
               disableGesture={termsStack.length === 1}
-              changeWordStats={triggerChangeWordStats}
+              updateCard={triggerChangeWordStats}
             />
           </>
         )}
@@ -175,12 +113,6 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
 };
 
 const stylesheet = createStyleSheet(theme => ({
-  title: {
-    fontSize: theme.typography.sizes.title,
-    color: theme.colors.dark,
-    fontFamily: theme.typography.fontFamily,
-    fontWeight: '400',
-  },
   container: {
     flex: 1,
     padding: 10,

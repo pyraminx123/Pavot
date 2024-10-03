@@ -18,7 +18,7 @@ const Folder = (props: {
         numberOfLines={2}
         adjustsFontSizeToFit={true}
         allowFontScaling={false}
-        ellipsizeMode="tail">
+        ellipsizeMode="head">
         {props.name}
       </Text>
       <View style={styles.containerRight}>
@@ -51,6 +51,7 @@ const stylesheet = createStyleSheet(theme => ({
     fontSize: 24,
     fontWeight: '300',
     color: theme.colors.dark,
+    maxWidth: '80%',
   },
 }));
 

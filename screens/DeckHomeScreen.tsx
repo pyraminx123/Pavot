@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useLayoutEffect} from 'react';
 import {View, Text, Pressable, FlatList} from 'react-native';
@@ -6,7 +5,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {LeftIcon} from './components/icons';
+import {MainHeader} from './components/headers';
 
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
@@ -20,13 +19,11 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: capitalize(originalDeckName),
-      headerTitleStyle: styles.title,
-      headerTitleAlign: 'center',
-      headerLeft: () => (
-        <Pressable onPress={() => navigation.goBack()}>
-          <LeftIcon />
-        </Pressable>
+      header: () => (
+        <MainHeader
+          title={capitalize(originalDeckName)}
+          onPress={() => navigation.goBack()}
+        />
       ),
     });
   }, [navigation, originalDeckName]);
@@ -87,12 +84,6 @@ const stylesheet = createStyleSheet(theme => ({
     flex: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
-  },
-  title: {
-    fontSize: theme.typography.sizes.title,
-    color: theme.colors.dark,
-    fontWeight: '400',
-    fontFamily: theme.typography.fontFamily,
   },
   button: {
     textAlign: 'left',

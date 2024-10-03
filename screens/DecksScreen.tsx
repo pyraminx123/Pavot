@@ -14,7 +14,7 @@ import {
 import DeckContainer from './components/deckContainer';
 import AddDeck from './components/addDeck';
 import {retrieveDataFromTable, generateUniqueTableName} from './handleData';
-import {LeftIcon} from './components/icons';
+import {MainHeader} from './components/headers';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useFocusEffect} from '@react-navigation/native';
@@ -36,13 +36,11 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerTitle: capitalize(originalFolderName),
-      headerTitleStyle: styles.title,
-      headerTitleAlign: 'center',
-      headerLeft: () => (
-        <Pressable onPress={() => navigation.goBack()}>
-          <LeftIcon />
-        </Pressable>
+      header: () => (
+        <MainHeader
+          title={capitalize(originalFolderName)}
+          onPress={() => navigation.goBack()}
+        />
       ),
     });
   }, [navigation, originalFolderName]);
@@ -159,22 +157,16 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   );
 };
 
-const stylesheet = createStyleSheet(theme => ({
+const stylesheet = createStyleSheet({
   container: {
     flex: 1,
     padding: 10,
     backgroundColor: '#FFFFFF',
   },
-  title: {
-    fontSize: theme.typography.sizes.title,
-    color: theme.colors.dark,
-    fontWeight: '400',
-    fontFamily: theme.typography.fontFamily,
-  },
   list: {
     alignItems: 'center',
     paddingBottom: 50,
   },
-}));
+});
 
 export default DecksScreen;

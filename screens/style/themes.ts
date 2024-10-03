@@ -3,6 +3,7 @@ const baseTheme = {
     fontFamily: 'Roboto',
     sizes: {
       title: 40,
+      middleTitle: 32,
       text: 24,
       smallText: 16,
     },
