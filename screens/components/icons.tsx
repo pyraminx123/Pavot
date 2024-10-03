@@ -59,3 +59,14 @@ export const LeftIcon = () => {
     </View>
   );
 };
+
+export const CrossIcon = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="25" height="25">
+        <Path d="M1.5 1.5l12 12m-12 0l12-12" stroke={theme.colors.dark} />
+      </Svg>
+    </View>
+  );
+};

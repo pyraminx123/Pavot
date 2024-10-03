@@ -12,7 +12,7 @@ import type {AppStackParamList} from '../App';
 import {runOnJS} from 'react-native-reanimated';
 import {retrieveWordFromDeck, updateWordStats} from './handleData';
 import type {wordObj, wordStats} from './types';
-import {LeftIcon} from './components/icons';
+import {CrossIcon} from './components/icons';
 
 type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 
@@ -26,19 +26,50 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
   const {styles} = useStyles(stylesheet);
+  const [isExiting, setIsExiting] = useState(false);
+
+  // with the help of chatGPT
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      setIsExiting(true);
+    });
+
+    return unsubscribe;
+  }, [navigation]);
 
   useLayoutEffect(() => {
+    //console.log('exiter', isExiting);
     navigation.setOptions({
       headerTitle: capitalize(originalDeckName),
       headerTitleStyle: styles.title,
       headerTitleAlign: 'center',
-      headerLeft: () => (
-        <Pressable onPress={() => navigation.goBack()}>
-          <LeftIcon />
+      headerRight: () => (
+        <Pressable
+          onPress={() => {
+            setIsExiting(true);
+          }}>
+          <CrossIcon />
         </Pressable>
       ),
+      gestureEnabled: false,
+      headerBackVisible: false,
+      animation: 'slide_from_right',
     });
-  }, [navigation, originalDeckName]);
+  }, [navigation, originalDeckName, isExiting]);
+
+  useEffect(() => {
+    const updateNavigationOptions = async () => {
+      //console.log('exiter', isExiting);
+      await navigation.setOptions({
+        animation: isExiting ? 'slide_from_bottom' : 'slide_from_right',
+      });
+      if (isExiting) {
+        navigation.goBack();
+      }
+    };
+
+    updateNavigationOptions();
+  }, [isExiting]);
 
   const [terms, setTerms] = useState(data);
   const [termsStack, setTermsStack] = useState(terms as wordObj[]);
