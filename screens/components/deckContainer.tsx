@@ -1,10 +1,11 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 import {View, Text, Pressable} from 'react-native';
 import {deleteDeck} from '../handleData';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {EditIcon, BinIcon} from './icons';
 import ContextMenu from './contextMenu';
+import {useFocusEffect} from '@react-navigation/native';
 
 const DeckContainer = (props: {
   originalDeckName: string;
@@ -38,11 +39,15 @@ const DeckContainer = (props: {
     }
   };
 
+  // with the help of chatGPT
+  useFocusEffect(useCallback(() => measureDeckPosition(), []));
+
   useEffect(() => {
     //console.log(props.scrollY);
     measureDeckPosition();
   }, [props.scrollY]);
 
+  //console.log('deckPosition', deckPosition);
   return (
     <View style={styles.container} ref={deckRef} onLayout={measureDeckPosition}>
       <View style={styles.containerLeft}>
