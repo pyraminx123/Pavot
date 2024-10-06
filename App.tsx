@@ -44,9 +44,9 @@ export type AppStackParamList = {
   DeckHome: flashcardParams;
 };
 
-type AppTabParamList = {
-  bigHome: undefined;
-  settings: undefined;
+export type AppTabParamList = {
+  BigHome: undefined;
+  Settings: undefined;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -76,8 +76,8 @@ const App = () => {
   return (
     <NavigationContainer>
       <Tab.Navigator screenOptions={{headerShown: false}}>
-        <Tab.Screen name="bigHome" component={HomeStackScreen} />
-        <Tab.Screen name="settings" component={SettingsScreen} />
+        <Tab.Screen name="BigHome" component={HomeStackScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>
     </NavigationContainer>
   );

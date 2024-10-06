@@ -18,8 +18,9 @@ import {MainHeader} from './components/headers';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {useFocusEffect} from '@react-navigation/native';
-import {AppStackParamList, deckData} from '../App';
+import {AppStackParamList} from '../App';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
+import {wordObj} from './types';
 
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
 
@@ -70,7 +71,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     uniqueDeckName: string,
     originalDeckName: string,
   ) => {
-    const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
+    const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     navigation.navigate('DeckHome', {data, originalDeckName, uniqueDeckName});
   };
 
@@ -78,7 +79,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     uniqueDeckName: string,
     originalDeckName: string,
   ) => {
-    const data = retrieveDataFromTable(uniqueDeckName) as deckData[];
+    const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     //console.log('from decks', data);
     navigation.navigate('Words', {
       data: data,
