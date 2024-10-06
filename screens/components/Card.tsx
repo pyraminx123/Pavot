@@ -4,7 +4,6 @@ import {TextInput, View} from 'react-native';
 import DeleteButton from './deleteButton';
 import {updateEntryInDeck, insertIntoDeck} from '../handleData';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
-import {hexToRgba} from '../style/hexToRGBA';
 
 interface cardInfo {
   term: string;
@@ -64,14 +63,14 @@ const Card = (props: {
           onChangeText={text => setTermInput(text)}
           style={styles.textInput}
           placeholder={'term'}
-          placeholderTextColor={hexToRgba(theme.colors.dark, 0.5)}
+          placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
         />
         <TextInput
           value={definitionInput}
           onChangeText={text => setDefinitionInput(text)}
           style={styles.textInput}
           placeholder={'definition'}
-          placeholderTextColor={hexToRgba(theme.colors.dark, 0.4)}
+          placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.4)}
         />
       </View>
     </View>

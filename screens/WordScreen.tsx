@@ -9,7 +9,6 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList} from '../App';
 import {deleteEntryInDeck, changeDeckName} from './handleData';
 import AddCard from './components/addCard';
-import {hexToRgba} from './style/hexToRGBA';
 import {wordObj} from './types';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
@@ -115,7 +114,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         value={text}
         onChangeText={txt => onChangeText(txt)}
         placeholder="Deck name"
-        placeholderTextColor={hexToRgba(theme.colors.dark, 0.5)}
+        placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
       />
       <SafeAreaView>
         <FlatList
