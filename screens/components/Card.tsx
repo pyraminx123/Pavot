@@ -15,6 +15,7 @@ interface cardInfo {
   uniqueFolderName: string;
 }
 
+// TODO update the update and insert functions
 const addCardToDatabase = async (cardProps: cardInfo) => {
   if (cardProps.deckId !== -1) {
     await updateEntryInDeck(
@@ -24,14 +25,12 @@ const addCardToDatabase = async (cardProps: cardInfo) => {
       cardProps.definition,
     );
   } else {
-    const wordStats = JSON.stringify({Attemps: [0, 0, 0, 0]});
     //console.log(wordStats);
     await insertIntoDeck(
       cardProps.uniqueFolderName,
       cardProps.uniqueDeckName,
       cardProps.term,
       cardProps.definition,
-      wordStats,
     );
   }
 };

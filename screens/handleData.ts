@@ -1,6 +1,8 @@
 import {open} from '@op-engineering/op-sqlite';
 import 'react-native-get-random-values';
+import {Card, createEmptyCard, State} from 'ts-fsrs';
 import {v4 as uuidv4} from 'uuid'; // to generate random values
+import {wordObj} from './types';
 
 const db = open({name: 'myDb.sqlite'});
 
@@ -124,7 +126,15 @@ const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
         term TEXT,
         definition TEXT,
         deckID INTEGER,
-        wordStats TEXT,
+        due DATE,
+        stability NUMBER,
+        difficulty NUMBER,
+        elapsed_days NUMBER,
+        scheduled_days NUMBER,
+        reps NUMBER,
+        lapses NUMBER,
+        state NUMBER,
+        last_review DATE,
         FOREIGN KEY (deckID) REFERENCES ${uniqueFolderName}(deckID)
       );`,
     );
@@ -204,24 +214,50 @@ const deleteDeck = (
   fetchDecks();
 };
 
+// ?? currently due it the current date and state is "0"
+// TODO update function
 const insertIntoDeck = async (
   uniqueFolderName: string,
   uniqueDeckName: string,
   term: string,
   definition: string,
-  wordStats: string,
 ) => {
-  if (term.trim().length > 0 && definition.trim().length > 0) {
+  // only one of them needs to be filled
+  if (term.trim().length > 0 || definition.trim().length > 0) {
     try {
-      const result = db.execute(
+      const emptyCard = createEmptyCard();
+      const result = await db.execute(
         `SELECT deckID FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
         [uniqueDeckName],
       );
       const deckID = result?.rows?._array[0]?.deckID;
       db.execute(
-        `INSERT INTO ${uniqueDeckName} (term, definition, deckID, wordStats)
-          VALUES (?, ?, ?, ?);`,
-        [term, definition, deckID, wordStats],
+        `INSERT INTO ${uniqueDeckName} (
+          term,
+          definition,
+          deckID,
+          due,
+          stability,
+          difficulty,
+          elapsed_days,
+          scheduled_days,
+          reps,
+          lapses,
+          state
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+        [
+          term,
+          definition,
+          deckID,
+          new Date(emptyCard.due).toISOString(),
+          emptyCard.stability,
+          emptyCard.difficulty,
+          emptyCard.elapsed_days,
+          emptyCard.scheduled_days,
+          emptyCard.reps,
+          emptyCard.lapses,
+          State[emptyCard.state],
+        ],
       );
       //console.log('table', retrieveDataFromTable(uniqueDeckName));
     } catch (error) {
@@ -233,18 +269,46 @@ const insertIntoDeck = async (
   }
 };
 
-const updateWordStats = async (
+const updateCard = async (
+  oldCard: wordObj,
+  newCardInfo: Card,
   uniqueDeckName: string,
-  id: number,
-  wordStats: string,
 ) => {
   try {
-    await db.execute(`UPDATE ${uniqueDeckName} SET wordStats=? WHERE id=?;`, [
-      wordStats,
-      id,
-    ]);
+    //console.log('newState', State[newCardInfo.state]);
+    await db.execute(
+      `UPDATE ${uniqueDeckName} SET
+        due=?,
+        stability=?,
+        difficulty=?,
+        elapsed_days=?,
+        scheduled_days=?,
+        reps=?,
+        lapses=?,
+        state=?,
+        last_review=?
+      WHERE id=?;`,
+      [
+        new Date(newCardInfo.due).toISOString(),
+        newCardInfo.stability,
+        newCardInfo.difficulty,
+        newCardInfo.elapsed_days,
+        newCardInfo.scheduled_days,
+        newCardInfo.reps,
+        newCardInfo.lapses,
+        State[newCardInfo.state],
+        newCardInfo?.last_review
+          ? new Date(newCardInfo.last_review).toISOString()
+          : null,
+        oldCard.id,
+      ],
+    );
+    //console.log('Data', retrieveDataFromTable(uniqueDeckName));
   } catch (error) {
-    console.error('An error ocurred trying to update the wordStats.', error);
+    console.error(
+      `Some error occurred trying to update card with id ${oldCard.id} in ${uniqueDeckName} due: ${newCardInfo.due}`,
+      error,
+    );
   }
 };
 
@@ -317,8 +381,8 @@ export {
   deleteFolder,
   insertIntoDeck,
   updateEntryInDeck,
-  updateWordStats,
   deleteEntryInDeck,
+  updateCard,
   retrieveDataFromTable,
   retrieveWordFromDeck,
 };

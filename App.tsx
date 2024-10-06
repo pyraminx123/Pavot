@@ -12,13 +12,7 @@ import DecksScreen from './screens/DecksScreen.tsx';
 import WordScreen from './screens/WordScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
 import DeckHomeScreen from './screens/DeckHomeScreen.tsx';
-
-export interface deckData {
-  deckID: number;
-  id: number;
-  term: string;
-  definition: string;
-}
+import {wordObj} from './screens/types.ts';
 
 export interface folderInfo {
   folderID: number;
@@ -27,13 +21,13 @@ export interface folderInfo {
 }
 
 interface flashcardParams {
-  data: deckData[];
+  data: wordObj[];
   originalDeckName: string;
   uniqueDeckName: string;
 }
 
 interface wordScreenParams {
-  data: deckData[];
+  data: wordObj[];
   originalDeckName: string;
   uniqueDeckName: string;
   uniqueFolderName: string;

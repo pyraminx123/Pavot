@@ -6,20 +6,33 @@ import SaveButton from './components/SaveButton';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {AppStackParamList, deckData} from '../App';
+import {AppStackParamList} from '../App';
 import {deleteEntryInDeck, changeDeckName} from './handleData';
 import AddCard from './components/addCard';
 import {hexToRgba} from './style/hexToRGBA';
+import {wordObj} from './types';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
 const WordScreen = ({route, navigation}: WordsProps) => {
+  const emptyCard = {
+    deckID: -1,
+    definition: '',
+    difficulty: 0,
+    due: new Date(),
+    elapsed_days: 0,
+    id: -1,
+    lapses: 0,
+    last_review: new Date(),
+    reps: 0,
+    scheduled_days: -1,
+    stability: -1,
+    state: 0, // Ensure the state matches the wordObj type
+    term: '',
+  };
   //const currentUsedIds = route.params.data.map(card => card.id);
   //console.log(currentUsedIds);
-  const initialData = [
-    ...route.params.data,
-    {id: -1, term: '', definition: '', deckID: -1},
-  ];
+  const initialData = [...route.params.data, emptyCard];
   const deckName = route.params.originalDeckName;
   const [data, setData] = useState(initialData);
   const [text, onChangeText] = useState(deckName);
@@ -52,7 +65,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
       return [...prevData];
     });
   };
-
+  // TODO differentiate between new and old cards
   const onSave = async () => {
     for (const item of data) {
       if (item.term && item.definition) {
@@ -78,7 +91,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     });
   };
 
-  const renderItem = ({item, index}: {item: deckData; index: number}) => {
+  const renderItem = ({item, index}: {item: wordObj; index: number}) => {
     return (
       <Card
         index={index}

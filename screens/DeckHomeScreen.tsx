@@ -6,6 +6,8 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MainHeader} from './components/headers';
+import {retrieveDataFromTable} from './handleData';
+import {wordObj} from './types';
 
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
@@ -15,7 +17,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   };
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
-  const data = route.params.data;
+  const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -31,7 +33,12 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const {styles} = useStyles(stylesheet);
 
   const navigateToFlashcardsScreen = () => {
-    navigation.navigate('Flashcards', {data, originalDeckName, uniqueDeckName});
+    const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+    navigation.navigate('Flashcards', {
+      data,
+      originalDeckName,
+      uniqueDeckName,
+    });
   };
 
   const renderItem = ({item}: {item: {term: string; definition: string}}) => {
@@ -73,7 +80,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
         </View>
       </View>
       <View>
-        <FlatList data={data} renderItem={renderItem} />
+        <FlatList data={initialData} renderItem={renderItem} />
       </View>
     </View>
   );

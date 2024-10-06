@@ -10,14 +10,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import {GestureDetector, Gesture} from 'react-native-gesture-handler';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
-
-interface wordObj {
-  deckID: number;
-  definition: string;
-  term: string;
-  id: number;
-  wordStats: string;
-}
+import type {wordObj} from '../types';
+import algorithm from '../algo';
 
 type SetTermsStackType = (newStack: wordObj[]) => void;
 
@@ -25,8 +19,8 @@ const Flashcard = (props: {
   currentWordObj: wordObj;
   termsStack: wordObj[];
   setTermsStack: SetTermsStackType;
-  changeWordStats: Function;
   disableGesture?: boolean; // optional
+  uniqueDeckName: string;
 }) => {
   //console.log('here', props.termsStack);
   const {styles, theme} = useStyles(stylesheet);
@@ -114,13 +108,18 @@ const Flashcard = (props: {
       y: 0,
     };
   };
-
+  // if it doesn't work, try to use async/await
   const handleSwipedWord = (isWordCorrect: boolean) => {
     'worklet';
     runOnJS(updateTermsStack)();
     setValuesOfAnimation();
-    props.changeWordStats(isWordCorrect, props.currentWordObj);
-    console.log(props.termsStack);
+    runOnJS(algorithm)(
+      isWordCorrect,
+      3,
+      props.currentWordObj,
+      props.uniqueDeckName,
+    );
+    //console.log(props.termsStack);
   };
 
   const pan = Gesture.Pan()

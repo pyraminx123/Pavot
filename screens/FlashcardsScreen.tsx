@@ -9,7 +9,6 @@ import Flashcard from './components/Flashcard';
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 import type {AppStackParamList} from '../App';
-import {runOnJS} from 'react-native-reanimated';
 import type {wordObj} from './types';
 import {CloseHeader} from './components/headers';
 
@@ -23,7 +22,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
   };
   const data = route.params.data as wordObj[];
   const originalDeckName = route.params.originalDeckName;
-  //const uniqueDeckName = route.params.uniqueDeckName;
+  const uniqueDeckName = route.params.uniqueDeckName;
   const {styles} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
 
@@ -77,18 +76,11 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
         definition: '',
         id: Math.random(),
         deckID: -1,
-        wordStats: '{"Attemps":[0,0,0,0]}',
       },
     ] as wordObj[];
     setTerms(termsWithEnding);
     setTermsStack(termsWithEnding);
   }, []);
-
-  // here the async/await are very important
-  const triggerChangeWordStats = async () => {
-    'worklet';
-    await runOnJS(() => console.log('does nothing'));
-  };
 
   return (
     // TODO handle case where no words are added yet bzw screen doesn't open when no words are added
@@ -103,7 +95,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
               termsStack={termsStack}
               setTermsStack={setTermsStack}
               disableGesture={termsStack.length === 1}
-              updateCard={triggerChangeWordStats}
+              uniqueDeckName={uniqueDeckName}
             />
           </>
         )}
