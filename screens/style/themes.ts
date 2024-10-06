@@ -33,3 +33,27 @@ export const greenTheme = {
     dark: '#335536',
   },
 } as const;
+
+export const orangeTheme = {
+  ...baseTheme,
+  colors: {
+    light: '#FDF1E8',
+    dark: '#CA8042',
+  },
+} as const;
+
+export const redTheme = {
+  ...baseTheme,
+  colors: {
+    light: '#FFD9D9',
+    dark: '#A35050',
+  },
+} as const;
+
+export const pinkTheme = {
+  ...baseTheme,
+  colors: {
+    light: '#FAE9FF',
+    dark: '#A367B5',
+  },
+} as const;
