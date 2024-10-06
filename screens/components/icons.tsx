@@ -60,11 +60,22 @@ export const LeftIcon = () => {
   );
 };
 
-export const CrossIcon = () => {
+export const CrossIconBig = () => {
   const {theme} = useStyles();
   return (
     <View>
       <Svg viewBox="0 0 15 15" fill="none" width="30" height="30">
+        <Path d="M1.5 1.5l12 12m-12 0l12-12" stroke={theme.colors.dark} />
+      </Svg>
+    </View>
+  );
+};
+
+export const CrossIconSmall = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="20" height="20">
         <Path d="M1.5 1.5l12 12m-12 0l12-12" stroke={theme.colors.dark} />
       </Svg>
     </View>

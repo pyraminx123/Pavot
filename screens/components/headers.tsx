@@ -1,7 +1,7 @@
 import React from 'react';
 import {View, Text, Pressable} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
-import {CrossIcon, LeftIcon} from './icons';
+import {CrossIconBig, LeftIcon} from './icons';
 
 export const MainHeader = (props: {title: string; onPress: Function}) => {
   const {styles} = useStyles(stylesheet);
@@ -43,7 +43,7 @@ export const CloseHeader = (props: {title: string; onPress: Function}) => {
         onPress={() => {
           props.onPress();
         }}>
-        <CrossIcon />
+        <CrossIconBig />
       </Pressable>
     </View>
   );
