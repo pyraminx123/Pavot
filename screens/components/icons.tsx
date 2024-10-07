@@ -81,3 +81,97 @@ export const CrossIconSmall = () => {
     </View>
   );
 };
+
+// with the help of chatGPT (but also mine)
+export const HomeIconOutline = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="45" height="45">
+        <Path
+          d="M1 8L7.5 2L14 8M2 7V14H6V10H9V14H13V7"
+          stroke-width="1"
+          stroke={theme.colors.dark}
+        />
+      </Svg>
+    </View>
+  );
+};
+
+export const HomeIconSolid = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill={theme.colors.dark} width="45" height="45">
+        <Path
+          d="M1 8L7.5 2L14 8M2 8V14H6V10H9V14H13V8"
+          stroke-width="1"
+          stroke={theme.colors.dark}
+        />
+      </Svg>
+    </View>
+  );
+};
+
+export const SettingsIconOutline = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="45" height="45">
+        <Path
+          clip-rule="evenodd"
+          d="M5.944.5l-.086.437-.329 1.598a5.52 5.52 0 00-1.434.823L2.487 2.82l-.432-.133-.224.385L.724 4.923.5 5.31l.328.287 1.244 1.058c-.045.277-.103.55-.103.841 0 .291.058.565.103.842L.828 9.395.5 9.682l.224.386 1.107 1.85.224.387.432-.135 1.608-.537c.431.338.908.622 1.434.823l.329 1.598.086.437h3.111l.087-.437.328-1.598a5.524 5.524 0 001.434-.823l1.608.537.432.135.225-.386 1.106-1.851.225-.386-.329-.287-1.244-1.058c.046-.277.103-.55.103-.842 0-.29-.057-.564-.103-.841l1.244-1.058.329-.287-.225-.386-1.106-1.85-.225-.386-.432.134-1.608.537a5.52 5.52 0 00-1.434-.823L9.142.937 9.055.5H5.944z"
+          stroke={theme.colors.dark}
+          stroke-linecap="square"
+          stroke-linejoin="round"
+        />
+        <Path
+          clip-rule="evenodd"
+          d="M9.5 7.495a2 2 0 01-4 0 2 2 0 014 0z"
+          stroke={theme.colors.dark}
+          stroke-linecap="square"
+          stroke-linejoin="round"
+        />
+      </Svg>
+    </View>
+  );
+};
+
+export const SettingsIconSolid = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill={theme.colors.dark} width="45" height="45">
+        <Path
+          clip-rule="evenodd"
+          d="M5.944.5l-.086.437-.329 1.598a5.52 5.52 0 00-1.434.823L2.487 2.82l-.432-.133-.224.385L.724 4.923.5 5.31l.328.287 1.244 1.058c-.045.277-.103.55-.103.841 0 .291.058.565.103.842L.828 9.395.5 9.682l.224.386 1.107 1.85.224.387.432-.135 1.608-.537c.431.338.908.622 1.434.823l.329 1.598.086.437h3.111l.087-.437.328-1.598a5.524 5.524 0 001.434-.823l1.608.537.432.135.225-.386 1.106-1.851.225-.386-.329-.287-1.244-1.058c.046-.277.103-.55.103-.842 0-.29-.057-.564-.103-.841l1.244-1.058.329-.287-.225-.386-1.106-1.85-.225-.386-.432.134-1.608.537a5.52 5.52 0 00-1.434-.823L9.142.937 9.055.5H5.944z"
+          stroke={theme.colors.dark}
+          stroke-linecap="square"
+          stroke-linejoin="round"
+        />
+        <Path
+          clip-rule="evenodd"
+          d="M9.5 7.495a2 2 0 01-4 0 2 2 0 014 0z"
+          fill="#FFFFFF"
+          stroke={theme.colors.dark}
+          stroke-linecap="square"
+          stroke-linejoin="round"
+        />
+      </Svg>
+    </View>
+  );
+};
+
+export const AddIconOutline = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="45" height="45">
+        <Path
+          d="M7.5 4v7M4 7.5h7m-3.5 7a7 7 0 110-14 7 7 0 010 14z"
+          stroke={theme.colors.dark}
+        />
+      </Svg>
+    </View>
+  );
+};

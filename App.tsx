@@ -1,3 +1,4 @@
+/* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
@@ -13,6 +14,7 @@ import WordScreen from './screens/WordScreen.tsx';
 import SettingsScreen from './screens/SettingsScreen.tsx';
 import DeckHomeScreen from './screens/DeckHomeScreen.tsx';
 import {wordObj} from './screens/types.ts';
+import {BottomTab} from './screens/components/headers.tsx';
 
 export interface folderInfo {
   folderID: number;
@@ -75,7 +77,30 @@ const HomeStackScreen = () => {
 const App = () => {
   return (
     <NavigationContainer>
-      <Tab.Navigator screenOptions={{headerShown: false}}>
+      <Tab.Navigator
+        screenOptions={{headerShown: false}}
+        tabBar={({navigation}) => {
+          // with the help of chatGPT
+          const {routes, index} = navigation.getState();
+          let currentRouteName = routes[index].name;
+          if (currentRouteName === 'BigHome') {
+            const stateIndex = routes[index].state?.index;
+            if (stateIndex !== 0) {
+              currentRouteName = 'Other';
+            }
+          }
+          //console.log(routes[index]);
+          return (
+            <BottomTab
+              onPressHome={() => navigation.navigate('Home')}
+              onPressSettings={() => navigation.navigate('Settings')}
+              onPressAdd={() => console.log('add')}
+              screenFocused={
+                currentRouteName as 'BigHome' | 'Settings' | 'Other'
+              }
+            />
+          );
+        }}>
         <Tab.Screen name="BigHome" component={HomeStackScreen} />
         <Tab.Screen name="Settings" component={SettingsScreen} />
       </Tab.Navigator>

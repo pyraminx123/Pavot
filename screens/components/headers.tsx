@@ -1,7 +1,15 @@
 import React from 'react';
 import {View, Text, Pressable} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
-import {CrossIconBig, LeftIcon} from './icons';
+import {
+  AddIconOutline,
+  CrossIconBig,
+  HomeIconOutline,
+  HomeIconSolid,
+  LeftIcon,
+  SettingsIconOutline,
+  SettingsIconSolid,
+} from './icons';
 
 export const MainHeader = (props: {title: string; onPress: Function}) => {
   const {styles} = useStyles(stylesheet);
@@ -49,6 +57,38 @@ export const CloseHeader = (props: {title: string; onPress: Function}) => {
   );
 };
 
+export const BottomTab = (props: {
+  onPressHome: Function;
+  onPressSettings: Function;
+  onPressAdd: Function;
+  screenFocused: 'BigHome' | 'Settings' | 'Other';
+}) => {
+  const {styles} = useStyles(stylesheet);
+  return (
+    <View style={styles.bottomTab}>
+      <View style={styles.buttons}>
+        <Pressable onPress={() => props.onPressHome()}>
+          {props.screenFocused === 'BigHome' ? (
+            <HomeIconSolid />
+          ) : (
+            <HomeIconOutline />
+          )}
+        </Pressable>
+        <Pressable style={styles.addButton} onPress={() => props.onPressAdd()}>
+          <AddIconOutline />
+        </Pressable>
+        <Pressable onPress={() => props.onPressSettings()}>
+          {props.screenFocused === 'Settings' ? (
+            <SettingsIconSolid />
+          ) : (
+            <SettingsIconOutline />
+          )}
+        </Pressable>
+      </View>
+    </View>
+  );
+};
+
 const stylesheet = createStyleSheet(theme => ({
   headerContainerMain: {
     flexDirection: 'row',
@@ -89,5 +129,18 @@ const stylesheet = createStyleSheet(theme => ({
     position: 'relative',
     marginRight: 30,
     marginTop: 50,
+  },
+  bottomTab: {
+    backgroundColor: '#FFFFFF',
+  },
+  addButton: {
+    position: 'relative',
+    marginBottom: 50,
+  },
+  buttons: {
+    marginVertical: 20,
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
   },
 }));
