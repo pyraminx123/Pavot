@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useLayoutEffect} from 'react';
 import {View, Text, Pressable, FlatList} from 'react-native';
@@ -12,29 +13,34 @@ import {wordObj} from './types';
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
 const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
-  const capitalize = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  };
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+  const {styles, theme} = useStyles(stylesheet);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
         <MainHeader
-          title={capitalize(originalDeckName)}
+          title={theme.utils.capitalize(originalDeckName)}
           onPress={() => navigation.goBack()}
         />
       ),
     });
   }, [navigation, originalDeckName]);
 
-  const {styles} = useStyles(stylesheet);
-
   const navigateToFlashcardsScreen = () => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     navigation.navigate('Flashcards', {
+      data,
+      originalDeckName,
+      uniqueDeckName,
+    });
+  };
+
+  const navigateToLearningModeScreen = () => {
+    const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+    navigation.navigate('LearningMode', {
       data,
       originalDeckName,
       uniqueDeckName,
@@ -61,7 +67,9 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
             onPress={() => navigateToFlashcardsScreen()}>
             <Text style={styles.buttonText}>Flashcards</Text>
           </Pressable>
-          <Pressable style={styles.button}>
+          <Pressable
+            style={styles.button}
+            onPress={() => navigateToLearningModeScreen()}>
             <Text
               style={styles.buttonText}
               numberOfLines={1}

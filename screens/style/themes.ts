@@ -15,6 +15,12 @@ const baseTheme = {
       const b = parseInt(hex.slice(5, 7), 16);
       return `rgba(${r}, ${g}, ${b}, ${alpha})`;
     },
+    capitalize: (word: string) => {
+      return word.charAt(0).toUpperCase() + word.slice(1);
+    },
+    sleep: (ms: number) => {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    },
   },
 };
 

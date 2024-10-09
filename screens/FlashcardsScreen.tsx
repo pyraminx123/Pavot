@@ -17,13 +17,10 @@ type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
 // ?? props need to be updated, maybe in the future add example sentences
 // use useState and useEffect to update props
 const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
-  const capitalize = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  };
   const data = route.params.data as wordObj[];
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
-  const {styles} = useStyles(stylesheet);
+  const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
 
   // with the help of chatGPT
@@ -40,7 +37,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
     navigation.setOptions({
       header: () => (
         <CloseHeader
-          title={capitalize(originalDeckName)}
+          title={theme.utils.capitalize(originalDeckName)}
           onPress={() => {
             setIsExiting(true);
           }}

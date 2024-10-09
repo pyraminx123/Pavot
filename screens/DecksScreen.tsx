@@ -25,10 +25,7 @@ import {wordObj} from './types';
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
 
 const DecksScreen = ({route, navigation}: DecksProps) => {
-  const capitalize = (word: string) => {
-    return word.charAt(0).toUpperCase() + word.slice(1);
-  };
-  const {styles} = useStyles(stylesheet);
+  const {styles, theme} = useStyles(stylesheet);
   const uniqueFolderName = route.params.uniqueFolderName;
   const originalFolderName = route.params.originalFolderName;
   const [scrollY, setScrollY] = useState(0);
@@ -39,7 +36,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     navigation.setOptions({
       header: () => (
         <MainHeader
-          title={capitalize(originalFolderName)}
+          title={theme.utils.capitalize(originalFolderName)}
           onPress={() => navigation.goBack()}
         />
       ),

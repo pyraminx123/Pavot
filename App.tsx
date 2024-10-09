@@ -15,6 +15,8 @@ import SettingsScreen from './screens/SettingsScreen.tsx';
 import DeckHomeScreen from './screens/DeckHomeScreen.tsx';
 import {wordObj} from './screens/types.ts';
 import {BottomTab} from './screens/components/headers.tsx';
+import LearningModeScreen from './screens/learningModeScreen.tsx';
+import SingleChoiceScreen from './screens/singleChoiceScreen.tsx';
 
 export interface folderInfo {
   folderID: number;
@@ -37,6 +39,14 @@ interface wordScreenParams {
   originalFolderName: string;
 }
 
+interface singleChoiceParams {
+  term: string;
+  correctDef: string;
+  otherDefs: string[]; // length = 3
+  originalDeckName: string;
+  flashcardParams: flashcardParams;
+}
+
 // parameters that are passed
 export type AppStackParamList = {
   Home: undefined;
@@ -44,6 +54,8 @@ export type AppStackParamList = {
   Deck: folderInfo;
   Words: wordScreenParams;
   DeckHome: flashcardParams;
+  LearningMode: flashcardParams;
+  SingleChoice: singleChoiceParams;
 };
 
 export type AppTabParamList = {
@@ -70,6 +82,10 @@ const HomeStackScreen = () => {
         options={{gestureEnabled: false, headerBackVisible: false}}
       />
       <Stack.Screen name="DeckHome" component={DeckHomeScreen} />
+      <Stack.Group>
+        <Stack.Screen name="LearningMode" component={LearningModeScreen} />
+        <Stack.Screen name="SingleChoice" component={SingleChoiceScreen} />
+      </Stack.Group>
     </Stack.Navigator>
   );
 };
