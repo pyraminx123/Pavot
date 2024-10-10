@@ -9,6 +9,7 @@ import {AppStackParamList} from '../App';
 import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import algorithm from './algo';
+import {wordObj} from './types';
 
 const ChoiceContainer = (props: {text: string; onPress: Function}) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -40,10 +41,35 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   const word = route.params.term;
   const correctDef = route.params.correctDef;
   const originalDeckName = route.params.originalDeckName;
-  const allDefs = route.params.otherDefs; // TODO add the correct def to it and shuffle
+  const allDefs = route.params.otherDefs;
+  const flashcardParams = route.params.flashcardParams;
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, setCurrentIndex} = useLearningModeContext();
+
+  const getCurrentPer = (words: wordObj[]) => {
+    return {
+      perDiffWords:
+        (words.filter(item => item.maturityLevel === 'Difficult').length /
+          words.length) *
+        100,
+      perMedWords:
+        (words.filter(item => item.maturityLevel === 'Medium').length /
+          words.length) *
+        100,
+      perEasyWords:
+        (words.filter(item => item.maturityLevel === 'Easy').length /
+          words.length) *
+        100,
+    };
+  };
+  const currentPer = getCurrentPer(flashcardParams.data);
+  const {perEasyWords, perMedWords, perDiffWords} = currentPer;
+  const segmentData = [
+    {per: perEasyWords, color: '#C2E8A2'},
+    {per: perMedWords, color: '#F9EDC5'},
+    {per: perDiffWords, color: '#F0CACA'},
+  ];
 
   // with the help of chatGPT
   useEffect(() => {
@@ -72,7 +98,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   useEffect(() => {
     if (isExiting) {
       navigation.setOptions({animation: 'slide_from_bottom'});
-      navigation.navigate('DeckHome', route.params.flashcardParams);
+      navigation.navigate('DeckHome', flashcardParams);
     }
   }, [isExiting]);
 
@@ -81,22 +107,33 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     algorithm(
       isCorrect,
       2,
-      route.params.flashcardParams.data[currentIndex],
-      route.params.flashcardParams.uniqueDeckName,
+      flashcardParams.data[currentIndex],
+      flashcardParams.uniqueDeckName,
     );
     await theme.utils.sleep(500);
-    const allWordsLength = route.params.flashcardParams.data.length;
+    const allWordsLength = flashcardParams.data.length;
     if (currentIndex < allWordsLength - 1) {
       setCurrentIndex(currentIndex + 1);
     } else {
       setCurrentIndex(0);
     }
     navigation.navigate('LearningMode', {
-      flashcardParams: route.params.flashcardParams,
+      flashcardParams: flashcardParams,
     });
   };
   return (
     <View style={styles.container}>
+      <View style={styles.lineContainer}>
+        {segmentData.map((segment, index) => (
+          <View
+            key={index}
+            style={[
+              styles.lineSegment,
+              {flex: segment.per, backgroundColor: segment.color},
+            ]}
+          />
+        ))}
+      </View>
       <Text style={styles.title}>{word}</Text>
       {allDefs.map((def, index) => (
         <ChoiceContainer
@@ -115,6 +152,16 @@ const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
+  },
+  lineContainer: {
+    flexDirection: 'row',
+    marginHorizontal: '5%',
+    height: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  lineSegment: {
+    height: '100%',
   },
   title: {
     top: 10,

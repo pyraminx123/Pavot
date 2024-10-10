@@ -27,6 +27,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     scheduled_days: -1,
     stability: -1,
     state: 0, // Ensure the state matches the wordObj type
+    maturityLevel: 'Medium' as 'Medium',
     term: '',
   };
   //const currentUsedIds = route.params.data.map(card => card.id);

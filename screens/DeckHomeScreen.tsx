@@ -10,6 +10,7 @@ import {MainHeader} from './components/headers';
 import {retrieveDataFromTable} from './handleData';
 import {wordObj} from './types';
 import {useLearningModeContext} from './contexts/LearningModeContext';
+import {State} from 'ts-fsrs';
 
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
@@ -52,12 +53,46 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     });
   };
 
-  const renderItem = ({item}: {item: {term: string; definition: string}}) => {
+  // TODO define maturity level in database
+  const renderItem = ({
+    item,
+  }: {
+    item: {
+      term: string;
+      definition: string;
+      stability: number;
+      state: State;
+      maturityLevel: string;
+    };
+  }) => {
+    const colors = {
+      redLight: '#F0CACA',
+      redDark: '#C04E4E',
+      yellowLight: '#F9EDC5',
+      yellowDark: '#8A7C28',
+      greenLight: '#C2E8A2',
+      greenDark: '#335536',
+    };
+    let backgroundColor = '';
+    let textColor = '';
+    if (item.maturityLevel === 'Difficult') {
+      backgroundColor = colors.redLight;
+      textColor = colors.redDark;
+    } else if (item.maturityLevel === 'Easy') {
+      backgroundColor = colors.greenLight;
+      textColor = colors.greenDark;
+    } else {
+      backgroundColor = colors.yellowLight;
+      textColor = colors.yellowDark;
+    }
+    //console.log(item);
     return (
-      <View style={styles.wordContainer}>
-        <Text style={styles.textLeft}>{item.term}</Text>
-        <Text style={styles.middleLine}>|</Text>
-        <Text style={styles.textRight}>{item.definition}</Text>
+      <View style={[styles.wordContainer, {backgroundColor: backgroundColor}]}>
+        <Text style={[styles.textLeft, {color: textColor}]}>{item.term}</Text>
+        <Text style={[styles.middleLine, {color: textColor}]}>|</Text>
+        <Text style={[styles.textRight, {color: textColor}]}>
+          {item.definition}
+        </Text>
       </View>
     );
   };

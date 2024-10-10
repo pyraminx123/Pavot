@@ -135,6 +135,7 @@ const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
         lapses NUMBER,
         state NUMBER,
         last_review DATE,
+        maturityLevel TEXT,
         FOREIGN KEY (deckID) REFERENCES ${uniqueFolderName}(deckID)
       );`,
     );
@@ -243,8 +244,9 @@ const insertIntoDeck = async (
           scheduled_days,
           reps,
           lapses,
-          state
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
+          state,
+          maturityLevel
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);`,
         [
           term,
           definition,
@@ -257,6 +259,7 @@ const insertIntoDeck = async (
           emptyCard.reps,
           emptyCard.lapses,
           State[emptyCard.state],
+          'Difficult',
         ],
       );
       //console.log('table', retrieveDataFromTable(uniqueDeckName));
@@ -275,6 +278,17 @@ const updateCard = async (
   uniqueDeckName: string,
 ) => {
   try {
+    let maturityLevel = 'Difficult';
+    if (
+      (newCardInfo.state as unknown as string) === 'New' ||
+      newCardInfo.stability < 1
+    ) {
+      maturityLevel = 'Difficult';
+    } else if (newCardInfo.stability >= 21) {
+      maturityLevel = 'Easy';
+    } else {
+      maturityLevel = 'Medium';
+    }
     //console.log('newState', State[newCardInfo.state]);
     await db.execute(
       `UPDATE ${uniqueDeckName} SET
@@ -286,7 +300,8 @@ const updateCard = async (
         reps=?,
         lapses=?,
         state=?,
-        last_review=?
+        last_review=?,
+        maturityLevel=?
       WHERE id=?;`,
       [
         new Date(newCardInfo.due).toISOString(),
@@ -300,6 +315,7 @@ const updateCard = async (
         newCardInfo?.last_review
           ? new Date(newCardInfo.last_review).toISOString()
           : null,
+        maturityLevel,
         oldCard.id,
       ],
     );

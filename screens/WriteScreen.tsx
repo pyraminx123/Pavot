@@ -9,6 +9,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import {RightArrow} from './components/icons';
 import algorithm from './algo';
+import {wordObj} from './types';
 
 type WriteProps = NativeStackScreenProps<AppStackParamList, 'Write'>;
 
@@ -17,10 +18,34 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, setCurrentIndex} = useLearningModeContext();
-  const wordObj = flashcardParams.data[currentIndex];
-  const term = wordObj.term;
-  const def = wordObj.definition;
+  const currentWordObj = flashcardParams.data[currentIndex];
+  const term = currentWordObj.term;
+  const def = currentWordObj.definition;
   const [text, onChangeText] = useState('');
+
+  const getCurrentPer = (words: wordObj[]) => {
+    return {
+      perDiffWords:
+        (words.filter(item => item.maturityLevel === 'Difficult').length /
+          words.length) *
+        100,
+      perMedWords:
+        (words.filter(item => item.maturityLevel === 'Medium').length /
+          words.length) *
+        100,
+      perEasyWords:
+        (words.filter(item => item.maturityLevel === 'Easy').length /
+          words.length) *
+        100,
+    };
+  };
+  const currentPer = getCurrentPer(flashcardParams.data);
+  const {perEasyWords, perMedWords, perDiffWords} = currentPer;
+  const segmentData = [
+    {per: perEasyWords, color: '#C2E8A2'},
+    {per: perMedWords, color: '#F9EDC5'},
+    {per: perDiffWords, color: '#F0CACA'},
+  ];
 
   // with the help of chatGPT
   useEffect(() => {
@@ -77,6 +102,17 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.lineContainer}>
+        {segmentData.map((segment, index) => (
+          <View
+            key={index}
+            style={[
+              styles.lineSegment,
+              {flex: segment.per, backgroundColor: segment.color},
+            ]}
+          />
+        ))}
+      </View>
       <View style={styles.card}>
         <Text style={styles.text}>{term}</Text>
       </View>
@@ -101,6 +137,16 @@ const stylesheet = createStyleSheet(theme => ({
     flex: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
+  },
+  lineContainer: {
+    flexDirection: 'row',
+    marginHorizontal: '5%',
+    height: 10,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  lineSegment: {
+    height: '100%',
   },
   card: {
     marginTop: 30,

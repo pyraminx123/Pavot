@@ -14,6 +14,7 @@ export interface wordObj {
   lapses: number;
   state: State;
   last_review?: Date;
+  maturityLevel: 'Difficult' | 'Medium' | 'Easy';
 }
 
 export interface wordStats {

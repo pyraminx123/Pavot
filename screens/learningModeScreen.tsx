@@ -21,6 +21,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const allDefs = allWords.map(word => word.definition);
   //console.log(allDefs);
   const originalDeckName = route.params.flashcardParams.originalDeckName;
+  const flashcardParams = route.params.flashcardParams;
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex} = useLearningModeContext();
 
@@ -65,6 +66,15 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     const updatedAllWords = retrieveDataFromTable(
       route.params.flashcardParams.uniqueDeckName,
     ) as wordObj[];
+
+    const updatedData = retrieveDataFromTable(
+      flashcardParams.uniqueDeckName,
+    ) as wordObj[];
+    const updatedFlashcardParams = {
+      data: updatedData,
+      uniqueDeckName: flashcardParams.uniqueDeckName,
+      originalDeckName,
+    };
     const updatedWordObj = updatedAllWords[currentIndex];
     //console.log(updatedWordObj, currentIndex);
     if ((updatedWordObj.state as unknown as string) === 'New') {
@@ -84,16 +94,15 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
         correctDef: updatedWordObj.definition,
         otherDefs: defsWithTerm,
         originalDeckName: originalDeckName,
-        flashcardParams: route.params.flashcardParams,
+        flashcardParams: updatedFlashcardParams,
       });
     } else {
       navigation.navigate('Write', {
-        flashcardParams: route.params.flashcardParams,
+        flashcardParams: updatedFlashcardParams,
       });
     }
   }, [allWords, currentIndex]);
 
-  // TODO check that array contains at least 4 items
   return <View style={styles.container} />;
 };
 
