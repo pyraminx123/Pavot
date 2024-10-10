@@ -18,6 +18,8 @@ import {BottomTab} from './screens/components/headers.tsx';
 import LearningModeScreen from './screens/learningModeScreen.tsx';
 import SingleChoiceScreen from './screens/singleChoiceScreen.tsx';
 
+import {LearningModeProvider} from './screens/contexts/LearningModeContext.tsx';
+
 export interface folderInfo {
   folderID: number;
   originalFolderName: string;
@@ -73,25 +75,27 @@ const Tab = createBottomTabNavigator<AppTabParamList>();
 // TODO update animation
 const HomeStackScreen = () => {
   return (
-    <Stack.Navigator>
-      <Stack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{headerShown: false}}
-      />
-      <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
-      <Stack.Screen name="Deck" component={DecksScreen} />
-      <Stack.Screen
-        name="Words"
-        component={WordScreen}
-        options={{gestureEnabled: false, headerBackVisible: false}}
-      />
-      <Stack.Screen name="DeckHome" component={DeckHomeScreen} />
-      <Stack.Group screenOptions={{animation: 'slide_from_right'}}>
-        <Stack.Screen name="LearningMode" component={LearningModeScreen} />
-        <Stack.Screen name="SingleChoice" component={SingleChoiceScreen} />
-      </Stack.Group>
-    </Stack.Navigator>
+    <LearningModeProvider>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
+        <Stack.Screen name="Deck" component={DecksScreen} />
+        <Stack.Screen
+          name="Words"
+          component={WordScreen}
+          options={{gestureEnabled: false, headerBackVisible: false}}
+        />
+        <Stack.Screen name="DeckHome" component={DeckHomeScreen} />
+        <Stack.Group screenOptions={{animation: 'slide_from_right'}}>
+          <Stack.Screen name="LearningMode" component={LearningModeScreen} />
+          <Stack.Screen name="SingleChoice" component={SingleChoiceScreen} />
+        </Stack.Group>
+      </Stack.Navigator>
+    </LearningModeProvider>
   );
 };
 

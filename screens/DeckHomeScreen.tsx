@@ -9,10 +9,12 @@ import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MainHeader} from './components/headers';
 import {retrieveDataFromTable} from './handleData';
 import {wordObj} from './types';
+import {useLearningModeContext} from './contexts/LearningModeContext';
 
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
 const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
+  const {setCurrentIndex} = useLearningModeContext();
   const originalDeckName = route.params.originalDeckName;
   const uniqueDeckName = route.params.uniqueDeckName;
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
@@ -40,6 +42,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
 
   const navigateToLearningModeScreen = () => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+    setCurrentIndex(0);
     navigation.navigate('LearningMode', {
       flashcardParams: {
         data,

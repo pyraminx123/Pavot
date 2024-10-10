@@ -5,8 +5,8 @@ import {View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import {State} from 'ts-fsrs';
 import {CloseHeader} from './components/headers';
+import {useLearningModeContext} from './contexts/LearningModeContext';
 
 type LearningModeProps = NativeStackScreenProps<
   AppStackParamList,
@@ -17,9 +17,10 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const allWords = route.params.flashcardParams.data;
   const allDefs = allWords.map(word => word.definition);
-  console.log(allDefs);
+  //console.log(allDefs);
   const originalDeckName = route.params.flashcardParams.originalDeckName;
   const [isExiting, setIsExiting] = useState(false);
+  const {currentIndex} = useLearningModeContext();
 
   // with the help of chatGPT
   useEffect(() => {
@@ -58,29 +59,33 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     updateNavigationOptions();
   }, [isExiting]);
 
-  return (
-    <View style={styles.container}>
-      {allWords.map(wordObj => {
-        console.log(wordObj.state, State.New);
-        if ((wordObj.state as unknown as string) === 'New') {
-          //   const otherDefs = [
-          //     allDefs.filter(word => word !== wordObj.definition),
-          //   ];
-          //const otherRandomDefs = otherDefs;
-          navigation.navigate('SingleChoice', {
-            term: wordObj.term,
-            correctDef: wordObj.definition,
-            otherDefs: ['Essen', 'Laufen', 'Schwimmen', 'Trinken'],
-            originalDeckName: originalDeckName,
-            flashcardParams: route.params.flashcardParams,
-          });
-          return '';
-        } else {
-          console.log('hello');
-        }
-      })}
-    </View>
-  );
+  useEffect(() => {
+    const wordObj = allWords[currentIndex];
+    console.log(wordObj, currentIndex);
+    if ((wordObj.state as unknown as string) === 'New') {
+      const otherDefs = allDefs.filter(word => word !== wordObj.definition); // removes the correct definition
+      const otherRandomDefs = theme.utils
+        .shuffleArray([...otherDefs])
+        .slice(0, 4);
+      const defsWithTerm = theme.utils.shuffleArray([
+        ...otherRandomDefs,
+        wordObj.definition,
+      ]);
+      //console.log('rand', otherRandomDefs, 'with', defsWithTerm);
+      navigation.navigate('SingleChoice', {
+        term: wordObj.term,
+        correctDef: wordObj.definition,
+        otherDefs: defsWithTerm,
+        originalDeckName: originalDeckName,
+        flashcardParams: route.params.flashcardParams,
+      });
+    } else {
+      console.log('hello');
+    }
+  }, [allWords, currentIndex]);
+
+  // TODO check that array contains at least 4 items
+  return <View style={styles.container} />;
 };
 
 const stylesheet = createStyleSheet(theme => ({
