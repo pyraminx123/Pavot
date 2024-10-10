@@ -41,9 +41,11 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const navigateToLearningModeScreen = () => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     navigation.navigate('LearningMode', {
-      data,
-      originalDeckName,
-      uniqueDeckName,
+      flashcardParams: {
+        data,
+        originalDeckName,
+        uniqueDeckName,
+      },
     });
   };
 

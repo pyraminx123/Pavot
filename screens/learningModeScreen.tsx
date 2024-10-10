@@ -3,10 +3,10 @@
 import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
-import {CloseHeader} from './components/headers';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {State} from 'ts-fsrs';
+import {CloseHeader} from './components/headers';
 
 type LearningModeProps = NativeStackScreenProps<
   AppStackParamList,
@@ -15,11 +15,11 @@ type LearningModeProps = NativeStackScreenProps<
 
 const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const {styles, theme} = useStyles(stylesheet);
-  const [isExiting, setIsExiting] = useState(false);
-  const allWords = route.params.data;
+  const allWords = route.params.flashcardParams.data;
   const allDefs = allWords.map(word => word.definition);
   console.log(allDefs);
-  const originalDeckName = route.params.originalDeckName;
+  const originalDeckName = route.params.flashcardParams.originalDeckName;
+  const [isExiting, setIsExiting] = useState(false);
 
   // with the help of chatGPT
   useEffect(() => {
@@ -41,7 +41,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
       ),
       gestureEnabled: false,
       headerBackVisible: false,
-      animation: 'slide_from_right',
+      animation: 'none',
     });
   }, [navigation, isExiting]);
 
@@ -49,10 +49,10 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     const updateNavigationOptions = async () => {
       //console.log('exiter', isExiting);
       await navigation.setOptions({
-        animation: isExiting ? 'slide_from_bottom' : 'slide_from_right',
+        animation: isExiting ? 'slide_from_bottom' : 'none',
       });
       if (isExiting) {
-        navigation.navigate('DeckHome', route.params);
+        navigation.navigate('DeckHome', route.params.flashcardParams);
       }
     };
     updateNavigationOptions();
@@ -72,7 +72,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
             correctDef: wordObj.definition,
             otherDefs: ['Essen', 'Laufen', 'Schwimmen', 'Trinken'],
             originalDeckName: originalDeckName,
-            flashcardParams: route.params,
+            flashcardParams: route.params.flashcardParams,
           });
           return '';
         } else {

@@ -1,9 +1,12 @@
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {View, Text, Pressable} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
+import {CloseHeader} from './components/headers';
 
 const ChoiceContainer = (props: {text: string; onPress: Function}) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -32,20 +35,68 @@ type SingleChoiceProps = NativeStackScreenProps<
 >;
 
 const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
+  useEffect(() => {
+    navigation.setOptions({
+      animation: 'none',
+    });
+  }, [navigation]);
   const word = route.params.term;
   const correctDef = route.params.correctDef;
+  const originalDeckName = route.params.originalDeckName;
   const allDefs = route.params.otherDefs; // TODO add the correct def to it and shuffle
   const {styles, theme} = useStyles(stylesheet);
+  const [isExiting, setIsExiting] = useState(false);
+
+  // with the help of chatGPT
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('beforeRemove', () => {
+      setIsExiting(true);
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: () => (
+        <CloseHeader
+          title={theme.utils.capitalize(originalDeckName)}
+          onPress={() => {
+            setIsExiting(true);
+          }}
+        />
+      ),
+      gestureEnabled: false,
+      headerBackVisible: false,
+      animation: 'none',
+    });
+  }, [navigation, isExiting]);
+
+  useEffect(() => {
+    const updateNavigationOptions = async () => {
+      //console.log('exiter', isExiting);
+      await navigation.setOptions({
+        animation: isExiting ? 'slide_from_bottom' : 'none',
+      });
+      if (isExiting) {
+        navigation.navigate('DeckHome', route.params.flashcardParams);
+      }
+    };
+    updateNavigationOptions();
+  }, [isExiting]);
 
   const checkWord = async (def: string) => {
     if (correctDef === def) {
       console.log('Correct!');
       await theme.utils.sleep(500);
-      navigation.navigate('LearningMode', route.params.flashcardParams);
+      navigation.navigate('LearningMode', {
+        flashcardParams: route.params.flashcardParams,
+      });
     } else {
       console.log('Incorrect!');
       await theme.utils.sleep(500);
-      navigation.navigate('LearningMode', route.params.flashcardParams);
+      navigation.navigate('LearningMode', {
+        flashcardParams: route.params.flashcardParams,
+      });
     }
   };
   return (

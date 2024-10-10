@@ -30,6 +30,10 @@ interface flashcardParams {
   uniqueDeckName: string;
 }
 
+interface learningModeParams {
+  flashcardParams: flashcardParams;
+}
+
 interface wordScreenParams {
   data: wordObj[];
   originalDeckName: string;
@@ -54,7 +58,7 @@ export type AppStackParamList = {
   Deck: folderInfo;
   Words: wordScreenParams;
   DeckHome: flashcardParams;
-  LearningMode: flashcardParams;
+  LearningMode: learningModeParams;
   SingleChoice: singleChoiceParams;
 };
 
@@ -66,6 +70,7 @@ export type AppTabParamList = {
 const Stack = createNativeStackNavigator<AppStackParamList>();
 const Tab = createBottomTabNavigator<AppTabParamList>();
 
+// TODO update animation
 const HomeStackScreen = () => {
   return (
     <Stack.Navigator>
@@ -82,7 +87,7 @@ const HomeStackScreen = () => {
         options={{gestureEnabled: false, headerBackVisible: false}}
       />
       <Stack.Screen name="DeckHome" component={DeckHomeScreen} />
-      <Stack.Group>
+      <Stack.Group screenOptions={{animation: 'slide_from_right'}}>
         <Stack.Screen name="LearningMode" component={LearningModeScreen} />
         <Stack.Screen name="SingleChoice" component={SingleChoiceScreen} />
       </Stack.Group>
