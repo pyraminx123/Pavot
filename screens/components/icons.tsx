@@ -175,3 +175,14 @@ export const AddIconOutline = () => {
     </View>
   );
 };
+
+export const RightArrow = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 20 20" fill="none" width="25" height="25">
+        <Path d="M13.5 7.5l-4-4m4 4l-4 4m4-4H1" stroke={theme.colors.dark} />
+      </Svg>
+    </View>
+  );
+};

@@ -7,6 +7,8 @@ import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
+import {retrieveDataFromTable} from './handleData';
+import {wordObj} from './types';
 
 type LearningModeProps = NativeStackScreenProps<
   AppStackParamList,
@@ -60,27 +62,34 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   }, [isExiting]);
 
   useEffect(() => {
-    const wordObj = allWords[currentIndex];
-    console.log(wordObj, currentIndex);
-    if ((wordObj.state as unknown as string) === 'New') {
-      const otherDefs = allDefs.filter(word => word !== wordObj.definition); // removes the correct definition
+    const updatedAllWords = retrieveDataFromTable(
+      route.params.flashcardParams.uniqueDeckName,
+    ) as wordObj[];
+    const updatedWordObj = updatedAllWords[currentIndex];
+    //console.log(updatedWordObj, currentIndex);
+    if ((updatedWordObj.state as unknown as string) === 'New') {
+      const otherDefs = allDefs.filter(
+        word => word !== updatedWordObj.definition,
+      ); // removes the correct definition
       const otherRandomDefs = theme.utils
         .shuffleArray([...otherDefs])
         .slice(0, 4);
       const defsWithTerm = theme.utils.shuffleArray([
         ...otherRandomDefs,
-        wordObj.definition,
+        updatedWordObj.definition,
       ]);
       //console.log('rand', otherRandomDefs, 'with', defsWithTerm);
       navigation.navigate('SingleChoice', {
-        term: wordObj.term,
-        correctDef: wordObj.definition,
+        term: updatedWordObj.term,
+        correctDef: updatedWordObj.definition,
         otherDefs: defsWithTerm,
         originalDeckName: originalDeckName,
         flashcardParams: route.params.flashcardParams,
       });
     } else {
-      console.log('hello');
+      navigation.navigate('Write', {
+        flashcardParams: route.params.flashcardParams,
+      });
     }
   }, [allWords, currentIndex]);
 

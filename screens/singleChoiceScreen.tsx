@@ -8,6 +8,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
+import algorithm from './algo';
 
 const ChoiceContainer = (props: {text: string; onPress: Function}) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -76,11 +77,13 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   }, [isExiting]);
 
   const checkWord = async (def: string) => {
-    if (correctDef === def) {
-      console.log('Correct!');
-    } else {
-      console.log('Incorrect!');
-    }
+    const isCorrect = correctDef === def;
+    algorithm(
+      isCorrect,
+      2,
+      route.params.flashcardParams.data[currentIndex],
+      route.params.flashcardParams.uniqueDeckName,
+    );
     await theme.utils.sleep(500);
     const allWordsLength = route.params.flashcardParams.data.length;
     if (currentIndex < allWordsLength - 1) {
