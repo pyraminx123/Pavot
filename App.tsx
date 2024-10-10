@@ -19,6 +19,7 @@ import LearningModeScreen from './screens/learningModeScreen.tsx';
 import SingleChoiceScreen from './screens/singleChoiceScreen.tsx';
 
 import {LearningModeProvider} from './screens/contexts/LearningModeContext.tsx';
+import WriteScreen from './screens/WriteScreen.tsx';
 
 export interface folderInfo {
   folderID: number;
@@ -53,6 +54,10 @@ interface singleChoiceParams {
   flashcardParams: flashcardParams;
 }
 
+interface writeParams {
+  flashcardParams: flashcardParams;
+}
+
 // parameters that are passed
 export type AppStackParamList = {
   Home: undefined;
@@ -62,6 +67,7 @@ export type AppStackParamList = {
   DeckHome: flashcardParams;
   LearningMode: learningModeParams;
   SingleChoice: singleChoiceParams;
+  Write: writeParams;
 };
 
 export type AppTabParamList = {
@@ -93,6 +99,7 @@ const HomeStackScreen = () => {
         <Stack.Group screenOptions={{animation: 'slide_from_right'}}>
           <Stack.Screen name="LearningMode" component={LearningModeScreen} />
           <Stack.Screen name="SingleChoice" component={SingleChoiceScreen} />
+          <Stack.Screen name="Write" component={WriteScreen} />
         </Stack.Group>
       </Stack.Navigator>
     </LearningModeProvider>
