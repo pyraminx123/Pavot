@@ -125,6 +125,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
           onChangeText={txt => onChangeText(txt)}
           placeholder="Definition"
           placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
+          onSubmitEditing={() => checkWord(text)}
         />
         <Pressable style={styles.arrow} onPress={() => checkWord(text)}>
           <RightArrow />
