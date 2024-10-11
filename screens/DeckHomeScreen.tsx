@@ -16,8 +16,8 @@ type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
 const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const {setCurrentIndex} = useLearningModeContext();
-  const originalDeckName = route.params.originalDeckName;
-  const uniqueDeckName = route.params.uniqueDeckName;
+  const originalDeckName = route.params.flashcardParams.originalDeckName;
+  const uniqueDeckName = route.params.flashcardParams.uniqueDeckName;
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
   const {styles, theme} = useStyles(stylesheet);
 

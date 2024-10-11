@@ -140,6 +140,7 @@ const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
       );`,
     );
     insertIntoFolder(uniqueFolderName, originalDeckName, uniqueDeckName);
+    return uniqueDeckName;
   } catch (error) {
     console.error(
       `Some error occurred trying to create a table ${uniqueDeckName}`,

@@ -74,7 +74,9 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   useEffect(() => {
     if (isExiting) {
       navigation.setOptions({animation: 'slide_from_bottom'});
-      navigation.navigate('DeckHome', route.params.flashcardParams);
+      navigation.navigate('DeckHome', {
+        flashcardParams: route.params.flashcardParams,
+      });
     }
   }, [isExiting]);
 

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {View} from 'react-native';
+import {Text, View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -56,7 +56,9 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
         animation: isExiting ? 'slide_from_bottom' : 'none',
       });
       if (isExiting) {
-        navigation.navigate('DeckHome', route.params.flashcardParams);
+        navigation.navigate('DeckHome', {
+          flashcardParams: route.params.flashcardParams,
+        });
       }
     };
     updateNavigationOptions();
@@ -77,33 +79,39 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     };
     const updatedWordObj = updatedAllWords[currentIndex];
     //console.log(updatedWordObj, currentIndex);
-    if ((updatedWordObj.state as unknown as string) === 'New') {
-      const otherDefs = allDefs.filter(
-        word => word !== updatedWordObj.definition,
-      ); // removes the correct definition
-      const otherRandomDefs = theme.utils
-        .shuffleArray([...otherDefs])
-        .slice(0, 4);
-      const defsWithTerm = theme.utils.shuffleArray([
-        ...otherRandomDefs,
-        updatedWordObj.definition,
-      ]);
-      //console.log('rand', otherRandomDefs, 'with', defsWithTerm);
-      navigation.navigate('SingleChoice', {
-        term: updatedWordObj.term,
-        correctDef: updatedWordObj.definition,
-        otherDefs: defsWithTerm,
-        originalDeckName: originalDeckName,
-        flashcardParams: updatedFlashcardParams,
-      });
-    } else {
-      navigation.navigate('Write', {
-        flashcardParams: updatedFlashcardParams,
-      });
+    if (updatedAllWords.length > 0) {
+      if ((updatedWordObj.state as unknown as string) === 'New') {
+        const otherDefs = allDefs.filter(
+          word => word !== updatedWordObj.definition,
+        ); // removes the correct definition
+        const otherRandomDefs = theme.utils
+          .shuffleArray([...otherDefs])
+          .slice(0, 4);
+        const defsWithTerm = theme.utils.shuffleArray([
+          ...otherRandomDefs,
+          updatedWordObj.definition,
+        ]);
+        //console.log('rand', otherRandomDefs, 'with', defsWithTerm);
+        navigation.navigate('SingleChoice', {
+          term: updatedWordObj.term,
+          correctDef: updatedWordObj.definition,
+          otherDefs: defsWithTerm,
+          originalDeckName: originalDeckName,
+          flashcardParams: updatedFlashcardParams,
+        });
+      } else {
+        navigation.navigate('Write', {
+          flashcardParams: updatedFlashcardParams,
+        });
+      }
     }
   }, [allWords, currentIndex]);
 
-  return <View style={styles.container} />;
+  return (
+    <View style={styles.container}>
+      <Text>Add Words</Text>
+    </View>
+  );
 };
 
 const stylesheet = createStyleSheet(theme => ({

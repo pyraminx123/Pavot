@@ -22,11 +22,21 @@ type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
   const {styles} = useStyles(stylesheet);
+  useEffect(() => {
+    console.log('Hello from the HomeScreen');
+    navigation.setParams({
+      handleAddPress: () => {
+        console.log('wow');
+      },
+    });
+    //console.log(navigation.getState().routes);
+  }, [navigation]);
   createFoldersTable();
   //insertIntoAllFolders('test');
   //const {t} = useTranslation() eg {t('HELLO')};
 
   const navigateToDecksScreen = (folder: folderInfo) => {
+    console.log('folder', folder);
     navigation.navigate('Deck', folder);
   };
 

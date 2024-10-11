@@ -25,6 +25,7 @@ export interface folderInfo {
   folderID: number;
   originalFolderName: string;
   uniqueFolderName: string;
+  handleAddPress?: () => void;
 }
 
 interface flashcardParams {
@@ -32,7 +33,10 @@ interface flashcardParams {
   originalDeckName: string;
   uniqueDeckName: string;
 }
-
+interface deckHomeParams {
+  flashcardParams: flashcardParams;
+  handleAddPress?: () => void;
+}
 interface learningModeParams {
   flashcardParams: flashcardParams;
 }
@@ -60,11 +64,11 @@ interface writeParams {
 
 // parameters that are passed
 export type AppStackParamList = {
-  Home: undefined;
+  Home: {handleAddPress?: () => void};
   Flashcards: flashcardParams;
   Deck: folderInfo;
   Words: wordScreenParams;
-  DeckHome: flashcardParams;
+  DeckHome: deckHomeParams;
   LearningMode: learningModeParams;
   SingleChoice: singleChoiceParams;
   Write: writeParams;
@@ -106,6 +110,7 @@ const HomeStackScreen = () => {
   );
 };
 
+// TODO bug: when first opening the app the house is not solid
 const App = () => {
   return (
     <NavigationContainer>
@@ -126,7 +131,6 @@ const App = () => {
             <BottomTab
               onPressHome={() => navigation.navigate('Home')}
               onPressSettings={() => navigation.navigate('Settings')}
-              onPressAdd={() => console.log('add')}
               screenFocused={
                 currentRouteName as 'BigHome' | 'Settings' | 'Other'
               }

@@ -98,7 +98,9 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   useEffect(() => {
     if (isExiting) {
       navigation.setOptions({animation: 'slide_from_bottom'});
-      navigation.navigate('DeckHome', flashcardParams);
+      navigation.navigate('DeckHome', {
+        flashcardParams: route.params.flashcardParams,
+      });
     }
   }, [isExiting]);
 

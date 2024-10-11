@@ -7,7 +7,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList} from '../App';
-import {deleteEntryInDeck, changeDeckName} from './handleData';
+import {deleteEntryInDeck, changeDeckName, createDeck} from './handleData';
 import AddCard from './components/addCard';
 import {wordObj} from './types';
 
@@ -67,23 +67,43 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   };
   // TODO differentiate between new and old cards
   const onSave = async () => {
-    for (const item of data) {
-      if (item.term && item.definition) {
-        await addCardToDatabase({
-          term: item.term,
-          definition: item.definition,
-          id: item.id,
-          deckId: item.deckID,
-          uniqueDeckName: route.params.uniqueDeckName,
-          uniqueFolderName: route.params.uniqueFolderName,
-        });
+    if (route.params.uniqueDeckName === '') {
+      const uniqueDeckName = createDeck(
+        text,
+        route.params.uniqueFolderName,
+      ) as string;
+      for (const item of data) {
+        if (item.term && item.definition) {
+          await addCardToDatabase({
+            term: item.term,
+            definition: item.definition,
+            id: item.id,
+            deckId: item.deckID,
+            uniqueDeckName: uniqueDeckName,
+            uniqueFolderName: route.params.uniqueFolderName,
+          });
+        }
       }
+    } else {
+      for (const item of data) {
+        if (item.term && item.definition) {
+          await addCardToDatabase({
+            term: item.term,
+            definition: item.definition,
+            id: item.id,
+            deckId: item.deckID,
+            uniqueDeckName: route.params.uniqueDeckName,
+            uniqueFolderName: route.params.uniqueFolderName,
+          });
+        }
+      }
+
+      await changeDeckName(
+        route.params.uniqueFolderName,
+        text,
+        route.params.uniqueDeckName,
+      );
     }
-    await changeDeckName(
-      route.params.uniqueFolderName,
-      text,
-      route.params.uniqueDeckName,
-    );
     navigation.navigate('Deck', {
       folderID: route.params.folderID,
       uniqueFolderName: route.params.uniqueFolderName,

@@ -43,6 +43,29 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     });
   }, [navigation, originalFolderName]);
 
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     const existingParams = route.params;
+  //     //console.log('Hello from the DeckScreen');
+  //     const newParams = {
+  //       folderID: existingParams.folderID,
+  //       originalFolderName: existingParams.originalFolderName,
+  //       uniqueFolderName: existingParams.uniqueFolderName,
+  //       handleAddPress: () => {
+  //         navigation.navigate('Words', {
+  //           data: [],
+  //           originalDeckName: '',
+  //           uniqueDeckName: '',
+  //           uniqueFolderName: existingParams.uniqueFolderName,
+  //           folderID: existingParams.folderID,
+  //           originalFolderName: existingParams.originalFolderName,
+  //         });
+  //       },
+  //     };
+  //     navigation.setParams(newParams);
+  //   }, [navigation]),
+  // );
+
   const measureFlatlistPosition = () => {
     if (flatlistRef.current) {
       flatlistRef.current.measureInWindow((x, y, width, height) => {
@@ -69,7 +92,8 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     originalDeckName: string,
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
-    navigation.navigate('DeckHome', {data, originalDeckName, uniqueDeckName});
+    const flashcardParams = {data, originalDeckName, uniqueDeckName};
+    navigation.navigate('DeckHome', {flashcardParams});
   };
 
   const navigateToWordsScreen = (
