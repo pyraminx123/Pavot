@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, FlatList, SafeAreaView, TextInput} from 'react-native';
 import Card, {addCardToDatabase} from './components/Card';
 import SaveButton from './components/SaveButton';
@@ -8,8 +8,9 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList} from '../App';
 import {deleteEntryInDeck, changeDeckName, createDeck} from './handleData';
-import AddCard from './components/addCard';
 import {wordObj} from './types';
+import {useFocusEffect} from '@react-navigation/native';
+import {useAddButtonContext} from './contexts/headerContext';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
@@ -20,7 +21,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     difficulty: 0,
     due: new Date(),
     elapsed_days: 0,
-    id: -1,
+    id: Math.random(),
     lapses: 0,
     last_review: new Date(),
     reps: 0,
@@ -32,10 +33,13 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   };
   //const currentUsedIds = route.params.data.map(card => card.id);
   //console.log(currentUsedIds);
-  const initialData = [...route.params.data, emptyCard];
+  const initialData = route.params.data.length
+    ? [...route.params.data, emptyCard]
+    : [emptyCard];
   const deckName = route.params.originalDeckName;
   const [data, setData] = useState(initialData);
   const [text, onChangeText] = useState(deckName);
+  const {setHandleAddPress} = useAddButtonContext();
   //console.log('initial', data);
 
   useEffect(() => {
@@ -43,6 +47,17 @@ const WordScreen = ({route, navigation}: WordsProps) => {
       headerRight: () => SaveButton(onSave),
     });
   }, [text, data]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setHandleAddPress(() => {
+        console.log('WordScreen Add Action');
+        setData(prevData => {
+          return [...prevData, {...emptyCard, id: Math.random()}];
+        });
+      });
+    }, [setHandleAddPress]),
+  );
 
   const deleteCard = async (id: number, deckId: number) => {
     console.log(data);
@@ -104,11 +119,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         route.params.uniqueDeckName,
       );
     }
-    navigation.navigate('Deck', {
-      folderID: route.params.folderID,
-      uniqueFolderName: route.params.uniqueFolderName,
-      originalFolderName: route.params.originalFolderName,
-    });
+    navigation.goBack();
   };
 
   const renderItem = ({item, index}: {item: wordObj; index: number}) => {
@@ -143,7 +154,6 @@ const WordScreen = ({route, navigation}: WordsProps) => {
           data={data}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
-          ListFooterComponent={AddCard({data: data, setData: setData})}
         />
       </SafeAreaView>
     </View>

@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {View, Text, Pressable, SafeAreaView, FlatList} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -17,23 +17,25 @@ import '../i18n.config';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, folderInfo} from '../App';
+import {useAddButtonContext} from './contexts/headerContext';
+import {useFocusEffect} from '@react-navigation/native';
 
 type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
 
 const HomeScreen = ({navigation}: HomeProps) => {
   const {styles} = useStyles(stylesheet);
-  useEffect(() => {
-    console.log('Hello from the HomeScreen');
-    navigation.setParams({
-      handleAddPress: () => {
-        console.log('wow');
-      },
-    });
-    //console.log(navigation.getState().routes);
-  }, [navigation]);
+  const {setHandleAddPress} = useAddButtonContext();
   createFoldersTable();
   //insertIntoAllFolders('test');
   //const {t} = useTranslation() eg {t('HELLO')};
+
+  useFocusEffect(
+    useCallback(() => {
+      setHandleAddPress(() => {
+        console.log('HomeScreen Add Action');
+      });
+    }, []),
+  );
 
   const navigateToDecksScreen = (folder: folderInfo) => {
     console.log('folder', folder);

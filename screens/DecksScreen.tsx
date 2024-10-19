@@ -21,6 +21,7 @@ import {useFocusEffect} from '@react-navigation/native';
 import {AppStackParamList} from '../App';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {wordObj} from './types';
+import {useAddButtonContext} from './contexts/headerContext';
 
 type DecksProps = NativeStackScreenProps<AppStackParamList, 'Deck'>;
 
@@ -31,6 +32,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   const [scrollY, setScrollY] = useState(0);
   const flatlistRef = useRef<View>(null);
   const [flatlistPositionY, setFlatlistPositionY] = useState(0);
+  const {setHandleAddPress} = useAddButtonContext();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,28 +45,20 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     });
   }, [navigation, originalFolderName]);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const existingParams = route.params;
-  //     //console.log('Hello from the DeckScreen');
-  //     const newParams = {
-  //       folderID: existingParams.folderID,
-  //       originalFolderName: existingParams.originalFolderName,
-  //       uniqueFolderName: existingParams.uniqueFolderName,
-  //       handleAddPress: () => {
-  //         navigation.navigate('Words', {
-  //           data: [],
-  //           originalDeckName: '',
-  //           uniqueDeckName: '',
-  //           uniqueFolderName: existingParams.uniqueFolderName,
-  //           folderID: existingParams.folderID,
-  //           originalFolderName: existingParams.originalFolderName,
-  //         });
-  //       },
-  //     };
-  //     navigation.setParams(newParams);
-  //   }, [navigation]),
-  // );
+  useFocusEffect(
+    useCallback(() => {
+      setHandleAddPress(() => {
+        console.log('DeckScreen Add Action');
+        const emptyCard = {} as wordObj[];
+        navigation.navigate('Words', {
+          data: emptyCard,
+          uniqueDeckName: '',
+          originalDeckName: '',
+          uniqueFolderName: route.params.uniqueFolderName,
+        });
+      });
+    }, []),
+  );
 
   const measureFlatlistPosition = () => {
     if (flatlistRef.current) {
@@ -93,7 +87,10 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     const flashcardParams = {data, originalDeckName, uniqueDeckName};
-    navigation.navigate('DeckHome', {flashcardParams});
+    navigation.navigate('DeckHome', {
+      flashcardParams,
+      uniqueFolderName,
+    });
   };
 
   const navigateToWordsScreen = (
@@ -107,8 +104,6 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
       originalDeckName: originalDeckName,
       uniqueDeckName: uniqueDeckName,
       uniqueFolderName: uniqueFolderName,
-      folderID: route.params.folderID,
-      originalFolderName: route.params.originalFolderName,
     });
   };
 

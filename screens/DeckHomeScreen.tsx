@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect} from 'react';
 import {View, Text, Pressable, FlatList} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -11,6 +11,8 @@ import {retrieveDataFromTable} from './handleData';
 import {wordObj} from './types';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import {State} from 'ts-fsrs';
+import {useAddButtonContext} from './contexts/headerContext';
+import {useFocusEffect} from '@react-navigation/native';
 
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
@@ -20,6 +22,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const uniqueDeckName = route.params.flashcardParams.uniqueDeckName;
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
   const {styles, theme} = useStyles(stylesheet);
+  const {setHandleAddPress} = useAddButtonContext();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -31,6 +34,21 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
       ),
     });
   }, [navigation, originalDeckName]);
+
+  useFocusEffect(
+    useCallback(() => {
+      setHandleAddPress(() => {
+        console.log('DeckHomeScreen Add Action');
+        const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+        navigation.navigate('Words', {
+          data,
+          uniqueDeckName,
+          originalDeckName,
+          uniqueFolderName: route.params.uniqueFolderName,
+        });
+      });
+    }, []),
+  );
 
   const navigateToFlashcardsScreen = () => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];

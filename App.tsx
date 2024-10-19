@@ -20,12 +20,12 @@ import SingleChoiceScreen from './screens/singleChoiceScreen.tsx';
 
 import {LearningModeProvider} from './screens/contexts/LearningModeContext.tsx';
 import WriteScreen from './screens/WriteScreen.tsx';
+import {AddButtonProvider} from './screens/contexts/headerContext.tsx';
 
 export interface folderInfo {
   folderID: number;
   originalFolderName: string;
   uniqueFolderName: string;
-  handleAddPress?: () => void;
 }
 
 interface flashcardParams {
@@ -35,7 +35,7 @@ interface flashcardParams {
 }
 interface deckHomeParams {
   flashcardParams: flashcardParams;
-  handleAddPress?: () => void;
+  uniqueFolderName: string;
 }
 interface learningModeParams {
   flashcardParams: flashcardParams;
@@ -46,8 +46,6 @@ interface wordScreenParams {
   originalDeckName: string;
   uniqueDeckName: string;
   uniqueFolderName: string;
-  folderID: number;
-  originalFolderName: string;
 }
 
 interface singleChoiceParams {
@@ -64,7 +62,7 @@ interface writeParams {
 
 // parameters that are passed
 export type AppStackParamList = {
-  Home: {handleAddPress?: () => void};
+  Home: undefined;
   Flashcards: flashcardParams;
   Deck: folderInfo;
   Words: wordScreenParams;
@@ -113,34 +111,36 @@ const HomeStackScreen = () => {
 // TODO bug: when first opening the app the house is not solid
 const App = () => {
   return (
-    <NavigationContainer>
-      <Tab.Navigator
-        screenOptions={{headerShown: false}}
-        tabBar={({navigation}) => {
-          // with the help of chatGPT
-          const {routes, index} = navigation.getState();
-          let currentRouteName = routes[index].name;
-          if (currentRouteName === 'BigHome') {
-            const stateIndex = routes[index].state?.index;
-            if (stateIndex !== 0) {
-              currentRouteName = 'Other';
-            }
-          }
-          //console.log(routes[index]);
-          return (
-            <BottomTab
-              onPressHome={() => navigation.navigate('Home')}
-              onPressSettings={() => navigation.navigate('Settings')}
-              screenFocused={
-                currentRouteName as 'BigHome' | 'Settings' | 'Other'
+    <AddButtonProvider>
+      <NavigationContainer>
+        <Tab.Navigator
+          screenOptions={{headerShown: false}}
+          tabBar={({navigation}) => {
+            // with the help of chatGPT
+            const {routes, index} = navigation.getState();
+            let currentRouteName = routes[index].name;
+            if (currentRouteName === 'BigHome') {
+              const stateIndex = routes[index].state?.index;
+              if (stateIndex !== 0) {
+                currentRouteName = 'Other';
               }
-            />
-          );
-        }}>
-        <Tab.Screen name="BigHome" component={HomeStackScreen} />
-        <Tab.Screen name="Settings" component={SettingsScreen} />
-      </Tab.Navigator>
-    </NavigationContainer>
+            }
+            //console.log(routes[index]);
+            return (
+              <BottomTab
+                onPressHome={() => navigation.navigate('Home')}
+                onPressSettings={() => navigation.navigate('Settings')}
+                screenFocused={
+                  currentRouteName as 'BigHome' | 'Settings' | 'Other'
+                }
+              />
+            );
+          }}>
+          <Tab.Screen name="BigHome" component={HomeStackScreen} />
+          <Tab.Screen name="Settings" component={SettingsScreen} />
+        </Tab.Navigator>
+      </NavigationContainer>
+    </AddButtonProvider>
   );
 };
 

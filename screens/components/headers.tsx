@@ -10,7 +10,7 @@ import {
   SettingsIconOutline,
   SettingsIconSolid,
 } from './icons';
-import {useNavigation} from '@react-navigation/native';
+import {useAddButtonContext} from '../contexts/headerContext';
 
 export const MainHeader = (props: {title: string; onPress: Function}) => {
   const {styles} = useStyles(stylesheet);
@@ -63,36 +63,8 @@ export const BottomTab = (props: {
   onPressSettings: Function;
   screenFocused: 'BigHome' | 'Settings' | 'Other';
 }) => {
-  const navigation = useNavigation();
   const {styles} = useStyles(stylesheet);
-
-  interface RouteParams {
-    handleAddPress?: () => void;
-  }
-
-  // with the help of chatGPT
-  const handleAddPress = () => {
-    const state = navigation.getState();
-    const currentRoute = state ? state.routes[state.index] : undefined;
-
-    const nestedState = currentRoute?.state;
-    const activeRoute =
-      nestedState && nestedState.index !== undefined
-        ? nestedState.routes[nestedState.index]
-        : currentRoute;
-
-    //console.log('Active route:', activeRoute);
-
-    // Access the params of the active route (Home screen or other stack screens)
-    const handleAddPressParam = (activeRoute?.params as RouteParams)
-      ?.handleAddPress;
-
-    if (handleAddPressParam) {
-      handleAddPressParam(); // Call the custom "add" action
-    } else {
-      console.log('Default Add behavior');
-    }
-  };
+  const {handleAddPress} = useAddButtonContext();
 
   return (
     <View style={styles.bottomTab}>
