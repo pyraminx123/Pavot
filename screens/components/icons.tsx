@@ -186,3 +186,18 @@ export const RightArrow = () => {
     </View>
   );
 };
+
+export const TickIcon = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg viewBox="0 0 15 15" fill="none" width="30" height="30">
+        <Path
+          d="M1 7l4.5 4.5L14 3"
+          stroke={theme.colors.dark}
+          stroke-linecap="square"
+        />
+      </Svg>
+    </View>
+  );
+};

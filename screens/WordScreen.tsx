@@ -1,8 +1,8 @@
+/* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {View, FlatList, SafeAreaView, TextInput} from 'react-native';
 import Card, {addCardToDatabase} from './components/Card';
-import SaveButton from './components/SaveButton';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -11,6 +11,7 @@ import {deleteEntryInDeck, changeDeckName, createDeck} from './handleData';
 import {wordObj} from './types';
 import {useFocusEffect} from '@react-navigation/native';
 import {useAddButtonContext} from './contexts/headerContext';
+import {WordsHeader} from './components/headers';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
@@ -36,15 +37,24 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   const initialData = route.params.data.length
     ? [...route.params.data, emptyCard]
     : [emptyCard];
+  const headerTitle = route.params.data.length
+    ? 'Edit Deck'
+    : 'Create New Deck';
   const deckName = route.params.originalDeckName;
   const [data, setData] = useState(initialData);
   const [text, onChangeText] = useState(deckName);
   const {setHandleAddPress} = useAddButtonContext();
   //console.log('initial', data);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => SaveButton(onSave),
+      header: () => (
+        <WordsHeader
+          title={headerTitle}
+          onSave={onSave}
+          onClose={navigation.goBack}
+        />
+      ),
     });
   }, [text, data]);
 

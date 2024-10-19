@@ -9,6 +9,7 @@ import {
   LeftIcon,
   SettingsIconOutline,
   SettingsIconSolid,
+  TickIcon,
 } from './icons';
 import {useAddButtonContext} from '../contexts/headerContext';
 
@@ -48,11 +49,31 @@ export const CloseHeader = (props: {title: string; onPress: Function}) => {
         </Text>
       </View>
       <Pressable
-        style={styles.closeIcon}
+        style={styles.closeIconRight}
         onPress={() => {
           props.onPress();
         }}>
         <CrossIconBig />
+      </Pressable>
+    </View>
+  );
+};
+
+export const WordsHeader = (props: {
+  title: string;
+  onSave: Function;
+  onClose: Function;
+}) => {
+  const {styles} = useStyles(stylesheet);
+
+  return (
+    <View style={styles.headerContainerClose}>
+      <Pressable style={styles.closeIconLeft} onPress={() => props.onClose()}>
+        <CrossIconBig />
+      </Pressable>
+      <Text style={styles.titleWords}>{props.title}</Text>
+      <Pressable style={styles.tickIcon} onPress={() => props.onSave()}>
+        <TickIcon />
       </Pressable>
     </View>
   );
@@ -127,9 +148,14 @@ const stylesheet = createStyleSheet(theme => ({
     marginLeft: 30,
     marginTop: 50,
   },
-  closeIcon: {
+  closeIconRight: {
     position: 'relative',
     marginRight: 30,
+    marginTop: 50,
+  },
+  closeIconLeft: {
+    position: 'relative',
+    marginLeft: 30,
     marginTop: 50,
   },
   bottomTab: {
@@ -144,5 +170,17 @@ const stylesheet = createStyleSheet(theme => ({
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignItems: 'center',
+  },
+  tickIcon: {
+    position: 'relative',
+    marginRight: 30,
+    marginTop: 50,
+  },
+  titleWords: {
+    fontSize: theme.typography.sizes.text,
+    color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: '200',
+    marginTop: 50,
   },
 }));
