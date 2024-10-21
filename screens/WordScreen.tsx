@@ -48,6 +48,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      animation: 'slide_from_bottom',
       header: () => (
         <WordsHeader
           title={headerTitle}
@@ -63,7 +64,23 @@ const WordScreen = ({route, navigation}: WordsProps) => {
       setHandleAddPress(() => {
         console.log('WordScreen Add Action');
         setData(prevData => {
-          return [...prevData, {...emptyCard, id: Math.random()}];
+          const newEmptyCard = {
+            deckID: -1,
+            definition: '',
+            difficulty: 0,
+            due: new Date(),
+            elapsed_days: 0,
+            id: Math.random(),
+            lapses: 0,
+            last_review: new Date(),
+            reps: 0,
+            scheduled_days: -1,
+            stability: -1,
+            state: 0,
+            maturityLevel: 'Medium' as 'Medium',
+            term: '',
+          };
+          return [...prevData, newEmptyCard];
         });
       });
     }, [setHandleAddPress]),

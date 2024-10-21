@@ -68,6 +68,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
         originalDeckName,
         uniqueDeckName,
       },
+      uniqueFolderName: route.params.uniqueFolderName,
     });
   };
 

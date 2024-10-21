@@ -39,6 +39,7 @@ interface deckHomeParams {
 }
 interface learningModeParams {
   flashcardParams: flashcardParams;
+  uniqueFolderName: string;
 }
 
 interface wordScreenParams {
@@ -54,10 +55,12 @@ interface singleChoiceParams {
   otherDefs: string[]; // length = 3
   originalDeckName: string;
   flashcardParams: flashcardParams;
+  uniqueFolderName: string;
 }
 
 interface writeParams {
   flashcardParams: flashcardParams;
+  uniqueFolderName: string;
 }
 
 // parameters that are passed

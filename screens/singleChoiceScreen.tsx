@@ -100,6 +100,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
       navigation.setOptions({animation: 'slide_from_bottom'});
       navigation.navigate('DeckHome', {
         flashcardParams: route.params.flashcardParams,
+        uniqueFolderName: route.params.uniqueFolderName,
       });
     }
   }, [isExiting]);
@@ -121,6 +122,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     }
     navigation.navigate('LearningMode', {
       flashcardParams: flashcardParams,
+      uniqueFolderName: route.params.uniqueFolderName,
     });
   };
   return (

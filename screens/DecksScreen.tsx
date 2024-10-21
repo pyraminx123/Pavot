@@ -12,8 +12,7 @@ import {
 } from 'react-native';
 
 import DeckContainer from './components/deckContainer';
-import AddDeck from './components/addDeck';
-import {retrieveDataFromTable, generateUniqueTableName} from './handleData';
+import {retrieveDataFromTable} from './handleData';
 import {MainHeader} from './components/headers';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -114,15 +113,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
       const getDecks = (await retrieveDataFromTable(
         uniqueFolderName,
       )) as folderData[];
-      setDecks([
-        ...getDecks,
-        {
-          deckID: -1,
-          originalDeckName: 'AddDeck',
-          uniqueDeckName: generateUniqueTableName('AddDeck'),
-          folderID: -1,
-        },
-      ]);
+      setDecks(getDecks);
     } catch (error) {
       console.error('Error fetching decks', error);
     }
@@ -135,27 +126,23 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   );
 
   const renderItem = ({item}: {item: folderData}) => {
-    if (item.deckID === -1) {
-      return <AddDeck onDeckAdded={fetchDecks} folderName={uniqueFolderName} />;
-    } else {
-      return (
-        <Pressable
-          onPress={() =>
-            navigateToDeckHomeScreen(item.uniqueDeckName, item.originalDeckName)
-          }>
-          <DeckContainer
-            originalDeckName={item.originalDeckName}
-            uniqueDeckName={item.uniqueDeckName}
-            uniqueFolderName={uniqueFolderName}
-            fetchDecks={fetchDecks}
-            navigateToWordsScreen={() =>
-              navigateToWordsScreen(item.uniqueDeckName, item.originalDeckName)
-            }
-            scrollY={scrollY}
-          />
-        </Pressable>
-      );
-    }
+    return (
+      <Pressable
+        onPress={() =>
+          navigateToDeckHomeScreen(item.uniqueDeckName, item.originalDeckName)
+        }>
+        <DeckContainer
+          originalDeckName={item.originalDeckName}
+          uniqueDeckName={item.uniqueDeckName}
+          uniqueFolderName={uniqueFolderName}
+          fetchDecks={fetchDecks}
+          navigateToWordsScreen={() =>
+            navigateToWordsScreen(item.uniqueDeckName, item.originalDeckName)
+          }
+          scrollY={scrollY}
+        />
+      </Pressable>
+    );
   };
 
   return (

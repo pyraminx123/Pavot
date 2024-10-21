@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState, useRef} from 'react';
 import {View, Text, TextInput, Pressable} from 'react-native';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -22,6 +22,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   const term = currentWordObj.term;
   const def = currentWordObj.definition;
   const [text, onChangeText] = useState('');
+  const textInputRef = useRef<TextInput>(null);
 
   const getCurrentPer = (words: wordObj[]) => {
     return {
@@ -49,6 +50,9 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
 
   // with the help of chatGPT
   useEffect(() => {
+    if (textInputRef.current) {
+      textInputRef.current.focus();
+    }
     const unsubscribe = navigation.addListener('beforeRemove', () => {
       setIsExiting(true);
     });
@@ -76,6 +80,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
       navigation.setOptions({animation: 'slide_from_bottom'});
       navigation.navigate('DeckHome', {
         flashcardParams: route.params.flashcardParams,
+        uniqueFolderName: route.params.uniqueFolderName,
       });
     }
   }, [isExiting]);
@@ -99,6 +104,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
     }
     navigation.navigate('LearningMode', {
       flashcardParams: route.params.flashcardParams,
+      uniqueFolderName: route.params.uniqueFolderName,
     });
   };
 
@@ -120,6 +126,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
       </View>
       <View style={styles.textInputContainer}>
         <TextInput
+          ref={textInputRef}
           style={styles.textInput}
           value={text}
           onChangeText={txt => onChangeText(txt)}

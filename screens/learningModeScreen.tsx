@@ -68,6 +68,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
       if (isExiting) {
         navigation.navigate('DeckHome', {
           flashcardParams: route.params.flashcardParams,
+          uniqueFolderName: route.params.uniqueFolderName,
         });
       }
     };
@@ -109,17 +110,25 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
           otherDefs: defsWithTerm,
           originalDeckName: originalDeckName,
           flashcardParams: updatedFlashcardParams,
+          uniqueFolderName: route.params.uniqueFolderName,
         });
       } else {
         navigation.navigate('Write', {
           flashcardParams: updatedFlashcardParams,
+          uniqueFolderName: route.params.uniqueFolderName,
         });
       }
     }
   }, [allWords, currentIndex, isButtonPressed]);
 
+  const textDueWords =
+    dueCards.length === 1
+      ? 'You have 1 word due today'
+      : 'You have ' + dueCards.length + ' words due today';
+
   return (
     <View style={styles.container}>
+      <Text>{textDueWords}</Text>
       {dueCards.map((word, index) => {
         return (
           <View key={index}>
