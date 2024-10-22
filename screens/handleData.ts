@@ -112,10 +112,13 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
 };
 
 // TODO folderID is currently = null
-const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
+const createDeck = (
+  originalDeckName: string,
+  uniqueFolderName: string,
+): string => {
   if (originalDeckName.trim().length === 0) {
     console.log('Input is empty or whitespace, no deck was created');
-    return;
+    return '';
   }
   const uniqueDeckName = generateUniqueTableName(originalDeckName);
   try {
@@ -146,6 +149,7 @@ const createDeck = (originalDeckName: string, uniqueFolderName: string) => {
       `Some error occurred trying to create a table ${uniqueDeckName}`,
       error,
     );
+    return '';
   }
 };
 

@@ -201,3 +201,21 @@ export const TickIcon = () => {
     </View>
   );
 };
+
+export const UploadIcon = () => {
+  const {theme} = useStyles();
+  return (
+    <View>
+      <Svg
+        viewBox="0 0 15 15"
+        fill="none"
+        width={theme.typography.sizes.text}
+        height={theme.typography.sizes.text}>
+        <Path
+          d="M7.5 1.5l3.25 3m-3.25-3l-3 3m3-3V11m6-4v6.5h-12V7"
+          stroke={theme.colors.dark}
+        />
+      </Svg>
+    </View>
+  );
+};

@@ -12,10 +12,15 @@ import {wordObj} from './types';
 import {useFocusEffect} from '@react-navigation/native';
 import {useAddButtonContext} from './contexts/headerContext';
 import {WordsHeader} from './components/headers';
+import UploadFile from './components/UploadFile';
 
 type WordsProps = NativeStackScreenProps<AppStackParamList, 'Words'>;
 
 const WordScreen = ({route, navigation}: WordsProps) => {
+  const uniqueDeckName = route.params.uniqueDeckName;
+  //console.log('uniqueDeckName', uniqueDeckName);
+  const uniqueFolderName = route.params.uniqueFolderName;
+
   const emptyCard = {
     deckID: -1,
     definition: '',
@@ -89,7 +94,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   const deleteCard = async (id: number, deckId: number) => {
     console.log(data);
     if (deckId !== -1) {
-      await deleteEntryInDeck(route.params.uniqueDeckName, id);
+      await deleteEntryInDeck(uniqueDeckName, id);
       const newData = data.filter(card => card.id !== id);
       setData(newData);
       // delete empty card
@@ -109,11 +114,8 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   };
   // TODO differentiate between new and old cards
   const onSave = async () => {
-    if (route.params.uniqueDeckName === '') {
-      const uniqueDeckName = createDeck(
-        text,
-        route.params.uniqueFolderName,
-      ) as string;
+    if (uniqueDeckName === '') {
+      const newUniqueDeckName = createDeck(text, uniqueFolderName) as string;
       for (const item of data) {
         if (item.term && item.definition) {
           await addCardToDatabase({
@@ -121,8 +123,8 @@ const WordScreen = ({route, navigation}: WordsProps) => {
             definition: item.definition,
             id: item.id,
             deckId: item.deckID,
-            uniqueDeckName: uniqueDeckName,
-            uniqueFolderName: route.params.uniqueFolderName,
+            uniqueDeckName: newUniqueDeckName,
+            uniqueFolderName: uniqueFolderName,
           });
         }
       }
@@ -134,17 +136,13 @@ const WordScreen = ({route, navigation}: WordsProps) => {
             definition: item.definition,
             id: item.id,
             deckId: item.deckID,
-            uniqueDeckName: route.params.uniqueDeckName,
-            uniqueFolderName: route.params.uniqueFolderName,
+            uniqueDeckName: uniqueDeckName,
+            uniqueFolderName: uniqueFolderName,
           });
         }
       }
 
-      await changeDeckName(
-        route.params.uniqueFolderName,
-        text,
-        route.params.uniqueDeckName,
-      );
+      await changeDeckName(uniqueFolderName, text, uniqueDeckName);
     }
     navigation.goBack();
   };
@@ -156,8 +154,8 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         term={item.term}
         definition={item.definition}
         id={item.id}
-        uniqueDeckName={route.params.uniqueDeckName}
-        uniqueFolderName={route.params.uniqueFolderName}
+        uniqueDeckName={uniqueDeckName}
+        uniqueFolderName={uniqueFolderName}
         deleteFunction={() => deleteCard(item.id, item.deckID)}
         updateCard={updateCard}
       />
@@ -181,6 +179,14 @@ const WordScreen = ({route, navigation}: WordsProps) => {
           data={data}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
+          ListHeaderComponent={
+            <UploadFile
+              previousData={data}
+              setData={setData}
+              uniqueDeckName={uniqueDeckName}
+              uniqueFolderName={uniqueFolderName}
+            />
+          }
         />
       </SafeAreaView>
     </View>
@@ -200,6 +206,7 @@ const stylesheet = createStyleSheet(theme => ({
     fontWeight: '400',
     borderBottomWidth: 1.5,
     borderColor: theme.colors.dark,
+    marginBottom: 20,
   },
   list: {
     alignItems: 'center',
