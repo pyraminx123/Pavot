@@ -38,7 +38,7 @@ const HomeScreen = ({navigation}: HomeProps) => {
   );
 
   const navigateToDecksScreen = (folder: folderInfo) => {
-    console.log('folder', folder);
+    //console.log('folder', folder);
     navigation.navigate('Deck', folder);
   };
 

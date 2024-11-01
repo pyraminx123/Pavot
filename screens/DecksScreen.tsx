@@ -47,7 +47,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
   useFocusEffect(
     useCallback(() => {
       setHandleAddPress(() => {
-        console.log('DeckScreen Add Action');
+        //console.log('DeckScreen Add Action');
         const emptyCard = {} as wordObj[];
         navigation.navigate('Words', {
           data: emptyCard,

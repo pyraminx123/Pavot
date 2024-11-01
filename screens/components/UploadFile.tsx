@@ -7,12 +7,7 @@ import {pick, types} from 'react-native-document-picker';
 import RNFS from 'react-native-fs';
 import {wordObj} from '../types';
 
-const UploadFile = (props: {
-  previousData: wordObj[];
-  setData: Function;
-  uniqueFolderName: string;
-  uniqueDeckName: string;
-}) => {
+const UploadFile = (props: {previousData: wordObj[]; setData: Function}) => {
   const {styles} = useStyles(stylesheet);
   const [fileContent, setFileContent] = useState('');
   const handleUpload = async () => {

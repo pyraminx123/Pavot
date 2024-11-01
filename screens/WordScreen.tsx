@@ -67,7 +67,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   useFocusEffect(
     useCallback(() => {
       setHandleAddPress(() => {
-        console.log('WordScreen Add Action');
+        //console.log('WordScreen Add Action');
         setData(prevData => {
           const newEmptyCard = {
             deckID: -1,
@@ -92,7 +92,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   );
 
   const deleteCard = async (id: number, deckId: number) => {
-    console.log(data);
+    //console.log(data);
     if (deckId !== -1) {
       await deleteEntryInDeck(uniqueDeckName, id);
       const newData = data.filter(card => card.id !== id);
@@ -180,12 +180,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
           renderItem={renderItem}
           contentContainerStyle={styles.list}
           ListHeaderComponent={
-            <UploadFile
-              previousData={data}
-              setData={setData}
-              uniqueDeckName={uniqueDeckName}
-              uniqueFolderName={uniqueFolderName}
-            />
+            <UploadFile previousData={data} setData={setData} />
           }
         />
       </SafeAreaView>

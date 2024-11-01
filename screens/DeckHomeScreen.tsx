@@ -17,7 +17,7 @@ import {useFocusEffect} from '@react-navigation/native';
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
 const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
-  const {setCurrentIndex} = useLearningModeContext();
+  const {setCurrentIndex, setIsButtonPressed} = useLearningModeContext();
   const originalDeckName = route.params.flashcardParams.originalDeckName;
   const uniqueDeckName = route.params.flashcardParams.uniqueDeckName;
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
@@ -38,7 +38,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   useFocusEffect(
     useCallback(() => {
       setHandleAddPress(() => {
-        console.log('DeckHomeScreen Add Action');
+        //console.log('DeckHomeScreen Add Action');
         const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
         navigation.navigate('Words', {
           data,
@@ -62,6 +62,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const navigateToLearningModeScreen = () => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     setCurrentIndex(0);
+    setIsButtonPressed(false);
     navigation.navigate('LearningMode', {
       flashcardParams: {
         data,
@@ -107,9 +108,19 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     //console.log(item);
     return (
       <View style={[styles.wordContainer, {backgroundColor: backgroundColor}]}>
-        <Text style={[styles.textLeft, {color: textColor}]}>{item.term}</Text>
+        <Text
+          style={[styles.textLeft, {color: textColor}]}
+          numberOfLines={2}
+          lineBreakMode="tail"
+          allowFontScaling={true}>
+          {item.term}
+        </Text>
         <Text style={[styles.middleLine, {color: textColor}]}>|</Text>
-        <Text style={[styles.textRight, {color: textColor}]}>
+        <Text
+          style={[styles.textRight, {color: textColor}]}
+          numberOfLines={2}
+          lineBreakMode="tail"
+          allowFontScaling={true}>
           {item.definition}
         </Text>
       </View>
@@ -147,7 +158,11 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
         </View>
       </View>
       <View>
-        <FlatList data={initialData} renderItem={renderItem} />
+        <FlatList
+          contentContainerStyle={styles.list}
+          data={initialData}
+          renderItem={renderItem}
+        />
       </View>
     </View>
   );
@@ -188,8 +203,8 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: theme.colors.light,
     margin: 5,
     borderRadius: 10,
-    width: 300,
-    height: 50,
+    width: 320,
+    paddingVertical: 15,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -200,20 +215,25 @@ const stylesheet = createStyleSheet(theme => ({
     fontWeight: '200',
     left: 10,
     position: 'absolute',
+    width: '45%',
   },
   textRight: {
     fontSize: theme.typography.sizes.smallText,
     color: theme.colors.dark,
     fontFamily: theme.typography.fontFamily,
     fontWeight: '200',
-    right: 10,
+    left: '55%',
     position: 'absolute',
+    width: '40%',
   },
   middleLine: {
     fontSize: theme.typography.sizes.text,
     color: theme.colors.dark,
     fontFamily: theme.typography.fontFamily,
     fontWeight: '100',
+  },
+  list: {
+    paddingBottom: 300,
   },
 }));
 

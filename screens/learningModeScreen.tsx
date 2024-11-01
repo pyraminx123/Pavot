@@ -19,9 +19,9 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const now = new Date();
   const allWords = route.params.flashcardParams.data;
-  console.log(allWords);
+  //console.log(allWords);
   const dueCards = allWords.filter(card => new Date(card.due) <= now);
-  console.log(dueCards);
+  //console.log(dueCards);
   const allDefs = allWords.map(word => word.definition);
   //console.log(allDefs);
   const originalDeckName = route.params.flashcardParams.originalDeckName;
@@ -29,11 +29,6 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, isButtonPressed, setIsButtonPressed} =
     useLearningModeContext();
-  useEffect(() => {
-    if (currentIndex === 0) {
-      setIsButtonPressed(false);
-    }
-  }, [currentIndex, setIsButtonPressed]);
 
   // with the help of chatGPT
   useEffect(() => {
@@ -90,6 +85,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     };
     const updatedWordObj = updatedAllWords[currentIndex];
     //console.log(updatedWordObj, currentIndex);
+    console.log(isButtonPressed, updatedAllWords.length);
     // TODO navigate to empty screen to add Words
     if (updatedAllWords.length > 0 && isButtonPressed === true) {
       if ((updatedWordObj.state as unknown as string) === 'New') {
@@ -129,13 +125,13 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   return (
     <View style={styles.container}>
       <Text>{textDueWords}</Text>
-      {dueCards.map((word, index) => {
+      {/* {dueCards.map((word, index) => {
         return (
           <View key={index}>
             <Text>{word.term}</Text>
           </View>
         );
-      })}
+      })} */}
       <Pressable style={styles.button} onPress={() => setIsButtonPressed(true)}>
         <Text style={styles.text}>Start</Text>
       </Pressable>
