@@ -29,6 +29,16 @@ const baseTheme = {
       return array;
     },
   },
+  baseColors: {
+    green: '#0F7F07',
+    red: '#CF0707',
+    redLight: '#FFB0B0',
+    redDark: '#C04E4E',
+    yellowLight: '#F9EDC5',
+    yellowDark: '#8A7C28',
+    greenLight: '#C2E8A2',
+    greenDark: '#335536',
+  },
 };
 
 export const blueTheme = {

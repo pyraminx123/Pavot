@@ -85,25 +85,17 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
       maturityLevel: string;
     };
   }) => {
-    const colors = {
-      redLight: '#F0CACA',
-      redDark: '#C04E4E',
-      yellowLight: '#F9EDC5',
-      yellowDark: '#8A7C28',
-      greenLight: '#C2E8A2',
-      greenDark: '#335536',
-    };
     let backgroundColor = '';
     let textColor = '';
     if (item.maturityLevel === 'Difficult') {
-      backgroundColor = colors.redLight;
-      textColor = colors.redDark;
+      backgroundColor = theme.baseColors.redLight;
+      textColor = theme.baseColors.redDark;
     } else if (item.maturityLevel === 'Easy') {
-      backgroundColor = colors.greenLight;
-      textColor = colors.greenDark;
+      backgroundColor = theme.baseColors.greenLight;
+      textColor = theme.baseColors.greenDark;
     } else {
-      backgroundColor = colors.yellowLight;
-      textColor = colors.yellowDark;
+      backgroundColor = theme.baseColors.yellowLight;
+      textColor = theme.baseColors.yellowDark;
     }
     //console.log(item);
     return (
@@ -129,7 +121,6 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   return (
     <View style={styles.container}>
       <Text>Chart pie</Text>
-
       <View style={styles.allButtonsContainer}>
         <View style={styles.buttonContainer}>
           <Pressable
