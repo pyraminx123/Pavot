@@ -1,14 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Pressable, Text, View} from 'react-native';
+import {Pressable, Text, View, Switch} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import {retrieveDataFromTable} from './handleData';
+import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {wordObj} from './types';
+import {Parrot} from './components/icons';
 
 type LearningModeProps = NativeStackScreenProps<
   AppStackParamList,
@@ -29,6 +31,10 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, isButtonPressed, setIsButtonPressed} =
     useLearningModeContext();
+  const dateToday = new Date();
+  // TODO save this info to the database
+  const [date, setDate] = useState(new Date());
+  const [isSwitchOn, setIsSwitchOn] = useState(false);
 
   // with the help of chatGPT
   useEffect(() => {
@@ -100,19 +106,21 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
           updatedWordObj.definition,
         ]);
         //console.log('rand', otherRandomDefs, 'with', defsWithTerm);
-        navigation.navigate('SingleChoice', {
+        const params = {
           term: updatedWordObj.term,
           correctDef: updatedWordObj.definition,
           otherDefs: defsWithTerm,
           originalDeckName: originalDeckName,
           flashcardParams: updatedFlashcardParams,
           uniqueFolderName: route.params.uniqueFolderName,
-        });
+        };
+        navigation.navigate('HiddenTabStack', {screen: 'SingleChoice', params});
       } else {
-        navigation.navigate('Write', {
+        const params = {
           flashcardParams: updatedFlashcardParams,
           uniqueFolderName: route.params.uniqueFolderName,
-        });
+        };
+        navigation.navigate('HiddenTabStack', {screen: 'Write', params});
       }
     }
   }, [allWords, currentIndex, isButtonPressed]);
@@ -125,16 +133,45 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   return (
     <View style={styles.container}>
       <Text>{textDueWords}</Text>
-      {/* {dueCards.map((word, index) => {
-        return (
-          <View key={index}>
-            <Text>{word.term}</Text>
+      <View style={styles.settingWhole}>
+        <View
+          style={[
+            styles.settingExam,
+            isSwitchOn ? styles.bordersSwitchOn : styles.bordersSwitchOff,
+          ]}>
+          <Text style={styles.settingText}>Set exam date</Text>
+          <Switch
+            trackColor={{
+              false: theme.baseColors.red,
+              true: theme.baseColors.green,
+            }}
+            ios_backgroundColor={theme.baseColors.red}
+            onValueChange={() => {
+              setIsSwitchOn(!isSwitchOn);
+            }}
+            value={isSwitchOn}
+          />
+        </View>
+        {isSwitchOn && (
+          <View style={styles.settingDate}>
+            <RNDateTimePicker
+              value={date}
+              minimumDate={dateToday}
+              mode="date"
+              display="default"
+              onChange={(event, selectedDate) => {
+                const currentDate = selectedDate || date;
+                setDate(currentDate);
+              }}
+              themeVariant="light"
+            />
           </View>
-        );
-      })} */}
+        )}
+      </View>
       <Pressable style={styles.button} onPress={() => setIsButtonPressed(true)}>
         <Text style={styles.text}>Start</Text>
       </Pressable>
+      <Parrot />
     </View>
   );
 };
@@ -157,6 +194,40 @@ const stylesheet = createStyleSheet(theme => ({
     width: 150,
     alignItems: 'center',
     backgroundColor: theme.colors.dark,
+  },
+  bordersSwitchOn: {
+    borderTopRightRadius: 10,
+    borderTopLeftRadius: 10,
+  },
+  bordersSwitchOff: {
+    borderRadius: 10,
+  },
+  settingWhole: {
+    marginVertical: 10,
+  },
+  settingExam: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: theme.colors.light,
+    width: 330,
+    padding: 10,
+    justifyContent: 'space-between',
+  },
+  settingText: {
+    color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.sizes.smallText,
+    fontWeight: '200',
+  },
+  settingDate: {
+    width: 330,
+    alignItems: 'center',
+    backgroundColor: theme.colors.light,
+    padding: 10,
+    borderBottomRightRadius: 10,
+    borderBottomLeftRadius: 10,
+    borderBlockColor: theme.colors.dark,
+    borderTopWidth: 1.5,
   },
 }));
 
