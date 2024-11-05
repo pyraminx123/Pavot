@@ -1,15 +1,22 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useEffect, useLayoutEffect, useState, useRef} from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+  useCallback,
+} from 'react';
 import {View, Text, TextInput, Pressable} from 'react-native';
-import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {useLearningModeContext} from './contexts/LearningModeContext';
-import {RightArrow} from './components/icons';
+import {Parrot, RightArrow} from './components/icons';
 import algorithm from './algo';
 import {wordObj} from './types';
+import {AppStackParamList} from '../App';
+import {useFocusEffect} from '@react-navigation/native';
 
 type WriteProps = NativeStackScreenProps<AppStackParamList, 'Write'>;
 
@@ -23,6 +30,16 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   const def = currentWordObj.definition;
   const [text, onChangeText] = useState('');
   const textInputRef = useRef<TextInput>(null);
+
+  // Reset text and ref each time the screen is focused
+  useFocusEffect(
+    useCallback(() => {
+      onChangeText('');
+      if (textInputRef.current) {
+        textInputRef.current.focus();
+      }
+    }, [currentIndex]),
+  );
 
   const getCurrentPer = (words: wordObj[]) => {
     return {
@@ -102,9 +119,12 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
     } else {
       setCurrentIndex(0);
     }
-    navigation.navigate('LearningMode', {
-      flashcardParams: route.params.flashcardParams,
-      uniqueFolderName: route.params.uniqueFolderName,
+    navigation.navigate('HiddenTabStack', {
+      screen: 'LearningMode',
+      params: {
+        flashcardParams,
+        uniqueFolderName: route.params.uniqueFolderName,
+      },
     });
   };
 
@@ -137,6 +157,9 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
         <Pressable style={styles.arrow} onPress={() => checkWord(text)}>
           <RightArrow />
         </Pressable>
+      </View>
+      <View style={styles.parrot}>
+        <Parrot />
       </View>
     </View>
   );
@@ -191,6 +214,11 @@ const stylesheet = createStyleSheet(theme => ({
   arrow: {
     position: 'absolute',
     bottom: 0,
+    right: 0,
+  },
+  parrot: {
+    position: 'absolute',
+    bottom: -25,
     right: 0,
   },
 }));

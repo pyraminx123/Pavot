@@ -8,11 +8,14 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import Flashcard from './components/Flashcard';
 
 import type {NativeStackScreenProps} from '@react-navigation/native-stack';
-import type {AppStackParamList} from '../App';
+import type {HiddenTabStackParamList} from '../App';
 import type {wordObj} from './types';
 import {CloseHeader} from './components/headers';
 
-type FlashcardsProps = NativeStackScreenProps<AppStackParamList, 'Flashcards'>;
+type FlashcardsProps = NativeStackScreenProps<
+  HiddenTabStackParamList,
+  'Flashcards'
+>;
 
 // ?? props need to be updated, maybe in the future add example sentences
 // use useState and useEffect to update props

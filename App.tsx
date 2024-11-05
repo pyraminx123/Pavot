@@ -1,6 +1,9 @@
 /* eslint-disable react/no-unstable-nested-components */
 import React from 'react';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  NavigatorScreenParams,
+} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
@@ -63,16 +66,23 @@ interface writeParams {
   uniqueFolderName: string;
 }
 
+export type HiddenTabStackParamList = {
+  Flashcards: flashcardParams;
+  Write: writeParams;
+  SingleChoice: singleChoiceParams;
+  LearningMode: learningModeParams;
+};
+
 // parameters that are passed
 export type AppStackParamList = {
   Home: undefined;
-  Flashcards: flashcardParams;
   Deck: folderInfo;
   Words: wordScreenParams;
   DeckHome: deckHomeParams;
   LearningMode: learningModeParams;
   SingleChoice: singleChoiceParams;
   Write: writeParams;
+  HiddenTabStack: NavigatorScreenParams<HiddenTabStackParamList>;
 };
 
 export type AppTabParamList = {
@@ -82,6 +92,27 @@ export type AppTabParamList = {
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
 const Tab = createBottomTabNavigator<AppTabParamList>();
+const RootStack = createNativeStackNavigator();
+const HiddenTabStack = createNativeStackNavigator<HiddenTabStackParamList>();
+
+const HiddenTabStackScreen = () => {
+  return (
+    <LearningModeProvider>
+      <HiddenTabStack.Navigator>
+        <HiddenTabStack.Screen name="Flashcards" component={FlashcardsScreen} />
+        <HiddenTabStack.Screen name="Write" component={WriteScreen} />
+        <HiddenTabStack.Screen
+          name="SingleChoice"
+          component={SingleChoiceScreen}
+        />
+        <HiddenTabStack.Screen
+          name="LearningMode"
+          component={LearningModeScreen}
+        />
+      </HiddenTabStack.Navigator>
+    </LearningModeProvider>
+  );
+};
 
 // TODO update animation
 const HomeStackScreen = () => {
@@ -93,7 +124,6 @@ const HomeStackScreen = () => {
           component={HomeScreen}
           options={{headerShown: false}}
         />
-        <Stack.Screen name="Flashcards" component={FlashcardsScreen} />
         <Stack.Screen name="Deck" component={DecksScreen} />
         <Stack.Screen
           name="Words"
@@ -102,7 +132,6 @@ const HomeStackScreen = () => {
         />
         <Stack.Screen name="DeckHome" component={DeckHomeScreen} />
         <Stack.Group screenOptions={{animation: 'slide_from_right'}}>
-          <Stack.Screen name="LearningMode" component={LearningModeScreen} />
           <Stack.Screen name="SingleChoice" component={SingleChoiceScreen} />
           <Stack.Screen name="Write" component={WriteScreen} />
         </Stack.Group>
@@ -112,38 +141,55 @@ const HomeStackScreen = () => {
 };
 
 // TODO bug: when first opening the app the house is not solid
-const App = () => {
+const Tabs = () => {
   return (
     <AddButtonProvider>
-      <NavigationContainer>
-        <Tab.Navigator
-          screenOptions={{headerShown: false}}
-          tabBar={({navigation}) => {
-            // with the help of chatGPT
-            const {routes, index} = navigation.getState();
-            let currentRouteName = routes[index].name;
-            if (currentRouteName === 'BigHome') {
-              const stateIndex = routes[index].state?.index;
-              if (stateIndex !== 0) {
-                currentRouteName = 'Other';
-              }
+      <Tab.Navigator
+        screenOptions={{headerShown: false}}
+        tabBar={({navigation}) => {
+          // with the help of chatGPT
+          const {routes, index} = navigation.getState();
+          let currentRouteName = routes[index].name;
+          if (currentRouteName === 'BigHome') {
+            const stateIndex = routes[index].state?.index;
+            if (stateIndex !== 0) {
+              currentRouteName = 'Other';
             }
-            //console.log(routes[index]);
-            return (
-              <BottomTab
-                onPressHome={() => navigation.navigate('Home')}
-                onPressSettings={() => navigation.navigate('Settings')}
-                screenFocused={
-                  currentRouteName as 'BigHome' | 'Settings' | 'Other'
-                }
-              />
-            );
-          }}>
-          <Tab.Screen name="BigHome" component={HomeStackScreen} />
-          <Tab.Screen name="Settings" component={SettingsScreen} />
-        </Tab.Navigator>
-      </NavigationContainer>
+          }
+          //console.log(routes[index]);
+          return (
+            <BottomTab
+              onPressHome={() => navigation.navigate('Home')}
+              onPressSettings={() => navigation.navigate('Settings')}
+              screenFocused={
+                currentRouteName as 'BigHome' | 'Settings' | 'Other'
+              }
+            />
+          );
+        }}>
+        <Tab.Screen name="BigHome" component={HomeStackScreen} />
+        <Tab.Screen name="Settings" component={SettingsScreen} />
+      </Tab.Navigator>
     </AddButtonProvider>
+  );
+};
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <RootStack.Navigator>
+        <RootStack.Screen
+          name="MainTabs"
+          component={Tabs}
+          options={{headerShown: false}}
+        />
+        <RootStack.Screen
+          name="HiddenTabStack"
+          component={HiddenTabStackScreen}
+          options={{headerShown: false}}
+        />
+      </RootStack.Navigator>
+    </NavigationContainer>
   );
 };
 

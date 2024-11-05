@@ -15,14 +15,17 @@ import {
 import '../i18n.config';
 //import {useTranslation} from 'react-i18next';
 
-import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList, folderInfo} from '../App';
 import {useAddButtonContext} from './contexts/headerContext';
-import {useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 
-type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
+type HomeScreenProps = NativeStackNavigationProp<AppStackParamList, 'Home'>;
 
-const HomeScreen = ({navigation}: HomeProps) => {
+//type HomeProps = NativeStackScreenProps<AppStackParamList, 'Home'>;
+
+const HomeScreen = () => {
+  const navigation = useNavigation<HomeScreenProps>();
   const {styles} = useStyles(stylesheet);
   const {setHandleAddPress} = useAddButtonContext();
   createFoldersTable();

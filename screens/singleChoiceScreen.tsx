@@ -2,7 +2,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
-import React, {useEffect, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {View, Text, Pressable} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
@@ -10,10 +10,19 @@ import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import algorithm from './algo';
 import {wordObj} from './types';
+import {useFocusEffect} from '@react-navigation/native';
 
 const ChoiceContainer = (props: {text: string; onPress: Function}) => {
   const [isSelected, setIsSelected] = useState(false);
   const {styles, theme} = useStyles(stylesheet);
+  const {currentIndex} = useLearningModeContext();
+
+  useFocusEffect(
+    useCallback(() => {
+      setIsSelected(false);
+    }, [currentIndex]),
+  );
+
   return (
     <Pressable
       style={[
@@ -120,9 +129,12 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     } else {
       setCurrentIndex(0);
     }
-    navigation.navigate('LearningMode', {
-      flashcardParams: flashcardParams,
-      uniqueFolderName: route.params.uniqueFolderName,
+    navigation.navigate('HiddenTabStack', {
+      screen: 'LearningMode',
+      params: {
+        flashcardParams,
+        uniqueFolderName: route.params.uniqueFolderName,
+      },
     });
   };
   return (
