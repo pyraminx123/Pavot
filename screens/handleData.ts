@@ -283,6 +283,7 @@ const updateCard = async (
   uniqueDeckName: string,
 ) => {
   try {
+    // TODO update maturityLevel
     let maturityLevel = 'Difficult';
     if (
       (newCardInfo.state as unknown as string) === 'New' ||
