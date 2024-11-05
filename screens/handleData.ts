@@ -46,6 +46,37 @@ const insertIntoAllFolders = async (folderName: string) => {
   }
 };
 
+const createSettingsTable = async () => {
+  try {
+    await db.execute(
+      `CREATE TABLE IF NOT EXISTS settings (
+        id INTEGER PRIMARY KEY,
+        theme TEXT
+      );`,
+    );
+    try {
+      // set default theme
+      await db.execute(
+        "INSERT OR IGNORE INTO settings (id, theme) VALUES (1, 'blue');",
+      );
+    } catch (error) {
+      console.error('Error inserting into settings table', error);
+    }
+  } catch (error) {
+    console.error('Error creating settings table', error);
+  }
+};
+
+const changeTheme = async (theme: string) => {
+  try {
+    await db.execute('UPDATE settings SET theme=? WHERE id=1;', [theme]);
+    console.log('Theme changed to', theme);
+    console.log('l', retrieveDataFromTable('settings'));
+  } catch (error) {
+    console.error('Error changing theme', error);
+  }
+};
+
 const createFolder = async (folderName: string) => {
   if (folderName.trim().length === 0) {
     console.log('Input is empty or whitespace, no folder was created');
@@ -396,6 +427,8 @@ const retrieveWordFromDeck = (uniqueDeckName: string, id: number): object => {
 export {
   generateUniqueTableName,
   createFoldersTable,
+  createSettingsTable,
+  changeTheme,
   createFolder,
   createDeck,
   changeDeckName,

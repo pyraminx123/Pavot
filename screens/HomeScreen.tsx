@@ -9,6 +9,7 @@ import {
   retrieveDataFromTable,
   createFoldersTable,
   generateUniqueTableName,
+  createSettingsTable,
 } from './handleData';
 
 // for translation
@@ -29,6 +30,7 @@ const HomeScreen = () => {
   const {styles} = useStyles(stylesheet);
   const {setHandleAddPress} = useAddButtonContext();
   createFoldersTable();
+  createSettingsTable();
   //insertIntoAllFolders('test');
   //const {t} = useTranslation() eg {t('HELLO')};
 

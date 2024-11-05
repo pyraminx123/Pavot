@@ -7,6 +7,7 @@ import {
   redTheme,
   pinkTheme,
 } from './themes';
+import {retrieveDataFromTable} from '../handleData';
 
 type AppBreakpoints = typeof breakpoints;
 type AppThemes = {
@@ -22,6 +23,11 @@ declare module 'react-native-unistyles' {
   export interface UnistylesThemes extends AppThemes {}
 }
 
+interface Settings {
+  id: number;
+  theme: 'blue' | 'green' | 'orange' | 'red' | 'pink';
+}
+
 UnistylesRegistry.addBreakpoints(breakpoints)
   .addThemes({
     blue: blueTheme,
@@ -31,5 +37,5 @@ UnistylesRegistry.addBreakpoints(breakpoints)
     pink: pinkTheme,
   })
   .addConfig({
-    initialTheme: 'blue',
+    initialTheme: (retrieveDataFromTable('settings') as Settings[])[0].theme,
   });

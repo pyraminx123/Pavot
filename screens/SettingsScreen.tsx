@@ -5,6 +5,7 @@ import {
   createStyleSheet,
   useStyles,
 } from 'react-native-unistyles';
+import {changeTheme, retrieveDataFromTable} from './handleData';
 
 const Circle = (props: {
   color: 'red' | 'green' | 'pink' | 'orange' | 'blue';
@@ -18,7 +19,12 @@ const Circle = (props: {
   };
   const {styles} = useStyles(stylesheet);
   return (
-    <Pressable onPress={() => UnistylesRuntime.setTheme(props.color)}>
+    <Pressable
+      onPress={() => {
+        UnistylesRuntime.setTheme(props.color);
+        changeTheme(props.color);
+        console.log(retrieveDataFromTable('settings'));
+      }}>
       <View style={[styles.circle, {backgroundColor: colors[props.color]}]} />
     </Pressable>
   );
