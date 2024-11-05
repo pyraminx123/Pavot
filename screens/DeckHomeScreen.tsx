@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {View, Text, Pressable, FlatList} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -13,6 +19,7 @@ import {useLearningModeContext} from './contexts/LearningModeContext';
 import {State} from 'ts-fsrs';
 import {useAddButtonContext} from './contexts/headerContext';
 import {useFocusEffect} from '@react-navigation/native';
+import {VictoryPie} from 'victory-native';
 
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
@@ -23,6 +30,40 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
   const {styles, theme} = useStyles(stylesheet);
   const {setHandleAddPress} = useAddButtonContext();
+  const [pieData, setPieData] = useState([
+    {x: 'Difficult', y: 0},
+    {x: 'Medium', y: 0},
+    {x: 'Easy', y: 0},
+  ]);
+  function hashMaturityLevels(data: wordObj[]) {
+    return data.map(item => item.maturityLevel).join('-');
+  }
+  const maturityLevelsHash = useMemo(
+    () => hashMaturityLevels(initialData),
+    [initialData],
+  );
+
+  useEffect(() => {
+    const newCounts = initialData.reduce(
+      (counts, item) => {
+        if (item.maturityLevel === 'Difficult') {
+          counts.Difficult++;
+        } else if (item.maturityLevel === 'Medium') {
+          counts.Medium++;
+        } else if (item.maturityLevel === 'Easy') {
+          counts.Easy++;
+        }
+        return counts;
+      },
+      {Difficult: 0, Medium: 0, Easy: 0},
+    );
+
+    setPieData([
+      {x: 'Difficult', y: newCounts.Difficult},
+      {x: 'Medium', y: newCounts.Medium},
+      {x: 'Easy', y: newCounts.Easy},
+    ]);
+  }, [maturityLevelsHash]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -52,10 +93,9 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
 
   const navigateToFlashcardsScreen = () => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
-    navigation.navigate('Flashcards', {
-      data,
-      originalDeckName,
-      uniqueDeckName,
+    navigation.navigate('HiddenTabStack', {
+      screen: 'Flashcards',
+      params: {data, originalDeckName, uniqueDeckName},
     });
   };
 
@@ -63,13 +103,13 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     setCurrentIndex(0);
     setIsButtonPressed(false);
-    navigation.navigate('LearningMode', {
-      flashcardParams: {
-        data,
-        originalDeckName,
-        uniqueDeckName,
+    const flashcardParams = {data, originalDeckName, uniqueDeckName};
+    navigation.navigate('HiddenTabStack', {
+      screen: 'LearningMode',
+      params: {
+        flashcardParams,
+        uniqueFolderName: route.params.uniqueFolderName,
       },
-      uniqueFolderName: route.params.uniqueFolderName,
     });
   };
 
@@ -120,7 +160,21 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   };
   return (
     <View style={styles.container}>
-      <Text>Chart pie</Text>
+      {initialData.length > 0 && (
+        <View style={styles.pie}>
+          <VictoryPie
+            data={pieData}
+            height={150}
+            labels={() => null}
+            colorScale={[
+              theme.baseColors.redLight,
+              theme.baseColors.yellowLight,
+              theme.baseColors.greenLight,
+            ]}
+            padding={{top: 0, bottom: 0}}
+          />
+        </View>
+      )}
       <View style={styles.allButtonsContainer}>
         <View style={styles.buttonContainer}>
           <Pressable
@@ -165,13 +219,17 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
   },
+  pie: {
+    marginTop: 10,
+    marginBottom: 10,
+  },
   button: {
     textAlign: 'left',
     width: 150,
     justifyContent: 'center',
     backgroundColor: theme.colors.light,
     padding: 10,
-    margin: 10,
+    margin: 5,
     borderRadius: 10,
     alignItems: 'center',
     flexWrap: 'wrap',
@@ -180,7 +238,7 @@ const stylesheet = createStyleSheet(theme => ({
     flexDirection: 'row',
   },
   allButtonsContainer: {
-    marginTop: 10,
+    marginBottom: 10,
     //justifyContent: 'space-around',
   },
   buttonText: {
@@ -224,7 +282,7 @@ const stylesheet = createStyleSheet(theme => ({
     fontWeight: '100',
   },
   list: {
-    paddingBottom: 300,
+    paddingBottom: 400,
   },
 }));
 
