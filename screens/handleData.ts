@@ -46,6 +46,7 @@ const insertIntoAllFolders = async (folderName: string) => {
   }
 };
 
+// TODO update structure
 const createSettingsTable = async () => {
   try {
     await db.execute(
