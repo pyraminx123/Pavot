@@ -24,6 +24,7 @@ import SingleChoiceScreen from './screens/singleChoiceScreen.tsx';
 import {LearningModeProvider} from './screens/contexts/LearningModeContext.tsx';
 import WriteScreen from './screens/WriteScreen.tsx';
 import {AddButtonProvider} from './screens/contexts/headerContext.tsx';
+import AddFolderScreen from './screens/AddFolderScreen.tsx';
 
 export interface folderInfo {
   folderID: number;
@@ -66,11 +67,18 @@ interface writeParams {
   uniqueFolderName: string;
 }
 
+interface addFolderParams {
+  uniqueFolderName: string;
+  originalFolderName: string;
+}
+
 export type HiddenTabStackParamList = {
   Flashcards: flashcardParams;
   Write: writeParams;
   SingleChoice: singleChoiceParams;
   LearningMode: learningModeParams;
+  AddFolder: addFolderParams;
+  Home: undefined;
 };
 
 // parameters that are passed
@@ -88,6 +96,7 @@ export type AppStackParamList = {
 export type AppTabParamList = {
   BigHome: undefined;
   Settings: undefined;
+  HiddenTabStack: NavigatorScreenParams<HiddenTabStackParamList>;
 };
 
 const Stack = createNativeStackNavigator<AppStackParamList>();
@@ -109,6 +118,7 @@ const HiddenTabStackScreen = () => {
           name="LearningMode"
           component={LearningModeScreen}
         />
+        <HiddenTabStack.Screen name="AddFolder" component={AddFolderScreen} />
       </HiddenTabStack.Navigator>
     </LearningModeProvider>
   );
@@ -150,8 +160,9 @@ const Tabs = () => {
           // with the help of chatGPT
           const {routes, index} = navigation.getState();
           let currentRouteName = routes[index].name;
+          console.log(currentRouteName);
           if (currentRouteName === 'BigHome') {
-            const stateIndex = routes[index].state?.index;
+            const stateIndex = routes[index].state?.index ?? 0;
             if (stateIndex !== 0) {
               currentRouteName = 'Other';
             }

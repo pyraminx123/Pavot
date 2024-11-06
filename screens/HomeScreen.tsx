@@ -1,14 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {View, Text, Pressable, SafeAreaView, FlatList} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Folder} from './components/Folder';
-import AddFolder from './components/addFolder';
 import {
   retrieveDataFromTable,
   createFoldersTable,
-  generateUniqueTableName,
   createSettingsTable,
 } from './handleData';
 
@@ -36,8 +34,12 @@ const HomeScreen = () => {
 
   useFocusEffect(
     useCallback(() => {
+      fetchFolders();
       setHandleAddPress(() => {
-        console.log('HomeScreen Add Action');
+        navigation.navigate('HiddenTabStack', {
+          screen: 'AddFolder',
+          params: {uniqueFolderName: '', originalFolderName: ''},
+        });
       });
     }, []),
   );
@@ -61,41 +63,25 @@ const HomeScreen = () => {
       const folders = (await retrieveDataFromTable(
         'allFolders',
       )) as allFoldersArray[];
-      setAllFolders([
-        ...folders,
-        {
-          folderID: -1,
-          originalFolderName: 'AddFolder',
-          uniqueFolderName: generateUniqueTableName('AddFolder'),
-        },
-      ]);
+      setAllFolders(folders);
     } catch (error) {
       console.error('Error fetching folders', error);
     }
   };
 
-  useEffect(() => {
-    fetchFolders();
-  }, []);
-
   //console.log(allFolders, 'all folders');
 
   // Folder component inside a Pressable
-  // varable has to be named item
   const renderItem = ({item}: {item: allFoldersArray}) => {
-    if (item.folderID === -1) {
-      return <AddFolder onFolderAdded={fetchFolders} />;
-    } else {
-      return (
-        <Pressable onPress={() => navigateToDecksScreen(item)}>
-          <Folder
-            name={item.originalFolderName}
-            fetchFolders={fetchFolders}
-            folderID={item.folderID}
-          />
-        </Pressable>
-      );
-    }
+    return (
+      <Pressable onPress={() => navigateToDecksScreen(item)}>
+        <Folder
+          name={item.originalFolderName}
+          fetchFolders={fetchFolders}
+          folderID={item.folderID}
+        />
+      </Pressable>
+    );
   };
 
   return (

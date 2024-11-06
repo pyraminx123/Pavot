@@ -1,4 +1,5 @@
-import React from 'react';
+/* eslint-disable react-hooks/exhaustive-deps */
+import React, {useCallback} from 'react';
 import {View, Text, ScrollView, Pressable} from 'react-native';
 import {
   UnistylesRuntime,
@@ -6,6 +7,10 @@ import {
   useStyles,
 } from 'react-native-unistyles';
 import {changeTheme, retrieveDataFromTable} from './handleData';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
+import {NativeStackNavigationProp} from '@react-navigation/native-stack';
+import {AppTabParamList} from '../App';
+import {useAddButtonContext} from './contexts/headerContext';
 
 const Circle = (props: {
   color: 'red' | 'green' | 'pink' | 'orange' | 'blue';
@@ -30,8 +35,28 @@ const Circle = (props: {
   );
 };
 
+type SettingsScreenProps = NativeStackNavigationProp<
+  AppTabParamList,
+  'Settings'
+>;
+
 const SettingsScreen = () => {
+  const navigation = useNavigation<SettingsScreenProps>();
+  const {setHandleAddPress} = useAddButtonContext();
   const {styles, theme} = useStyles(stylesheet);
+
+  useFocusEffect(
+    useCallback(() => {
+      //fetchFolders();
+      setHandleAddPress(() => {
+        navigation.navigate('HiddenTabStack', {
+          screen: 'AddFolder',
+          params: {uniqueFolderName: '', originalFolderName: ''},
+        });
+      });
+    }, []),
+  );
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Settings</Text>
