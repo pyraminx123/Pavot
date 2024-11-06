@@ -51,14 +51,14 @@ const createSettingsTable = async () => {
   try {
     await db.execute(
       `CREATE TABLE IF NOT EXISTS settings (
-        id INTEGER PRIMARY KEY,
-        theme TEXT
+        settingName TEXT PRIMARY KEY,
+        settingValue TEXT
       );`,
     );
     try {
       // set default theme
       await db.execute(
-        "INSERT OR IGNORE INTO settings (id, theme) VALUES (1, 'blue');",
+        "INSERT OR IGNORE INTO settings (settingName, settingValue) VALUES ('theme', 'blue');",
       );
     } catch (error) {
       console.error('Error inserting into settings table', error);
@@ -70,9 +70,11 @@ const createSettingsTable = async () => {
 
 const changeTheme = async (theme: string) => {
   try {
-    await db.execute('UPDATE settings SET theme=? WHERE id=1;', [theme]);
-    console.log('Theme changed to', theme);
-    console.log('l', retrieveDataFromTable('settings'));
+    await db.execute(
+      'UPDATE settings SET settingValue=? WHERE settingName="theme";',
+      [theme],
+    );
+    //console.log('Theme changed to', theme);
   } catch (error) {
     console.error('Error changing theme', error);
   }

@@ -24,9 +24,11 @@ declare module 'react-native-unistyles' {
 }
 
 interface Settings {
-  id: number;
-  theme: 'blue' | 'green' | 'orange' | 'red' | 'pink';
+  settingName: string;
+  settingValue: string;
 }
+
+const settings = retrieveDataFromTable('settings') as Settings[];
 
 UnistylesRegistry.addBreakpoints(breakpoints)
   .addThemes({
@@ -37,5 +39,5 @@ UnistylesRegistry.addBreakpoints(breakpoints)
     pink: pinkTheme,
   })
   .addConfig({
-    initialTheme: (retrieveDataFromTable('settings') as Settings[])[0].theme,
+    initialTheme: settings[0].settingValue as keyof AppThemes,
   });
