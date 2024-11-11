@@ -16,7 +16,6 @@ import {MainHeader} from './components/headers';
 import {retrieveDataFromTable} from './handleData';
 import {wordObj} from './types';
 import {useLearningModeContext} from './contexts/LearningModeContext';
-import {State} from 'ts-fsrs';
 import {useAddButtonContext} from './contexts/headerContext';
 import {useFocusEffect} from '@react-navigation/native';
 import {VictoryPie} from 'victory-native';
@@ -114,17 +113,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   };
 
   // TODO define maturity level in database
-  const renderItem = ({
-    item,
-  }: {
-    item: {
-      term: string;
-      definition: string;
-      stability: number;
-      state: State;
-      maturityLevel: string;
-    };
-  }) => {
+  const renderItem = ({item}: {item: wordObj}) => {
     let backgroundColor = '';
     let textColor = '';
     if (item.maturityLevel === 'Difficult') {
@@ -137,9 +126,16 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
       backgroundColor = theme.baseColors.yellowLight;
       textColor = theme.baseColors.yellowDark;
     }
-    //console.log(item);
+
     return (
-      <View style={[styles.wordContainer, {backgroundColor: backgroundColor}]}>
+      <Pressable
+        style={[styles.wordContainer, {backgroundColor: backgroundColor}]}
+        onPress={() => {
+          navigation.navigate('HiddenTabStack', {
+            screen: 'WordInfo',
+            params: {wordObj: item, uniqueDeckName},
+          });
+        }}>
         <Text
           style={[styles.textLeft, {color: textColor}]}
           numberOfLines={2}
@@ -155,7 +151,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
           allowFontScaling={true}>
           {item.definition}
         </Text>
-      </View>
+      </Pressable>
     );
   };
   return (

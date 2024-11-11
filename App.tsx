@@ -25,6 +25,7 @@ import {LearningModeProvider} from './screens/contexts/LearningModeContext.tsx';
 import WriteScreen from './screens/WriteScreen.tsx';
 import {AddButtonProvider} from './screens/contexts/headerContext.tsx';
 import AddFolderScreen from './screens/AddFolderScreen.tsx';
+import WordInfoScreen from './screens/WordInfo.tsx';
 
 export interface folderInfo {
   folderID: number;
@@ -72,12 +73,18 @@ interface addFolderParams {
   originalFolderName: string;
 }
 
+interface wordInfoParams {
+  wordObj: wordObj;
+  uniqueDeckName: string;
+}
+
 export type HiddenTabStackParamList = {
   Flashcards: flashcardParams;
   Write: writeParams;
   SingleChoice: singleChoiceParams;
   LearningMode: learningModeParams;
   AddFolder: addFolderParams;
+  WordInfo: wordInfoParams;
   Home: undefined;
 };
 
@@ -119,6 +126,7 @@ const HiddenTabStackScreen = () => {
           component={LearningModeScreen}
         />
         <HiddenTabStack.Screen name="AddFolder" component={AddFolderScreen} />
+        <HiddenTabStack.Screen name="WordInfo" component={WordInfoScreen} />
       </HiddenTabStack.Navigator>
     </LearningModeProvider>
   );
