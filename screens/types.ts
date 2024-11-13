@@ -20,3 +20,12 @@ export interface wordObj {
 export interface wordStats {
   Attemps: number[];
 }
+
+export interface folderData {
+  deckID: number;
+  originalDeckName: string;
+  uniqueDeckName: string;
+  folderID: number;
+  examDateSet: boolean;
+  examDate: Date;
+}

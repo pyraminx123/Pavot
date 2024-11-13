@@ -93,6 +93,8 @@ const createFolder = async (folderName: string) => {
         originalDeckName TEXT,
         uniqueDeckName TEXT UNIQUE,
         folderID INTEGER,
+        examDateSet BOOLEAN,
+        examDate DATE,
         FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
       );`,
     );
@@ -143,6 +145,62 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
   }
   // soo that it rerenders
   fetchFolders();
+};
+
+// TODO setExamDate = true
+const setExamDate = async (
+  uniqueDeckName: string,
+  uniqueFolderName: string,
+  examDate: Date,
+) => {
+  try {
+    await db.execute(
+      `UPDATE ${uniqueFolderName} SET examDate=?, examDateSet=? WHERE uniqueDeckName=?;`,
+      [examDate.toISOString(), true, uniqueDeckName],
+    );
+  } catch (error) {
+    console.error('Error adding exam date', error);
+  }
+};
+
+const getExamDate = async (
+  uniqueDeckName: string,
+  uniqueFolderName: string,
+) => {
+  try {
+    const examDateSetResult = await db.execute(
+      `SELECT examDateSet FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
+      [uniqueDeckName],
+    );
+    const examDateSet = examDateSetResult?.rows?._array[0]?.examDateSet;
+    if (examDateSet) {
+      const result = await db.execute(
+        `SELECT examDate FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
+        [uniqueDeckName],
+      );
+      return result?.rows?._array[0]?.examDate;
+    } else {
+      return Date.now();
+    }
+  } catch (error) {
+    console.error('Error getting exam date', error);
+    return '';
+  }
+};
+
+const setExamDateSet = async (
+  uniqueDeckName: string,
+  uniqueFolderName: string,
+  examDateSetValue: boolean,
+) => {
+  try {
+    await db.execute(
+      `UPDATE ${uniqueFolderName} SET examDateSet=? WHERE uniqueDeckName=?;`,
+      [examDateSetValue, uniqueDeckName],
+    );
+  } catch (error) {
+    console.error('Error resetting exam date', error);
+  }
 };
 
 // TODO folderID is currently = null
@@ -216,12 +274,12 @@ const insertIntoFolder = (
 ) => {
   try {
     db.execute(
-      `INSERT INTO ${uniqueFolderName} (originalDeckName, uniqueDeckName) VALUES (?, ?);`,
-      [originalDeckName, uniqueDeckName],
+      `INSERT INTO ${uniqueFolderName} (originalDeckName, uniqueDeckName, examDateSet, examDate) VALUES (?, ?, ?, ?);`,
+      [originalDeckName, uniqueDeckName, false, Date.now()],
     );
   } catch (error) {
     console.error(
-      'Some error occurred trying to get the folderID from allFolders',
+      'Some error occurred trying to insert data into the folder',
       error,
     );
   }
@@ -438,6 +496,9 @@ export {
   deleteDeck,
   deleteFolder,
   insertIntoDeck,
+  setExamDate,
+  getExamDate,
+  setExamDateSet,
   updateEntryInDeck,
   deleteEntryInDeck,
   updateCard,

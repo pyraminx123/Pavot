@@ -7,10 +7,16 @@ import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
-import {retrieveDataFromTable} from './handleData';
+import {
+  getExamDate,
+  retrieveDataFromTable,
+  setExamDate,
+  setExamDateSet,
+} from './handleData';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {wordObj} from './types';
 import {Parrot} from './components/icons';
+import {folderData} from './types';
 
 type LearningModeProps = NativeStackScreenProps<
   AppStackParamList,
@@ -28,13 +34,28 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   //console.log(allDefs);
   const originalDeckName = route.params.flashcardParams.originalDeckName;
   const flashcardParams = route.params.flashcardParams;
+  const uniqueDeckName = flashcardParams.uniqueDeckName;
+  const uniqueFolderName = route.params.uniqueFolderName;
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, isButtonPressed, setIsButtonPressed} =
     useLearningModeContext();
-  const dateToday = new Date();
-  // TODO save this info to the database
+  // data will immediately be updated
   const [date, setDate] = useState(new Date());
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+
+  useEffect(() => {
+    const fetchExamDate = async () => {
+      const examDate = await getExamDate(uniqueDeckName, uniqueFolderName);
+      setDate(new Date(examDate));
+    };
+    fetchExamDate();
+    const examSet = Boolean(
+      (retrieveDataFromTable(uniqueFolderName) as folderData[]).filter(
+        item => item.uniqueDeckName === uniqueDeckName,
+      )[0].examDateSet,
+    );
+    setIsSwitchOn(examSet);
+  }, [uniqueDeckName, uniqueFolderName]);
 
   // with the help of chatGPT
   useEffect(() => {
@@ -147,6 +168,14 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
             }}
             ios_backgroundColor={theme.baseColors.red}
             onValueChange={() => {
+              // so that the date is set to today when the switch is turned on
+              // it is if (flase) since the isSwithOn value is not updated yet
+              if (!isSwitchOn) {
+                setDate(new Date());
+                setExamDate(uniqueDeckName, uniqueFolderName, new Date());
+              } else {
+                setExamDateSet(uniqueDeckName, uniqueFolderName, !isSwitchOn);
+              }
               setIsSwitchOn(!isSwitchOn);
             }}
             value={isSwitchOn}
@@ -156,12 +185,13 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
           <View style={styles.settingDate}>
             <RNDateTimePicker
               value={date}
-              minimumDate={dateToday}
+              minimumDate={now}
               mode="date"
               display="default"
               onChange={(event, selectedDate) => {
                 const currentDate = selectedDate || date;
                 setDate(currentDate);
+                setExamDate(uniqueDeckName, uniqueFolderName, currentDate);
               }}
               themeVariant="light"
             />
