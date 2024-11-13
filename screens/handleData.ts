@@ -320,6 +320,9 @@ const insertIntoDeck = async (
   term: string,
   definition: string,
 ) => {
+  if (uniqueDeckName.trim().length === 0) {
+    uniqueDeckName = createDeck('Unnamed deck', uniqueFolderName);
+  }
   // only one of them needs to be filled
   if (term.trim().length > 0 || definition.trim().length > 0) {
     try {
