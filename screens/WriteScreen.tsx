@@ -7,16 +7,17 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, TextInput, Pressable, Alert} from 'react-native';
+import {View, Text, TextInput, Pressable} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {useLearningModeContext} from './contexts/LearningModeContext';
-import {Parrot, RightArrow} from './components/icons';
+import {RightArrow} from './components/icons';
 import algorithm from './algo';
 import {wordObj} from './types';
 import {AppStackParamList} from '../App';
 import {useFocusEffect} from '@react-navigation/native';
+import FeedbackModal from './components/FeedbackModal';
 
 type WriteProps = NativeStackScreenProps<AppStackParamList, 'Write'>;
 
@@ -30,6 +31,9 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   const def = currentWordObj.definition;
   const [text, onChangeText] = useState('');
   const textInputRef = useRef<TextInput>(null);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [onModalClose, setOnModalClose] = useState<() => void>(() => () => {}); // typescript: with the help from CoPilot
+  const [isCorrect, setIsCorrect] = useState(false);
 
   // Reset text and ref each time the screen is focused
   useFocusEffect(
@@ -102,22 +106,39 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
     }
   }, [isExiting]);
 
+  const showModal = () => {
+    console.log('hi');
+    return new Promise<void>(resolve => {
+      setIsModalVisible(true);
+      console.log('hello');
+
+      const handleModalClose = () => {
+        setIsModalVisible(false);
+        resolve();
+      };
+
+      setOnModalClose(() => handleModalClose);
+    });
+  };
+
   // TODO check for typos and stuff like that
   const checkWord = async (enteredDef: string) => {
-    const isCorrect = enteredDef === def;
+    const isWordCorrect = enteredDef === def;
+    setIsCorrect(isWordCorrect);
     //console.log(isCorrect);
     algorithm(
-      isCorrect,
+      isWordCorrect,
       2,
       route.params.flashcardParams.data[currentIndex],
       route.params.flashcardParams.uniqueDeckName,
       route.params.uniqueFolderName,
     );
     await theme.utils.sleep(500);
+    await showModal();
     // waits for a response from the user
-    await new Promise(resolve => {
-      Alert.alert(`${isCorrect}`, '', [{text: 'OK', onPress: resolve}]);
-    });
+    // await new Promise(resolve => {
+    //   Alert.alert(`${isCorrect}`, '', [{text: 'OK', onPress: resolve}]);
+    // });
     const allWordsLength = route.params.flashcardParams.data.length;
     if (currentIndex < allWordsLength - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -163,9 +184,14 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
           <RightArrow />
         </Pressable>
       </View>
-      <View style={styles.parrot}>
-        <Parrot text={'Correct!'} conffeties={true} />
-      </View>
+      <FeedbackModal
+        modalVisible={isModalVisible}
+        onClose={() => onModalClose()}
+        isCorrect={isCorrect}
+        term={term}
+        definition={def}
+        userAnswer={text}
+      />
     </View>
   );
 };
@@ -219,11 +245,6 @@ const stylesheet = createStyleSheet(theme => ({
   arrow: {
     position: 'absolute',
     bottom: 0,
-    right: 0,
-  },
-  parrot: {
-    position: 'absolute',
-    bottom: -25,
     right: 0,
   },
 }));
