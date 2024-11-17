@@ -1,7 +1,7 @@
 import React from 'react';
-import {View} from 'react-native';
+import {Text, View} from 'react-native';
 import {Svg, Path} from 'react-native-svg';
-import {useStyles} from 'react-native-unistyles';
+import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 export const BinIcon = () => {
   //const {theme} = useStyles();
@@ -220,9 +220,46 @@ export const UploadIcon = () => {
   );
 };
 
-export const Parrot = () => {
+interface ParrotProps {
+  text: string;
+  conffeties: boolean;
+}
+
+const Confetti = () => {
   return (
     <View>
+      <Svg width="101" height="92" viewBox="0 0 101 92" fill="none">
+        <Path d="M8 62.5L0 55L8 51.5L15 58L8 62.5Z" fill="#69F99A" />
+        <Path d="M12 33V22H21L17.5 33H12Z" fill="#A869F9" />
+        <Path d="M51.5 6.5L54 0H62V6.5H51.5Z" fill="#F9698B" />
+        <Path d="M58 91.5V86H67.5V91.5H58Z" fill="#A367B5" />
+        <Path d="M31 71L26.5 80H31L38.5 74L31 71Z" fill="#69F9F9" />
+        <Path
+          d="M57.5 70.25L62 59.75L71 64.25L67.5 70.25H57.5Z"
+          fill="#F4AC6A"
+        />
+        <Path d="M33 37.5V33.5H43.5L49 37.5H33Z" fill="#F969EA" />
+        <Path
+          d="M93.5 34L85.5 26.5L93.5 23L100.5 29.5L93.5 34Z"
+          fill="#FF5959"
+        />
+        <Path d="M38.5 22L41 15.5H49V22H38.5Z" fill="#B9F969" />
+        <Path d="M62 37.5V26.5H71L67.5 37.5H62Z" fill="#6C69F9" />
+      </Svg>
+    </View>
+  );
+};
+
+export const Parrot = (props: ParrotProps) => {
+  const {styles} = useStyles(stylesheet);
+  return (
+    <View style={styles.parrotContainer}>
+      {props.conffeties && (
+        <View style={styles.confetti}>
+          <Confetti />
+        </View>
+      )}
+      <Text style={styles.parrotText}>{props.text}</Text>
       <Svg width="64" height="113" viewBox="0 0 64 113" fill="none">
         <Path
           d="M18.262 11.3105L19.5128 7.05765L24.2659 5.05634L28.894 9.80946L23.8907 14.3124L18.262 11.3105Z"
@@ -268,3 +305,22 @@ export const Parrot = () => {
     </View>
   );
 };
+
+const stylesheet = createStyleSheet(theme => ({
+  parrotContainer: {
+    flexDirection: 'row',
+  },
+  parrotText: {
+    marginRight: 10,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.sizes.smallText,
+    fontWeight: '200',
+    color: '#000000',
+  },
+  confetti: {
+    position: 'absolute',
+    zIndex: -1,
+    right: 70,
+    bottom: 60,
+  },
+}));
