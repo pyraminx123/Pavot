@@ -11,6 +11,7 @@ import {useLearningModeContext} from './contexts/LearningModeContext';
 import algorithm from './algo';
 import {wordObj} from './types';
 import {useFocusEffect} from '@react-navigation/native';
+import FeedbackModal from './components/FeedbackModal';
 
 const ChoiceContainer = (props: {text: string; onPress: Function}) => {
   const [isSelected, setIsSelected] = useState(false);
@@ -55,6 +56,10 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, setCurrentIndex} = useLearningModeContext();
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [onModalClose, setOnModalClose] = useState<() => void>(() => () => {}); // typescript: with the help from CoPilot
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [userAnswer, setUserAnswer] = useState('');
 
   const getCurrentPer = (words: wordObj[]) => {
     return {
@@ -114,15 +119,36 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     }
   }, [isExiting]);
 
+  const showModal = () => {
+    return new Promise<void>(resolve => {
+      setIsModalVisible(true);
+
+      const handleModalClose = () => {
+        setIsModalVisible(false);
+        resolve();
+      };
+
+      setOnModalClose(() => handleModalClose);
+    });
+  };
+
   const checkWord = async (def: string) => {
-    const isCorrect = correctDef === def;
+    const isWordCorrect = correctDef === def;
+    setUserAnswer(def);
+
+    setIsCorrect(isWordCorrect);
+
     algorithm(
       isCorrect,
       2,
       flashcardParams.data[currentIndex],
       flashcardParams.uniqueDeckName,
+      route.params.uniqueFolderName,
     );
+
     await theme.utils.sleep(500);
+    await showModal();
+
     const allWordsLength = flashcardParams.data.length;
     if (currentIndex < allWordsLength - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -160,6 +186,14 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
           }}
         />
       ))}
+      <FeedbackModal
+        modalVisible={isModalVisible}
+        onClose={() => onModalClose()}
+        isCorrect={isCorrect}
+        term={word}
+        definition={correctDef}
+        userAnswer={userAnswer}
+      />
     </View>
   );
 };

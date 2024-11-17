@@ -107,10 +107,8 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   }, [isExiting]);
 
   const showModal = () => {
-    console.log('hi');
     return new Promise<void>(resolve => {
       setIsModalVisible(true);
-      console.log('hello');
 
       const handleModalClose = () => {
         setIsModalVisible(false);
