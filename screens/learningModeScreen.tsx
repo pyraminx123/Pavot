@@ -15,7 +15,6 @@ import {
 } from './handleData';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {wordObj} from './types';
-import {Parrot} from './components/icons';
 import {folderData} from './types';
 
 type LearningModeProps = NativeStackScreenProps<
@@ -109,10 +108,11 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
       data: updatedData,
       uniqueDeckName: flashcardParams.uniqueDeckName,
       originalDeckName,
+      uniqueFolderName,
     };
     const updatedWordObj = updatedAllWords[currentIndex];
     //console.log(updatedWordObj, currentIndex);
-    console.log(isButtonPressed, updatedAllWords.length);
+    //console.log(isButtonPressed, updatedAllWords.length);
     // TODO navigate to empty screen to add Words
     if (updatedAllWords.length > 0 && isButtonPressed === true) {
       if ((updatedWordObj.state as unknown as string) === 'New') {
@@ -201,7 +201,6 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
       <Pressable style={styles.button} onPress={() => setIsButtonPressed(true)}>
         <Text style={styles.text}>Start</Text>
       </Pressable>
-      <Parrot />
     </View>
   );
 };

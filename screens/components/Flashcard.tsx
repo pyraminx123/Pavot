@@ -21,6 +21,7 @@ const Flashcard = (props: {
   setTermsStack: SetTermsStackType;
   disableGesture?: boolean; // optional
   uniqueDeckName: string;
+  uniqueFolderName: string;
 }) => {
   //console.log('here', props.termsStack);
   const {styles, theme} = useStyles(stylesheet);
@@ -118,6 +119,7 @@ const Flashcard = (props: {
       3,
       props.currentWordObj,
       props.uniqueDeckName,
+      props.uniqueFolderName,
     );
     //console.log(props.termsStack);
   };
@@ -133,9 +135,9 @@ const Flashcard = (props: {
         y: e.translationY,
       };
       if (offset.value.x > threshold && !disableGesture) {
-        borderColor.value = '#00FF00';
+        borderColor.value = theme.baseColors.green;
       } else if (offset.value.x < -threshold && !disableGesture) {
-        borderColor.value = '#FF0000';
+        borderColor.value = theme.baseColors.red;
       } else {
         borderColor.value = defaultBorderColor;
       }

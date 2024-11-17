@@ -37,6 +37,7 @@ interface flashcardParams {
   data: wordObj[];
   originalDeckName: string;
   uniqueDeckName: string;
+  uniqueFolderName: string;
 }
 interface deckHomeParams {
   flashcardParams: flashcardParams;

@@ -26,6 +26,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
   const {setCurrentIndex, setIsButtonPressed} = useLearningModeContext();
   const originalDeckName = route.params.flashcardParams.originalDeckName;
   const uniqueDeckName = route.params.flashcardParams.uniqueDeckName;
+  const uniqueFolderName = route.params.uniqueFolderName;
   const initialData = retrieveDataFromTable(uniqueDeckName) as wordObj[];
   const {styles, theme} = useStyles(stylesheet);
   const {setHandleAddPress} = useAddButtonContext();
@@ -84,7 +85,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
           data,
           uniqueDeckName,
           originalDeckName,
-          uniqueFolderName: route.params.uniqueFolderName,
+          uniqueFolderName,
         });
       });
     }, []),
@@ -94,7 +95,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     navigation.navigate('HiddenTabStack', {
       screen: 'Flashcards',
-      params: {data, originalDeckName, uniqueDeckName},
+      params: {data, originalDeckName, uniqueDeckName, uniqueFolderName},
     });
   };
 
@@ -102,12 +103,17 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     setCurrentIndex(0);
     setIsButtonPressed(false);
-    const flashcardParams = {data, originalDeckName, uniqueDeckName};
+    const flashcardParams = {
+      data,
+      originalDeckName,
+      uniqueDeckName,
+      uniqueFolderName,
+    };
     navigation.navigate('HiddenTabStack', {
       screen: 'LearningMode',
       params: {
         flashcardParams,
-        uniqueFolderName: route.params.uniqueFolderName,
+        uniqueFolderName,
       },
     });
   };

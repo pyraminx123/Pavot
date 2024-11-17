@@ -1,6 +1,6 @@
 import {generatorParameters, fsrs, FSRS, RecordLogItem, State} from 'ts-fsrs';
-import {wordObj} from './types';
-import {updateCard} from './handleData';
+import {folderData, wordObj} from './types';
+import {retrieveDataFromTable, updateCard} from './handleData';
 
 // TODO add max interval (for tests)
 const algorithm = async (
@@ -8,13 +8,25 @@ const algorithm = async (
   rating: 1 | 2 | 3 | 4, // 1 - again, 2 - hard, 3 - good, 4 - easy
   flashcard: wordObj,
   uniqueDeckName: string,
+  uniqueFolderName: string,
 ) => {
   if (!isWordCorrect) {
     rating = 1;
   }
+  const folderDataArray = retrieveDataFromTable(
+    uniqueFolderName,
+  ) as folderData[];
+  const filteredFolderData = folderDataArray.filter(
+    item => item.uniqueDeckName === uniqueDeckName,
+  ) as folderData[];
+  const examDate = filteredFolderData[0].examDate;
+  const examDateSet = Boolean(filteredFolderData[0].examDateSet);
+  console.log('r', examDate, examDateSet);
   const params = generatorParameters({
     enable_fuzz: true,
     enable_short_term: false,
+    maximum_interval: 2,
+    request_retention: 0.9,
   });
   const card = {
     due: flashcard.due,

@@ -96,6 +96,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
               setTermsStack={setTermsStack}
               disableGesture={termsStack.length === 1}
               uniqueDeckName={uniqueDeckName}
+              uniqueFolderName={route.params.uniqueFolderName}
             />
           </>
         )}

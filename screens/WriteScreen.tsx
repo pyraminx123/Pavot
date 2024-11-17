@@ -7,7 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, TextInput, Pressable} from 'react-native';
+import {View, Text, TextInput, Pressable, Alert} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
@@ -111,8 +111,13 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
       2,
       route.params.flashcardParams.data[currentIndex],
       route.params.flashcardParams.uniqueDeckName,
+      route.params.uniqueFolderName,
     );
     await theme.utils.sleep(500);
+    // waits for a response from the user
+    await new Promise(resolve => {
+      Alert.alert(`${isCorrect}`, '', [{text: 'OK', onPress: resolve}]);
+    });
     const allWordsLength = route.params.flashcardParams.data.length;
     if (currentIndex < allWordsLength - 1) {
       setCurrentIndex(currentIndex + 1);
@@ -159,7 +164,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
         </Pressable>
       </View>
       <View style={styles.parrot}>
-        <Parrot />
+        <Parrot text={'Correct!'} conffeties={true} />
       </View>
     </View>
   );
