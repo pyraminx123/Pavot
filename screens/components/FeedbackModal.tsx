@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {Modal, Text, Pressable, View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {Parrot} from './icons';
@@ -18,6 +18,7 @@ const FeedbackModal = (props: Props) => {
   const borderColor = props.isCorrect
     ? theme.baseColors.green
     : theme.baseColors.red;
+  const [textOpacity, setTextOpacity] = useState(1);
 
   return (
     <Modal transparent={true} visible={props.modalVisible}>
@@ -37,8 +38,12 @@ const FeedbackModal = (props: Props) => {
           </View>
           <Pressable
             style={[styles.button, {borderColor: borderColor}]}
+            onPressIn={() => setTextOpacity(0.5)}
+            onPressOut={() => setTextOpacity(1)}
             onPress={props.onClose}>
-            <Text style={styles.textButton}>Continue</Text>
+            <Text style={[styles.textButton, {opacity: textOpacity}]}>
+              Continue
+            </Text>
           </Pressable>
         </View>
       </View>
