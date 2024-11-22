@@ -26,6 +26,8 @@ import WriteScreen from './screens/WriteScreen.tsx';
 import {AddButtonProvider} from './screens/contexts/headerContext.tsx';
 import AddFolderScreen from './screens/AddFolderScreen.tsx';
 import WordInfoScreen from './screens/WordInfo.tsx';
+import CongratsScreen from './screens/CongratsScreen.tsx';
+import CycleScreen from './screens/CycleScreen.tsx';
 
 export interface folderInfo {
   folderID: number;
@@ -62,11 +64,13 @@ interface singleChoiceParams {
   originalDeckName: string;
   flashcardParams: flashcardParams;
   uniqueFolderName: string;
+  dataForStatusBar: wordObj[];
 }
 
 interface writeParams {
   flashcardParams: flashcardParams;
   uniqueFolderName: string;
+  dataForStatusBar: wordObj[];
 }
 
 interface addFolderParams {
@@ -79,6 +83,11 @@ interface wordInfoParams {
   uniqueDeckName: string;
 }
 
+interface cycleParams {
+  originalDeckName: string;
+  deckHomeParams: deckHomeParams;
+}
+
 export type HiddenTabStackParamList = {
   Flashcards: flashcardParams;
   Write: writeParams;
@@ -87,6 +96,9 @@ export type HiddenTabStackParamList = {
   AddFolder: addFolderParams;
   WordInfo: wordInfoParams;
   Home: undefined;
+  DeckHome: deckHomeParams;
+  Congrats: undefined;
+  Cycle: cycleParams;
 };
 
 // parameters that are passed
@@ -128,6 +140,8 @@ const HiddenTabStackScreen = () => {
         />
         <HiddenTabStack.Screen name="AddFolder" component={AddFolderScreen} />
         <HiddenTabStack.Screen name="WordInfo" component={WordInfoScreen} />
+        <HiddenTabStack.Screen name="Congrats" component={CongratsScreen} />
+        <HiddenTabStack.Screen name="Cycle" component={CycleScreen} />
       </HiddenTabStack.Navigator>
     </LearningModeProvider>
   );
@@ -159,7 +173,6 @@ const HomeStackScreen = () => {
   );
 };
 
-// TODO bug: when first opening the app the house is not solid
 const Tabs = () => {
   return (
     <AddButtonProvider>

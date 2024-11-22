@@ -23,9 +23,11 @@ type WriteProps = NativeStackScreenProps<AppStackParamList, 'Write'>;
 
 const WriteScreen = ({navigation, route}: WriteProps) => {
   const flashcardParams = route.params.flashcardParams;
+  const dataForStatusBar = route.params.dataForStatusBar;
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
-  const {currentIndex, setCurrentIndex} = useLearningModeContext();
+  const {currentIndex, setCurrentIndex, cycle, setCycle} =
+    useLearningModeContext();
   const currentWordObj = flashcardParams.data[currentIndex];
   const term = currentWordObj.term;
   const def = currentWordObj.definition;
@@ -61,7 +63,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
         100,
     };
   };
-  const currentPer = getCurrentPer(flashcardParams.data);
+  const currentPer = getCurrentPer(dataForStatusBar);
   const {perEasyWords, perMedWords, perDiffWords} = currentPer;
   const segmentData = [
     {per: perEasyWords, color: '#C2E8A2'},
@@ -133,23 +135,19 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
     );
     await theme.utils.sleep(500);
     await showModal();
-    // waits for a response from the user
-    // await new Promise(resolve => {
-    //   Alert.alert(`${isCorrect}`, '', [{text: 'OK', onPress: resolve}]);
-    // });
-    const allWordsLength = route.params.flashcardParams.data.length;
-    if (currentIndex < allWordsLength - 1) {
+    if (currentIndex !== 4) {
       setCurrentIndex(currentIndex + 1);
+      navigation.navigate('HiddenTabStack', {
+        screen: 'LearningMode',
+        params: {
+          flashcardParams,
+          uniqueFolderName: route.params.uniqueFolderName,
+        },
+      });
     } else {
       setCurrentIndex(0);
+      setCycle(cycle + 1);
     }
-    navigation.navigate('HiddenTabStack', {
-      screen: 'LearningMode',
-      params: {
-        flashcardParams,
-        uniqueFolderName: route.params.uniqueFolderName,
-      },
-    });
   };
 
   return (

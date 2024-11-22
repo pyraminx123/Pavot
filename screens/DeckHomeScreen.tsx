@@ -23,7 +23,8 @@ import {VictoryPie} from 'victory-native';
 type DeckHomeProps = NativeStackScreenProps<AppStackParamList, 'DeckHome'>;
 
 const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
-  const {setCurrentIndex, setIsButtonPressed} = useLearningModeContext();
+  const {setCurrentIndex, setIsButtonPressed, setCycle} =
+    useLearningModeContext();
   const originalDeckName = route.params.flashcardParams.originalDeckName;
   const uniqueDeckName = route.params.flashcardParams.uniqueDeckName;
   const uniqueFolderName = route.params.uniqueFolderName;
@@ -103,6 +104,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     setCurrentIndex(0);
     setIsButtonPressed(false);
+    setCycle(0);
     const flashcardParams = {
       data,
       originalDeckName,

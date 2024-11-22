@@ -69,77 +69,9 @@ const shortTerm = (
   });
 
   const f: FSRS = fsrs(params);
-  let scheduled_days = f.next(card, new Date(), rating).card.scheduled_days;
+  let scheduled_days = f.next(card, dateToday, rating).card.scheduled_days;
   console.log('scheduled_days', scheduled_days);
-
-  const getTypicalIntervals = (initialCard: Card) => {
-    let intervals: number[] = [];
-    let currentCard = {...initialCard};
-    let date = currentCard.due;
-    let iterationCount = 0;
-    const maxIterations = 50; // Safety limit for iterations
-
-    let scheduledCard: RecordLogItem = f.next(currentCard, date, 4);
-    let scheduledNbDays = scheduledCard.card.scheduled_days;
-    let due = scheduledCard.card.due;
-
-    intervals.push(scheduledNbDays);
-    currentCard = scheduledCard.card; // Update the card state
-    let retrievability = f.get_retrievability(currentCard, due, false);
-
-    // Debugging initial state
-    console.log('Initial:', {
-      scheduledNbDays,
-      retrievability,
-      stability: currentCard.stability,
-      difficulty: currentCard.difficulty,
-    });
-
-    // Loop until retrievability is greater than or equal to the target (0.9)
-    while (retrievability < 0.85 && iterationCount < maxIterations) {
-      const nextCard = f.next(currentCard, due, 4);
-      scheduledNbDays = nextCard.card.scheduled_days;
-      due = nextCard.card.due;
-
-      intervals.push(scheduledNbDays);
-
-      currentCard = nextCard.card;
-      retrievability = f.get_retrievability(currentCard, due, false);
-
-      console.log('Iteration', iterationCount + 1, {
-        scheduledNbDays,
-        stability: nextCard.card.stability,
-        difficulty: nextCard.card.difficulty,
-        retrievability: retrievability,
-      });
-
-      iterationCount++;
-    }
-
-    if (iterationCount >= maxIterations) {
-      console.warn(
-        'Reached maximum iterations, stopping early to avoid infinite loop.',
-      );
-    }
-
-    return intervals;
-  };
-
-  const intervals = getTypicalIntervals(card);
-  const optimalNbDays = intervals.reduce((a, b) => a + b, 0);
-  const nbOfTotalCards = (retrieveDataFromTable(uniqueDeckName) as wordObj[])
-    .length;
-  console.log('nbOfTotalCards', nbOfTotalCards);
-
-  let compressionFactor = (differenceInDays - 1) / optimalNbDays;
-  if (compressionFactor > 1) {
-    compressionFactor = 1;
-  }
-
-  const newInterval = intervals.map(interval => interval * compressionFactor);
-  console.log('new interval', newInterval);
-
-  console.log('intervals', intervals, optimalNbDays, compressionFactor);
+  console.log(examDate, new Date(examDate.getTime() - 1000 * 60 * 60 * 24));
 };
 
 const longTerm = async (
@@ -152,7 +84,7 @@ const longTerm = async (
   const params = generatorParameters({
     enable_fuzz: true,
     enable_short_term: false,
-    maximum_interval: 1000,
+    maximum_interval: 365,
     request_retention: 0.9,
   });
   const f: FSRS = fsrs(params);

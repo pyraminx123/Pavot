@@ -53,9 +53,11 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   const originalDeckName = route.params.originalDeckName;
   const allDefs = route.params.otherDefs;
   const flashcardParams = route.params.flashcardParams;
+  const dataForStatusBar = route.params.dataForStatusBar;
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
-  const {currentIndex, setCurrentIndex} = useLearningModeContext();
+  const {currentIndex, setCurrentIndex, cycle, setCycle} =
+    useLearningModeContext();
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [onModalClose, setOnModalClose] = useState<() => void>(() => () => {}); // typescript: with the help from CoPilot
   const [isCorrect, setIsCorrect] = useState(false);
@@ -77,7 +79,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
         100,
     };
   };
-  const currentPer = getCurrentPer(flashcardParams.data);
+  const currentPer = getCurrentPer(dataForStatusBar);
   const {perEasyWords, perMedWords, perDiffWords} = currentPer;
   const segmentData = [
     {per: perEasyWords, color: '#C2E8A2'},
@@ -150,18 +152,22 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     await showModal();
 
     const allWordsLength = flashcardParams.data.length;
-    if (currentIndex < allWordsLength - 1) {
+    console.log(allWordsLength, currentIndex);
+    if (currentIndex !== 4) {
+      console.log('to learning mode', currentIndex + 1, allWordsLength - 1);
       setCurrentIndex(currentIndex + 1);
+      navigation.navigate('HiddenTabStack', {
+        screen: 'LearningMode',
+        params: {
+          flashcardParams,
+          uniqueFolderName: route.params.uniqueFolderName,
+        },
+      });
     } else {
+      console.log('to cycle');
+      setCycle(cycle + 1);
       setCurrentIndex(0);
     }
-    navigation.navigate('HiddenTabStack', {
-      screen: 'LearningMode',
-      params: {
-        flashcardParams,
-        uniqueFolderName: route.params.uniqueFolderName,
-      },
-    });
   };
   return (
     <View style={styles.container}>
