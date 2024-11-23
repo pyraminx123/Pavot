@@ -6,6 +6,9 @@ import {useStyles, createStyleSheet} from 'react-native-unistyles';
 import {CloseHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
+import {useLearningModeContext} from './contexts/LearningModeContext';
+import {retrieveDataFromTable} from './handleData';
+import {wordObj} from './types';
 
 type CycleProps = NativeStackScreenProps<HiddenTabStackParamList, 'Cycle'>;
 
@@ -13,6 +16,12 @@ const CycleScreen = ({navigation, route}: CycleProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const originalDeckName = route.params.originalDeckName;
   const deckHomeParams = route.params.deckHomeParams;
+  const uniqueDeckName = deckHomeParams.uniqueFolderName;
+  const allWords = deckHomeParams.flashcardParams.data;
+  const allDefs = allWords.map(word => word.definition);
+  const allDueCards = route.params.allDueCards;
+  const {setIsButtonPressed, setCurrentIndex, currentIndex, setCycle} =
+    useLearningModeContext();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -30,11 +39,48 @@ const CycleScreen = ({navigation, route}: CycleProps) => {
     });
   }, [navigation]);
 
+  const navigateToCorrectScreen = () => {
+    const dataForStatusBar = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+    const nextWordObj = allDueCards[currentIndex + 1];
+    console.log('nextWordObj', nextWordObj);
+    if (nextWordObj) {
+      if (nextWordObj.maturityLevel === 'Difficult') {
+        console.log('difficult');
+        navigation.navigate('SingleChoice', {
+          term: nextWordObj.term,
+          correctDef: nextWordObj.definition,
+          originalDeckName: originalDeckName,
+          otherDefs: allDefs,
+          flashcardParams: deckHomeParams.flashcardParams,
+          uniqueFolderName: deckHomeParams.uniqueFolderName,
+          dataForStatusBar: dataForStatusBar,
+          allDueCardsLength: allDueCards.length,
+        });
+      } else {
+        console.log('easy');
+        navigation.navigate('Write', {
+          flashcardParams: deckHomeParams.flashcardParams,
+          dataForStatusBar: dataForStatusBar,
+          uniqueFolderName: deckHomeParams.uniqueFolderName,
+          allDueCardsLength: allDueCards.length,
+        });
+      }
+    } else {
+      console.log('no more cards'); // TODO navigate to congrats screen this should happen from either single or write
+    }
+  };
+
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Cycle</Text>
       <Pressable
-        onPress={() => navigation.navigate('LearningMode', deckHomeParams)}>
+        onPress={() => {
+          navigation.navigate('LearningMode', deckHomeParams);
+          setIsButtonPressed(true);
+          setCurrentIndex(currentIndex + 1);
+          setCycle(0);
+          navigateToCorrectScreen();
+        }}>
         <Text>Continue</Text>
       </Pressable>
     </View>

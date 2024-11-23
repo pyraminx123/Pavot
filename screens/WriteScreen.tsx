@@ -24,6 +24,7 @@ type WriteProps = NativeStackScreenProps<AppStackParamList, 'Write'>;
 const WriteScreen = ({navigation, route}: WriteProps) => {
   const flashcardParams = route.params.flashcardParams;
   const dataForStatusBar = route.params.dataForStatusBar;
+  const allDueCardsLength = route.params.allDueCardsLength;
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, setCurrentIndex, cycle, setCycle} =
@@ -135,7 +136,11 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
     );
     await theme.utils.sleep(500);
     await showModal();
-    if (currentIndex !== 4) {
+    console.log('currentIndex', currentIndex, allDueCardsLength);
+    if (currentIndex === 4 || allDueCardsLength - 1 === currentIndex) {
+      console.log('to cycle');
+      setCycle(cycle + 1);
+    } else {
       setCurrentIndex(currentIndex + 1);
       navigation.navigate('HiddenTabStack', {
         screen: 'LearningMode',
@@ -144,9 +149,6 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
           uniqueFolderName: route.params.uniqueFolderName,
         },
       });
-    } else {
-      setCurrentIndex(0);
-      setCycle(cycle + 1);
     }
   };
 

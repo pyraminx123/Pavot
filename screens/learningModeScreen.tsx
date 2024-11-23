@@ -1,15 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Pressable, Text, View, Switch, Alert} from 'react-native';
+import {Pressable, Text, View, Switch} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import {
+  getDueCards,
   getExamDate,
   retrieveDataFromTable,
+  setDueNewCards,
+  setDueReviewCards,
   setExamDate,
   setExamDateSet,
 } from './handleData';
@@ -26,16 +29,6 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const now = new Date();
   const allWords = route.params.flashcardParams.data;
-  const newWords = allWords.filter(
-    card => card.state === ('New' as unknown as State),
-  );
-  //console.log('new', newWords);
-  const dueReviewCards = allWords.filter(
-    card =>
-      new Date(card.due) <= now && card.state !== ('New' as unknown as State),
-  );
-  const dueNewCards = newWords.slice(0, 10);
-  const allDueCards = [...dueReviewCards, ...dueNewCards];
   //console.log('all', allDueCards);
   //console.log(dueCards);
   const allDefs = allWords.map(word => word.definition);
@@ -50,6 +43,47 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   // data will immediately be updated
   const [date, setDate] = useState(new Date());
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+
+  const [allDueCards, setAllDueCards] = useState<wordObj[]>([]);
+  const [newCards, setNewCards] = useState<wordObj[]>([]);
+  const [reviewCards, setReviewCards] = useState<wordObj[]>([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      const result = await fetchDueCards();
+      if (result) {
+        const {allCardsThatAreDue, dueNewCards, dueReviewCards} = result;
+        setAllDueCards(allCardsThatAreDue);
+        setNewCards(dueNewCards);
+        setReviewCards(dueReviewCards);
+      }
+    };
+
+    fetchData();
+  }, [allWords]);
+
+  const fetchDueCards = async () => {
+    try {
+      const newReviewCards = allWords.filter(
+        card =>
+          new Date(card.due) <= now &&
+          card.state !== ('New' as unknown as State),
+      );
+      console.log('newReviewCards', newReviewCards);
+      await setDueReviewCards(newReviewCards, uniqueFolderName, uniqueDeckName);
+      await setDueNewCards(uniqueFolderName, uniqueDeckName);
+      const {dueNewCards, dueReviewCards} = await getDueCards(
+        uniqueFolderName,
+        uniqueDeckName,
+      );
+      const allCardsThatAreDue = [...dueReviewCards, ...dueNewCards];
+      return {allCardsThatAreDue, dueNewCards, dueReviewCards};
+    } catch (error) {
+      console.error('Error fetching due cards', error);
+    }
+  };
+
+  //console.log('allDueCards', allDueCards);
 
   useEffect(() => {
     const fetchExamDate = async () => {
@@ -108,76 +142,80 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   // TODO retrieve data so that the status bar is up to date
   useEffect(() => {
     if (cycle > 0) {
-      navigation.navigate('HiddenTabStack', {
-        screen: 'Cycle',
-        params: {originalDeckName, deckHomeParams: route.params},
-      });
-    } else {
-      const updatedFlashcardParams = {
-        data: allDueCards,
-        uniqueDeckName: flashcardParams.uniqueDeckName,
-        originalDeckName,
-        uniqueFolderName,
-      };
-
-      if (allDueCards.length !== 0) {
-        const updatedWordObj = allDueCards[currentIndex];
-        // TODO navigate to empty screen to add Words
-        if (isButtonPressed === true && updatedWordObj) {
-          // single choice
-          // TODO if under certain retention rate (or difficulty/stability)
-          if ((updatedWordObj.state as unknown as string) === 'New') {
-            const otherDefs = allDefs.filter(
-              word => word !== updatedWordObj.definition,
-            ); // removes the correct definition
-            const otherRandomDefs = theme.utils
-              .shuffleArray([...otherDefs])
-              .slice(0, 4);
-            const defsWithTerm = theme.utils.shuffleArray([
-              ...otherRandomDefs,
-              updatedWordObj.definition,
-            ]);
-            const params = {
-              term: updatedWordObj.term,
-              correctDef: updatedWordObj.definition,
-              otherDefs: defsWithTerm,
-              originalDeckName: originalDeckName,
-              flashcardParams: updatedFlashcardParams,
-              uniqueFolderName: route.params.uniqueFolderName,
-              dataForStatusBar: retrieveDataFromTable(
-                uniqueDeckName,
-              ) as wordObj[],
-            };
-            navigation.navigate('HiddenTabStack', {
-              screen: 'SingleChoice',
-              params,
-            });
-            // write
-          } else {
-            const params = {
-              flashcardParams: updatedFlashcardParams,
-              uniqueFolderName: route.params.uniqueFolderName,
-              dataForStatusBar: retrieveDataFromTable(
-                uniqueDeckName,
-              ) as wordObj[],
-            };
-            navigation.navigate('HiddenTabStack', {screen: 'Write', params});
-          }
-        }
+      if (allDueCards.length - 1 === currentIndex) {
+        navigation.navigate('HiddenTabStack', {
+          screen: 'Congrats',
+          params: {originalDeckName, deckHomeParams: route.params},
+        });
       } else {
-        Alert.alert('No words to review');
+        navigation.navigate('HiddenTabStack', {
+          screen: 'Cycle',
+          params: {originalDeckName, deckHomeParams: route.params, allDueCards},
+        });
+      }
+    } else {
+      const updatedWordObj = allDueCards[currentIndex];
+      // TODO navigate to empty screen to add Words
+      if (isButtonPressed === true && updatedWordObj) {
+        const updatedFlashcardParams = {
+          data: allDueCards,
+          uniqueDeckName: flashcardParams.uniqueDeckName,
+          originalDeckName,
+          uniqueFolderName,
+        };
+        // single choice
+        // TODO if under certain retention rate (or difficulty/stability)
+        if (updatedWordObj.maturityLevel === 'Difficult') {
+          const otherDefs = allDefs.filter(
+            word => word !== updatedWordObj.definition,
+          ); // removes the correct definition
+          const otherRandomDefs = theme.utils
+            .shuffleArray([...otherDefs])
+            .slice(0, 4);
+          const defsWithTerm = theme.utils.shuffleArray([
+            ...otherRandomDefs,
+            updatedWordObj.definition,
+          ]);
+          const params = {
+            term: updatedWordObj.term,
+            correctDef: updatedWordObj.definition,
+            otherDefs: defsWithTerm,
+            originalDeckName: originalDeckName,
+            flashcardParams: updatedFlashcardParams,
+            uniqueFolderName: route.params.uniqueFolderName,
+            dataForStatusBar: retrieveDataFromTable(
+              uniqueDeckName,
+            ) as wordObj[],
+            allDueCardsLength: allDueCards.length,
+          };
+          navigation.navigate('HiddenTabStack', {
+            screen: 'SingleChoice',
+            params,
+          });
+          // write
+        } else {
+          const params = {
+            flashcardParams: updatedFlashcardParams,
+            uniqueFolderName: route.params.uniqueFolderName,
+            dataForStatusBar: retrieveDataFromTable(
+              uniqueDeckName,
+            ) as wordObj[],
+            allDueCardsLength: allDueCards.length,
+          };
+          navigation.navigate('HiddenTabStack', {screen: 'Write', params});
+        }
       }
     }
   }, [allWords, currentIndex, isButtonPressed, cycle]);
 
   const textDueReviewWords =
-    dueReviewCards.length === 1
+    reviewCards.length === 1
       ? 'Review: You have 1 word due today'
-      : 'Review: You have ' + dueReviewCards.length + ' words due today';
+      : 'Review: You have ' + reviewCards.length + ' words due today';
   const textDueNewWords =
-    dueNewCards.length === 1
+    newCards.length === 1
       ? 'New: You have 1 word due today'
-      : 'New: You have ' + dueNewCards.length + ' words due today';
+      : 'New: You have ' + newCards.length + ' words due today';
 
   return (
     <View style={styles.container}>

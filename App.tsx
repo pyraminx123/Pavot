@@ -65,12 +65,14 @@ interface singleChoiceParams {
   flashcardParams: flashcardParams;
   uniqueFolderName: string;
   dataForStatusBar: wordObj[];
+  allDueCardsLength: number;
 }
 
 interface writeParams {
   flashcardParams: flashcardParams;
   uniqueFolderName: string;
   dataForStatusBar: wordObj[];
+  allDueCardsLength: number;
 }
 
 interface addFolderParams {
@@ -86,6 +88,12 @@ interface wordInfoParams {
 interface cycleParams {
   originalDeckName: string;
   deckHomeParams: deckHomeParams;
+  allDueCards: wordObj[];
+}
+
+interface congratsParams {
+  originalDeckName: string;
+  deckHomeParams: deckHomeParams;
 }
 
 export type HiddenTabStackParamList = {
@@ -97,7 +105,7 @@ export type HiddenTabStackParamList = {
   WordInfo: wordInfoParams;
   Home: undefined;
   DeckHome: deckHomeParams;
-  Congrats: undefined;
+  Congrats: congratsParams;
   Cycle: cycleParams;
 };
 

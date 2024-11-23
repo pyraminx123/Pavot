@@ -54,6 +54,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
   const allDefs = route.params.otherDefs;
   const flashcardParams = route.params.flashcardParams;
   const dataForStatusBar = route.params.dataForStatusBar;
+  const allDueCardsLength = route.params.allDueCardsLength;
   const {styles, theme} = useStyles(stylesheet);
   const [isExiting, setIsExiting] = useState(false);
   const {currentIndex, setCurrentIndex, cycle, setCycle} =
@@ -151,10 +152,10 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     await theme.utils.sleep(500);
     await showModal();
 
-    const allWordsLength = flashcardParams.data.length;
-    console.log(allWordsLength, currentIndex);
-    if (currentIndex !== 4) {
-      console.log('to learning mode', currentIndex + 1, allWordsLength - 1);
+    if (currentIndex === 4 || allDueCardsLength - 1 === currentIndex) {
+      console.log('to cycle');
+      setCycle(cycle + 1);
+    } else {
       setCurrentIndex(currentIndex + 1);
       navigation.navigate('HiddenTabStack', {
         screen: 'LearningMode',
@@ -163,10 +164,6 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
           uniqueFolderName: route.params.uniqueFolderName,
         },
       });
-    } else {
-      console.log('to cycle');
-      setCycle(cycle + 1);
-      setCurrentIndex(0);
     }
   };
   return (
