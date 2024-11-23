@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Pressable, Text, View, Switch} from 'react-native';
+import {Pressable, Text, View, Switch, Alert} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -156,6 +156,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     } else {
       const updatedWordObj = allDueCards[currentIndex];
       // TODO navigate to empty screen to add Words
+      console.log(isButtonPressed);
       if (isButtonPressed === true && updatedWordObj) {
         const updatedFlashcardParams = {
           data: allDueCards,
@@ -204,6 +205,10 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
           };
           navigation.navigate('HiddenTabStack', {screen: 'Write', params});
         }
+      } else if (isButtonPressed === true && allDueCards.length === 0) {
+        setIsButtonPressed(false);
+        Alert.alert('Nothing to study (-:');
+        console.log(allWords, currentIndex, isButtonPressed, cycle);
       }
     }
   }, [allWords, currentIndex, isButtonPressed, cycle]);

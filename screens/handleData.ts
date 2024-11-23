@@ -265,21 +265,19 @@ const getDueCards = async (
 const setDueNewCards = async (
   uniqueFolderName: string,
   uniqueDeckName: string,
-  firstTime: boolean = false,
 ) => {
   try {
-    if (!firstTime) {
-      const lastTimeUpdatedDueCards = await db.execute(
-        `SELECT lastTimeUpdatedDueCards FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
-        [uniqueDeckName],
-      )?.rows?._array[0]?.lastTimeUpdatedDueCards;
-      const now = new Date();
-      console.log('Now', now);
-      console.log('Last time updated due cards', lastTimeUpdatedDueCards);
-      const lastTime = new Date(lastTimeUpdatedDueCards);
-      const difference = Math.abs(now.getTime() - lastTime.getTime());
-      const daysDifference = Math.trunc(difference / (1000 * 3600 * 24));
-      //console.log('Days difference', daysDifference);
+    const lastTimeUpdatedDueCards = await db.execute(
+      `SELECT lastTimeUpdatedDueCards FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
+      [uniqueDeckName],
+    )?.rows?._array[0]?.lastTimeUpdatedDueCards;
+    const now = new Date();
+    const lastTime = new Date(lastTimeUpdatedDueCards);
+    const difference = Math.abs(now.getTime() - lastTime.getTime());
+    const daysDifference = Math.trunc(difference / (1000 * 3600 * 24));
+    console.log('First time', lastTimeUpdatedDueCards);
+
+    if (lastTimeUpdatedDueCards) {
       if (daysDifference >= 1) {
         const result = await db.execute(
           `SELECT * FROM ${uniqueDeckName} WHERE state="New";`,
@@ -291,17 +289,13 @@ const setDueNewCards = async (
         );
       }
     } else {
-      console.log(
-        'First time setting new due cards',
-        retrieveDataFromTable(uniqueDeckName),
-      );
       const result = await db.execute(
         `SELECT * FROM ${uniqueDeckName} WHERE state="New";`,
       );
       const dueNewCards = result?.rows?._array.slice(0, 10) || [];
       await db.execute(
-        `UPDATE ${uniqueFolderName} SET dueNewCards=? WHERE uniqueDeckName=?;`,
-        [JSON.stringify(dueNewCards), uniqueDeckName],
+        `UPDATE ${uniqueFolderName} SET dueNewCards=?, lastTimeUpdatedDueCards=? WHERE uniqueDeckName=?;`,
+        [JSON.stringify(dueNewCards), now.toISOString(), uniqueDeckName],
       );
     }
   } catch (error) {
@@ -386,12 +380,11 @@ const insertIntoFolder = async (
         uniqueDeckName,
         false,
         Date.now(),
-        Date.now(),
+        null,
         JSON.stringify([]),
         JSON.stringify([]),
       ],
     );
-    await setDueNewCards(uniqueFolderName, uniqueDeckName, true);
   } catch (error) {
     console.error(
       'Some error occurred trying to insert data into the folder',
@@ -477,7 +470,6 @@ const insertIntoDeck = async (
           'Difficult',
         ],
       );
-      await setDueNewCards(uniqueFolderName, uniqueDeckName);
       //console.log('table', retrieveDataFromTable(uniqueDeckName));
     } catch (error) {
       console.error(
