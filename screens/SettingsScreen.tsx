@@ -6,7 +6,7 @@ import {
   createStyleSheet,
   useStyles,
 } from 'react-native-unistyles';
-import {changeTheme, retrieveDataFromTable} from './handleData';
+import {changeTheme} from './handleData';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {AppTabParamList} from '../App';
@@ -28,7 +28,7 @@ const Circle = (props: {
       onPress={() => {
         UnistylesRuntime.setTheme(props.color);
         changeTheme(props.color);
-        console.log(retrieveDataFromTable('settings'));
+        //console.log(retrieveDataFromTable('settings'));
       }}>
       <View style={[styles.circle, {backgroundColor: colors[props.color]}]} />
     </Pressable>

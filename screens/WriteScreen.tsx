@@ -136,9 +136,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
     );
     await theme.utils.sleep(500);
     await showModal();
-    console.log('currentIndex', currentIndex, allDueCardsLength);
     if (currentIndex === 4 || allDueCardsLength - 1 === currentIndex) {
-      console.log('to cycle');
       setCycle(cycle + 1);
     } else {
       setCurrentIndex(currentIndex + 1);

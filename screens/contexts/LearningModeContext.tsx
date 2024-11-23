@@ -23,7 +23,6 @@ export const LearningModeProvider = ({children}: {children: ReactNode}) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cycle, setCycle] = useState(0);
   const [isButtonPressed, setIsButtonPressed] = useState(false);
-  console.log('c', currentIndex);
 
   return (
     <LearningModeContext.Provider

@@ -190,7 +190,7 @@ const Tabs = () => {
           // with the help of chatGPT
           const {routes, index} = navigation.getState();
           let currentRouteName = routes[index].name;
-          console.log(currentRouteName);
+          //console.log(currentRouteName);
           if (currentRouteName === 'BigHome') {
             const stateIndex = routes[index].state?.index ?? 0;
             if (stateIndex !== 0) {

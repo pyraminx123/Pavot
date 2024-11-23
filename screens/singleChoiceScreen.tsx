@@ -153,7 +153,6 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     await showModal();
 
     if (currentIndex === 4 || allDueCardsLength - 1 === currentIndex) {
-      console.log('to cycle');
       setCycle(cycle + 1);
     } else {
       setCurrentIndex(currentIndex + 1);

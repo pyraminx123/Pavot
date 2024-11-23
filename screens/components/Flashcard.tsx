@@ -89,7 +89,6 @@ const Flashcard = (props: {
   const updateTermsStack = () => {
     if (props.termsStack.length > 2) {
       const newTerms = props.termsStack.slice(1);
-      console.log(newTerms);
       props.setTermsStack(newTerms);
     } else if (props.termsStack.length === 2) {
       const newTerms = props.termsStack.slice(1);

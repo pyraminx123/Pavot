@@ -22,7 +22,6 @@ const AddFolderScreen = ({navigation, route}: AddFolderProps) => {
   // TODO update function for when folder name is edited
   const onSave = () => {
     if (uniqueFolderName.length === 0) {
-      console.log(text);
       createFolder(text);
     }
     navigation.navigate('Home');
@@ -43,8 +42,6 @@ const AddFolderScreen = ({navigation, route}: AddFolderProps) => {
     });
   }, [navigation, text]);
 
-  console.log('Current text state:', text);
-
   return (
     <View style={styles.container}>
       <TextInput
@@ -52,7 +49,6 @@ const AddFolderScreen = ({navigation, route}: AddFolderProps) => {
         value={text}
         onChangeText={txt => {
           onChangeText(txt);
-          console.log('Input value:', txt);
         }}
         placeholder="Folder name"
         placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}

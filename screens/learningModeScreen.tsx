@@ -69,7 +69,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
           new Date(card.due) <= now &&
           card.state !== ('New' as unknown as State),
       );
-      console.log('newReviewCards', newReviewCards);
+      //console.log('newReviewCards', newReviewCards);
       await setDueReviewCards(newReviewCards, uniqueFolderName, uniqueDeckName);
       await setDueNewCards(uniqueFolderName, uniqueDeckName);
       const {dueNewCards, dueReviewCards} = await getDueCards(
@@ -156,7 +156,6 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
     } else {
       const updatedWordObj = allDueCards[currentIndex];
       // TODO navigate to empty screen to add Words
-      console.log(isButtonPressed);
       if (isButtonPressed === true && updatedWordObj) {
         const updatedFlashcardParams = {
           data: allDueCards,
@@ -208,7 +207,6 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
       } else if (isButtonPressed === true && allDueCards.length === 0) {
         setIsButtonPressed(false);
         Alert.alert('Nothing to study (-:');
-        console.log(allWords, currentIndex, isButtonPressed, cycle);
       }
     }
   }, [allWords, currentIndex, isButtonPressed, cycle]);

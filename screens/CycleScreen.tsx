@@ -42,7 +42,6 @@ const CycleScreen = ({navigation, route}: CycleProps) => {
   const navigateToCorrectScreen = () => {
     const dataForStatusBar = retrieveDataFromTable(uniqueDeckName) as wordObj[];
     const nextWordObj = allDueCards[currentIndex + 1];
-    console.log('nextWordObj', nextWordObj);
     if (nextWordObj) {
       if (nextWordObj.maturityLevel === 'Difficult') {
         console.log('difficult');

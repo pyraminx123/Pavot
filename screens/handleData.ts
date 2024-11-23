@@ -275,7 +275,6 @@ const setDueNewCards = async (
     const lastTime = new Date(lastTimeUpdatedDueCards);
     const difference = Math.abs(now.getTime() - lastTime.getTime());
     const daysDifference = Math.trunc(difference / (1000 * 3600 * 24));
-    console.log('First time', lastTimeUpdatedDueCards);
 
     if (lastTimeUpdatedDueCards) {
       if (daysDifference >= 1) {
@@ -309,8 +308,7 @@ const createDeck = (
   uniqueFolderName: string,
 ): string => {
   if (originalDeckName.trim().length === 0) {
-    console.log('Input is empty or whitespace, no deck was created');
-    return '';
+    originalDeckName = 'Unnamed deck';
   }
   const uniqueDeckName = generateUniqueTableName(originalDeckName);
   try {
@@ -588,7 +586,7 @@ const retrieveWordFromDeck = (uniqueDeckName: string, id: number): object => {
       ?.rows?._array;
     return res as object;
   } catch (error) {
-    console.log(
+    console.error(
       `Couldn't retrieve word with id ${id} from ${uniqueDeckName}`,
       error,
     );
