@@ -28,4 +28,9 @@ export interface folderData {
   folderID: number;
   examDateSet: boolean;
   examDate: Date;
+  dueNewCards: wordObj[];
+  dueReviewCards: wordObj[];
+  lastTimeUpdatedDueCards: Date;
+  shortTermDailyLoad: {[key: number]: wordObj[]};
+  startingDate: Date;
 }

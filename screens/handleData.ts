@@ -2,7 +2,7 @@ import {open} from '@op-engineering/op-sqlite';
 import 'react-native-get-random-values';
 import {Card, createEmptyCard, State} from 'ts-fsrs';
 import {v4 as uuidv4} from 'uuid'; // to generate random values
-import {wordObj} from './types';
+import {folderData, wordObj} from './types';
 
 const db = open({name: 'myDb.sqlite'});
 
@@ -86,6 +86,8 @@ const createFolder = async (folderName: string) => {
   }
   try {
     const uniqueFolderName = await insertIntoAllFolders(folderName);
+    // TODO set startingDate and shortTermDailyLoad back to null
+    // TODO what it examDate changes
     db.execute(
       `CREATE TABLE ${uniqueFolderName} (
         deckID INTEGER PRIMARY KEY,
@@ -97,6 +99,8 @@ const createFolder = async (folderName: string) => {
         dueNewCards TEXT,
         dueReviewCards TEXT,
         lastTimeUpdatedDueCards DATE,
+        shortTermDailyLoad TEXT,
+        startingDate Date,
         FOREIGN KEY (folderID) REFERENCES allFolders(folderID)
       );`,
     );
@@ -149,6 +153,21 @@ const deleteFolder = async (folderID: number, fetchFolders: Function) => {
   fetchFolders();
 };
 
+const setShortTermDailyLoad = async (
+  uniqueDeckName: string,
+  uniqueFolderName: string,
+  dailyLoads: {[key: number]: wordObj[]}, // eg {1: [wordObj1], 2: [wordObj2]}
+) => {
+  try {
+    await db.execute(
+      `UPDATE ${uniqueFolderName} SET shortTermDailyLoad=? WHERE uniqueDeckName=?;`,
+      [JSON.stringify(dailyLoads), uniqueDeckName],
+    );
+  } catch (error) {
+    console.error('Error setting short term daily load', error);
+  }
+};
+
 // TODO setExamDate = true
 const setExamDate = async (
   uniqueDeckName: string,
@@ -156,9 +175,15 @@ const setExamDate = async (
   examDate: Date,
 ) => {
   try {
+    const startingDate = new Date();
     await db.execute(
-      `UPDATE ${uniqueFolderName} SET examDate=?, examDateSet=? WHERE uniqueDeckName=?;`,
-      [examDate.toISOString(), true, uniqueDeckName],
+      `UPDATE ${uniqueFolderName} SET examDate=?, examDateSet=?, startingDate=?, shortTermDailyLoad=null WHERE uniqueDeckName=?;`,
+      [
+        examDate.toISOString(),
+        true,
+        startingDate.toISOString(),
+        uniqueDeckName,
+      ],
     );
   } catch (error) {
     console.error('Error adding exam date', error);
@@ -267,39 +292,148 @@ const setDueNewCards = async (
   uniqueDeckName: string,
 ) => {
   try {
-    const lastTimeUpdatedDueCards = await db.execute(
-      `SELECT lastTimeUpdatedDueCards FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
-      [uniqueDeckName],
-    )?.rows?._array[0]?.lastTimeUpdatedDueCards;
-    const now = new Date();
-    const lastTime = new Date(lastTimeUpdatedDueCards);
-    const difference = Math.abs(now.getTime() - lastTime.getTime());
-    const daysDifference = Math.trunc(difference / (1000 * 3600 * 24));
+    const folderDataArray = retrieveDataFromTable(
+      uniqueFolderName,
+    ) as folderData[];
+    const filteredFolderData = folderDataArray.filter(
+      item => item.uniqueDeckName === uniqueDeckName,
+    ) as folderData[];
+    const examDateSet = Boolean(filteredFolderData[0].examDateSet);
+    const dateToday = new Date();
 
-    if (lastTimeUpdatedDueCards) {
-      if (daysDifference >= 1) {
+    if (!examDateSet) {
+      // if long term enabled
+      const lastTimeUpdatedDueCards = await db.execute(
+        `SELECT lastTimeUpdatedDueCards FROM ${uniqueFolderName} WHERE uniqueDeckName=?;`,
+        [uniqueDeckName],
+      )?.rows?._array[0]?.lastTimeUpdatedDueCards;
+      const lastTime = new Date(lastTimeUpdatedDueCards);
+      const difference = Math.abs(dateToday.getTime() - lastTime.getTime());
+      const daysDifference = Math.trunc(difference / (1000 * 3600 * 24));
+
+      if (lastTimeUpdatedDueCards) {
+        if (daysDifference >= 1) {
+          const result = await db.execute(
+            `SELECT * FROM ${uniqueDeckName} WHERE state="New";`,
+          );
+          const dueNewCards = result?.rows?._array.slice(0, 10) || [];
+          await db.execute(
+            `UPDATE ${uniqueFolderName} SET dueNewCards=?, lastTimeUpdatedDueCards=? WHERE uniqueDeckName=?;`,
+            [
+              JSON.stringify(dueNewCards),
+              dateToday.toISOString(),
+              uniqueDeckName,
+            ],
+          );
+        }
+      } else {
         const result = await db.execute(
           `SELECT * FROM ${uniqueDeckName} WHERE state="New";`,
         );
         const dueNewCards = result?.rows?._array.slice(0, 10) || [];
         await db.execute(
           `UPDATE ${uniqueFolderName} SET dueNewCards=?, lastTimeUpdatedDueCards=? WHERE uniqueDeckName=?;`,
-          [JSON.stringify(dueNewCards), now.toISOString(), uniqueDeckName],
+          [
+            JSON.stringify(dueNewCards),
+            dateToday.toISOString(),
+            uniqueDeckName,
+          ],
         );
       }
     } else {
-      const result = await db.execute(
-        `SELECT * FROM ${uniqueDeckName} WHERE state="New";`,
+      // if short term enabled
+      const startingDate = filteredFolderData[0].startingDate;
+      let shortTermDailyLoad = filteredFolderData[0].shortTermDailyLoad; // TODO set back to null when short term is disabled
+      if (!shortTermDailyLoad) {
+        const examDate = filteredFolderData[0].examDate; // TODO what if examDate changes
+        const difference = new Date(examDate).getTime() - dateToday.getTime();
+        const differenceInDays = Math.ceil(difference / (1000 * 60 * 60 * 24));
+        const reviewDays = Math.floor(differenceInDays / 3);
+        const totalDaysForLearning = differenceInDays - reviewDays;
+        const allWords = retrieveDataFromTable(uniqueDeckName) as wordObj[];
+        const intervals = calculateIntervals(totalDaysForLearning, allWords);
+        const distributedCards = distributeCards(
+          intervals,
+          allWords,
+          reviewDays,
+        ); // TODO mix them
+        await setShortTermDailyLoad(
+          uniqueDeckName,
+          uniqueFolderName,
+          distributedCards,
+        );
+        const updatedFolderDataArray = (await retrieveDataFromTable(
+          uniqueFolderName,
+        )) as folderData[];
+        const updatedFilteredFolderData = updatedFolderDataArray.filter(
+          item => item.uniqueDeckName === uniqueDeckName,
+        ) as folderData[];
+        shortTermDailyLoad = updatedFilteredFolderData[0].shortTermDailyLoad;
+      }
+      const differenceBetweenStartAndExam = Math.abs(
+        Math.ceil(
+          (new Date(startingDate).getTime() - dateToday.getTime()) /
+            (1000 * 60 * 60 * 24),
+        ),
       );
-      const dueNewCards = result?.rows?._array.slice(0, 10) || [];
-      await db.execute(
-        `UPDATE ${uniqueFolderName} SET dueNewCards=?, lastTimeUpdatedDueCards=? WHERE uniqueDeckName=?;`,
-        [JSON.stringify(dueNewCards), now.toISOString(), uniqueDeckName],
+      console.log(
+        'load',
+        String(differenceBetweenStartAndExam),
+        shortTermDailyLoad[String(differenceBetweenStartAndExam)],
       );
+      // TODO don't forget to save to database
     }
   } catch (error) {
     console.error('Error setting new due cards', error);
   }
+};
+
+// for short term
+const calculateIntervals = (
+  totalDaysForLearning: number,
+  allWords: wordObj[],
+) => {
+  const func = (i: number) => 1 / i;
+  let weightTotal = 0;
+  for (let i = 1; i <= totalDaysForLearning; i++) {
+    weightTotal += func(i);
+  }
+
+  let intervals = [];
+  for (let i = 1; i <= totalDaysForLearning; i++) {
+    intervals.push(Math.floor(allWords.length * (func(i) / weightTotal)));
+  }
+
+  const cardsLeftToDistribute =
+    allWords.length - intervals.reduce((a, b) => a + b, 0);
+  //console.log('cardsLeftToDistribute', cardsLeftToDistribute);
+  if (cardsLeftToDistribute > 0) {
+    for (let i = 0; i < cardsLeftToDistribute; i++) {
+      const randomIndex = Math.floor(Math.random() * intervals.length);
+      intervals[randomIndex] += 1;
+    }
+  }
+
+  return intervals;
+};
+
+// also for short term
+const distributeCards = (
+  intervals: number[],
+  allWords: wordObj[],
+  reviewDays: number,
+) => {
+  let distributedAllWords = allWords;
+  let distributedCards: {[key: number]: wordObj[]} = {};
+  let i = 0;
+  for (i = 0; i < intervals.length; i++) {
+    distributedCards[+i] = distributedAllWords.slice(0, intervals[i]);
+    distributedAllWords = distributedAllWords.slice(intervals[i]);
+  }
+  for (let j = 0; j < reviewDays; j++) {
+    distributedCards[i + j] = allWords; // TODO distribute cards for review too
+  }
+  return distributedCards;
 };
 
 // TODO folderID is currently = null
@@ -610,6 +744,7 @@ export {
   setExamDateSet,
   setDueReviewCards,
   setDueNewCards,
+  setShortTermDailyLoad,
   getDueCards,
   deleteDueCards,
   updateEntryInDeck,

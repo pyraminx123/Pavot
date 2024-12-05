@@ -29,7 +29,6 @@ const algorithm = async (
   ) as folderData[];
   const examDate = new Date(filteredFolderData[0].examDate);
   const examDateSet = Boolean(filteredFolderData[0].examDateSet);
-  console.log('r', examDate, examDateSet);
 
   const card = {
     due: flashcard.due,
@@ -46,32 +45,26 @@ const algorithm = async (
   if (!examDateSet) {
     await longTerm(flashcard, uniqueDeckName, card, rating);
   } else {
-    await shortTerm(examDate, card, rating, uniqueDeckName);
+    await shortTerm(examDate, card, rating);
   }
 };
 
-const shortTerm = (
-  examDate: Date,
-  card: Card,
-  rating: 1 | 2 | 3 | 4,
-  uniqueDeckName: string,
-) => {
+const shortTerm = async (examDate: Date, card: Card, rating: 1 | 2 | 3 | 4) => {
   const dateToday = new Date();
   const difference = examDate.getTime() - dateToday.getTime();
   const differenceInDays = Math.ceil(difference / (1000 * 60 * 60 * 24));
-  console.log('short term', differenceInDays);
-
+  const reviewDays = Math.floor(differenceInDays / 3);
+  const totalDaysForLearning = differenceInDays - reviewDays;
   const params = generatorParameters({
     enable_fuzz: false,
     enable_short_term: true,
-    maximum_interval: differenceInDays / 4,
+    maximum_interval: Math.ceil(totalDaysForLearning / 4),
     request_retention: 0.9,
   });
 
   const f: FSRS = fsrs(params);
   let scheduled_days = f.next(card, dateToday, rating).card.scheduled_days;
   console.log('scheduled_days', scheduled_days);
-  console.log(examDate, new Date(examDate.getTime() - 1000 * 60 * 60 * 24));
 };
 
 const longTerm = async (
