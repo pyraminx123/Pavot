@@ -86,7 +86,7 @@ const HomeScreen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Vocabulum</Text>
+      <Text style={styles.text}>Pavot</Text>
       <SafeAreaView style={styles.listContainer}>
         <FlatList
           numColumns={2}

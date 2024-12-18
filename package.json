@@ -1,5 +1,5 @@
 {
-  "name": "lexol",
+  "name": "pavot",
   "version": "0.0.1",
   "private": true,
   "scripts": {
@@ -26,6 +26,7 @@
     "react-native-get-random-values": "^1.11.0",
     "react-native-localize": "^3.0.6",
     "react-native-reanimated": "^3.8.1",
+    "react-native-rename": "^3.2.14",
     "react-native-safe-area-context": "^4.9.0",
     "react-native-screens": "^3.29.0",
     "react-native-svg": "^15.8.0",

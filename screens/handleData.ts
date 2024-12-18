@@ -342,8 +342,12 @@ const setDueNewCards = async (
       }
     } else {
       // if short term enabled
+      console.log('short term enabled');
       const startingDate = filteredFolderData[0].startingDate;
-      let shortTermDailyLoad = filteredFolderData[0].shortTermDailyLoad; // TODO set back to null when short term is disabled
+      let shortTermDailyLoad = JSON.parse(
+        filteredFolderData[0].shortTermDailyLoad as unknown as string,
+      ); // TODO set back to null when short term is disabled
+      console.log('shortTermDailyLoad', shortTermDailyLoad);
       if (!shortTermDailyLoad) {
         const examDate = filteredFolderData[0].examDate; // TODO what if examDate changes
         const difference = new Date(examDate).getTime() - dateToday.getTime();
@@ -379,7 +383,7 @@ const setDueNewCards = async (
       console.log(
         'load',
         String(differenceBetweenStartAndExam),
-        shortTermDailyLoad[String(differenceBetweenStartAndExam)],
+        shortTermDailyLoad,
       );
       // TODO don't forget to save to database
     }

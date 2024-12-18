@@ -49,6 +49,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const [reviewCards, setReviewCards] = useState<wordObj[]>([]);
 
   useEffect(() => {
+    console.log('allWords changed, fetching data');
     const fetchData = async () => {
       const result = await fetchDueCards();
       if (result) {
