@@ -8,6 +8,7 @@ import {
   pinkTheme,
 } from './themes';
 import {retrieveDataFromTable} from '../handleData';
+import {createSettingsTable} from '../handleData';
 
 type AppBreakpoints = typeof breakpoints;
 type AppThemes = {
@@ -27,6 +28,8 @@ interface Settings {
   settingName: string;
   settingValue: string;
 }
+
+createSettingsTable();
 
 const settings = retrieveDataFromTable('settings') as Settings[];
 

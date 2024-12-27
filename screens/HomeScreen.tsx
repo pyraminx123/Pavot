@@ -4,11 +4,7 @@ import {View, Text, Pressable, SafeAreaView, FlatList} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Folder} from './components/Folder';
-import {
-  retrieveDataFromTable,
-  createFoldersTable,
-  createSettingsTable,
-} from './handleData';
+import {retrieveDataFromTable, createFoldersTable} from './handleData';
 
 // for translation
 import '../i18n.config';
@@ -28,7 +24,6 @@ const HomeScreen = () => {
   const {styles} = useStyles(stylesheet);
   const {setHandleAddPress} = useAddButtonContext();
   createFoldersTable();
-  createSettingsTable();
   //insertIntoAllFolders('test');
   //const {t} = useTranslation() eg {t('HELLO')};
 
