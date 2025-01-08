@@ -87,7 +87,7 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: 10,
     borderWidth: 3,
     overflow: 'hidden',
-    paddingBottom: 80, // Add padding for better spacing
+    paddingBottom: 80,
   },
   button: {
     position: 'absolute',
