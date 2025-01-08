@@ -37,7 +37,9 @@ const ChoiceContainer = (props: {text: string; onPress: Function}) => {
       <View style={styles.bigCircle}>
         <View style={[styles.smallCircle, {opacity: isSelected ? 1 : 0}]} />
       </View>
-      <Text style={styles.text}>{props.text}</Text>
+      <View style={styles.textContainer}>
+        <Text style={styles.text}>{props.text}</Text>
+      </View>
     </Pressable>
   );
 };
@@ -234,6 +236,9 @@ const stylesheet = createStyleSheet(theme => ({
     borderRadius: 10,
     borderWidth: 1.5,
     alignItems: 'center',
+  },
+  textContainer: {
+    width: '80%',
   },
   text: {
     fontFamily: theme.typography.fontFamily,

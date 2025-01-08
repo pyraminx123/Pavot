@@ -25,9 +25,27 @@ const FeedbackModal = (props: Props) => {
       <View style={styles.overlay}>
         <View style={[styles.modalView, {borderColor: borderColor}]}>
           <View style={styles.textContainer}>
-            <Text style={styles.text}>Term: {props.term}</Text>
-            <Text style={styles.text}>Definition: {props.definition}</Text>
-            <Text style={styles.text}>Your answer: {props.userAnswer}</Text>
+            <Text
+              style={styles.text}
+              numberOfLines={2}
+              lineBreakMode="tail"
+              allowFontScaling={true}>
+              Term: {props.term}
+            </Text>
+            <Text
+              style={styles.text}
+              numberOfLines={2}
+              lineBreakMode="tail"
+              allowFontScaling={true}>
+              Definition: {props.definition}
+            </Text>
+            <Text
+              style={styles.text}
+              numberOfLines={2}
+              lineBreakMode="tail"
+              allowFontScaling={true}>
+              Your answer: {props.userAnswer}
+            </Text>
           </View>
           <View style={styles.parrot}>
             <Parrot
@@ -59,24 +77,23 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: 'rgba(0, 0, 0, 0.2)',
   },
   textContainer: {
+    width: '60%',
     marginLeft: 10,
-    marginTop: 30,
+    marginTop: 20,
   },
   modalView: {
-    height: 200,
     width: '85%',
     backgroundColor: 'white',
     borderRadius: 10,
     borderWidth: 3,
-    //borderColor: 'black', // TODO change to green or red
     overflow: 'hidden',
+    paddingBottom: 80, // Add padding for better spacing
   },
   button: {
     position: 'absolute',
     backgroundColor: '#FFFFFF',
     borderBottomLeftRadius: 10,
     borderBottomRightRadius: 10,
-    //borderTopColor: '#000000', // TODO change to green or red
     borderTopWidth: 2,
     width: '100%',
     paddingVertical: 20,
@@ -91,9 +108,9 @@ const stylesheet = createStyleSheet(theme => ({
   },
   parrot: {
     position: 'absolute',
-    right: -20,
+    right: -25,
     bottom: 30,
-    transform: [{scale: 0.8}],
+    transform: [{scale: 0.7}],
   },
   text: {
     fontFamily: theme.typography.fontFamily,
