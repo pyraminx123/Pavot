@@ -32,6 +32,8 @@ interface Settings {
 createSettingsTable();
 
 const settings = retrieveDataFromTable('settings') as Settings[];
+console.log(settings);
+const initialTheme = (settings[0]?.settingValue as keyof AppThemes) || 'blue';
 
 UnistylesRegistry.addBreakpoints(breakpoints)
   .addThemes({
@@ -42,5 +44,5 @@ UnistylesRegistry.addBreakpoints(breakpoints)
     pink: pinkTheme,
   })
   .addConfig({
-    initialTheme: settings[0].settingValue as keyof AppThemes,
+    initialTheme: initialTheme,
   });
