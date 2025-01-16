@@ -70,12 +70,17 @@ const DeckContainer = (props: {
   );
 };
 
+// TODO make better
+import {Dimensions} from 'react-native';
+
+const windowWidth = Dimensions.get('window').width;
+
 const stylesheet = createStyleSheet(theme => ({
   container: {
     borderRadius: 10,
     margin: 10,
     backgroundColor: theme.colors.light,
-    width: 350,
+    width: windowWidth - 40,
     height: 70,
     justifyContent: 'center',
   },

@@ -1,7 +1,16 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {Pressable, Text, View, Switch, Alert} from 'react-native';
+import {
+  Pressable,
+  Text,
+  View,
+  Switch,
+  Alert,
+  PixelRatio,
+  Platform,
+  SafeAreaView,
+} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -43,6 +52,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   // data will immediately be updated
   const [date, setDate] = useState(new Date());
   const [isSwitchOn, setIsSwitchOn] = useState(false);
+  const [showPicker, setShowPicker] = useState(false);
 
   const [allDueCards, setAllDueCards] = useState<wordObj[]>([]);
   const [newCards, setNewCards] = useState<wordObj[]>([]);
@@ -222,9 +232,9 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
       : 'New: You have ' + newCards.length + ' words due today';
 
   return (
-    <View style={styles.container}>
-      <Text>{textDueReviewWords}</Text>
-      <Text>{textDueNewWords}</Text>
+    <SafeAreaView style={styles.container}>
+      <Text style={styles.textDue}>{textDueReviewWords}</Text>
+      <Text style={styles.textDue}>{textDueNewWords}</Text>
       <View style={styles.settingWhole}>
         <View
           style={[
@@ -254,33 +264,90 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
         </View>
         {isSwitchOn && (
           <View style={styles.settingDate}>
-            <RNDateTimePicker
-              value={date}
-              minimumDate={now}
-              mode="date"
-              display="default"
-              onChange={(event, selectedDate) => {
-                const currentDate = selectedDate || date;
-                setDate(currentDate);
-                setExamDate(uniqueDeckName, uniqueFolderName, currentDate);
-              }}
-              themeVariant="light"
-            />
+            {Platform.OS === 'ios' ? (
+              <RNDateTimePicker
+                value={date}
+                minimumDate={now}
+                mode="date"
+                display="default"
+                onChange={(event, selectedDate) => {
+                  const currentDate = selectedDate || date;
+                  setDate(currentDate);
+                  setExamDate(uniqueDeckName, uniqueFolderName, currentDate);
+                }}
+                themeVariant="light"
+              />
+            ) : (
+              <View>
+                <Pressable
+                  style={styles.dateAndroidContainer}
+                  onPress={() => setShowPicker(true)}>
+                  <Text style={styles.dateAndroid}>{date.toDateString()}</Text>
+                </Pressable>
+                {showPicker && (
+                  <RNDateTimePicker
+                    value={date}
+                    minimumDate={now}
+                    mode="date"
+                    display="default"
+                    onChange={(event, selectedDate) => {
+                      if (event.type === 'dismissed') {
+                        setShowPicker(false);
+                      }
+                      const currentDate = selectedDate || date;
+                      setDate(currentDate);
+                      setShowPicker(false);
+                      setExamDate(
+                        uniqueDeckName,
+                        uniqueFolderName,
+                        currentDate,
+                      );
+                    }}
+                  />
+                )}
+              </View>
+            )}
           </View>
         )}
       </View>
       <Pressable style={styles.button} onPress={() => setIsButtonPressed(true)}>
         <Text style={styles.text}>Start</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
+
+const borderRadius = PixelRatio.roundToNearestPixel(10);
+
+// TODO make better
+import {Dimensions} from 'react-native';
+
+const windowWidth = Dimensions.get('window').width;
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
+    paddingHorizontal: 20,
+  },
+  dateAndroidContainer: {
+    borderBlockColor: '#FFFFFF',
+    borderRadius: borderRadius,
+    backgroundColor: '#FFFFFF',
+  },
+  dateAndroid: {
+    color: theme.colors.dark,
+    fontFamily: theme.typography.fontFamily,
+    fontSize: theme.typography.sizes.smallText,
+    fontWeight: '200',
+    padding: 10,
+  },
+  textDue: {
+    fontFamily: theme.typography.fontFamily,
+    fontWeight: '300',
+    fontSize: theme.typography.sizes.smallText,
+    color: '#000000',
   },
   text: {
     fontFamily: theme.typography.fontFamily,
@@ -290,17 +357,18 @@ const stylesheet = createStyleSheet(theme => ({
     color: theme.colors.light,
   },
   button: {
-    borderRadius: 10,
+    borderColor: theme.colors.dark,
+    borderRadius: borderRadius,
     width: 150,
     alignItems: 'center',
     backgroundColor: theme.colors.dark,
   },
   bordersSwitchOn: {
-    borderTopRightRadius: 10,
-    borderTopLeftRadius: 10,
+    borderTopRightRadius: borderRadius,
+    borderTopLeftRadius: borderRadius,
   },
   bordersSwitchOff: {
-    borderRadius: 10,
+    borderRadius: borderRadius,
   },
   settingWhole: {
     marginVertical: 10,
@@ -309,7 +377,7 @@ const stylesheet = createStyleSheet(theme => ({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.light,
-    width: 330,
+    width: windowWidth - 40,
     padding: 10,
     justifyContent: 'space-between',
   },
@@ -320,12 +388,13 @@ const stylesheet = createStyleSheet(theme => ({
     fontWeight: '200',
   },
   settingDate: {
-    width: 330,
+    width: windowWidth - 40,
     alignItems: 'center',
     backgroundColor: theme.colors.light,
     padding: 10,
-    borderBottomRightRadius: 10,
-    borderBottomLeftRadius: 10,
+    overflow: 'hidden',
+    borderBottomRightRadius: borderRadius,
+    borderBottomLeftRadius: borderRadius,
     borderBlockColor: theme.colors.dark,
     borderTopWidth: 1.5,
   },

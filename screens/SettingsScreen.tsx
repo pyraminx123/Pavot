@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback} from 'react';
 import {View, Text, ScrollView, Pressable} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {
   UnistylesRuntime,
   createStyleSheet,
@@ -58,7 +59,7 @@ const SettingsScreen = () => {
   );
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.title}>Settings</Text>
       <ScrollView contentContainerStyle={styles.scrollView}>
         <View style={styles.settingColor}>
@@ -74,7 +75,7 @@ const SettingsScreen = () => {
         </View>
         {/* other settings come here, styles.setting */}
       </ScrollView>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -83,33 +84,23 @@ const stylesheet = createStyleSheet(theme => ({
     flex: 1,
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
+    paddingHorizontal: 30,
   },
   scrollView: {
     flexGrow: 1,
   },
   title: {
-    top: 50,
     color: theme.colors.dark,
     fontFamily: theme.typography.fontFamily,
     fontSize: theme.typography.sizes.title,
     fontWeight: '400',
-    marginBottom: 70,
-  },
-  setting: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: theme.colors.light,
-    width: 330,
-    padding: 10,
-    borderRadius: 10,
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    marginBottom: 20,
   },
   settingColor: {
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: theme.colors.light,
-    width: 330,
+    width: '100%',
     padding: 10,
     borderTopRightRadius: 10,
     borderTopLeftRadius: 10,
@@ -121,7 +112,7 @@ const stylesheet = createStyleSheet(theme => ({
     paddingHorizontal: 20,
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: 330,
+    width: '100%',
     backgroundColor: theme.colors.light,
     padding: 10,
     borderBottomRightRadius: 10,

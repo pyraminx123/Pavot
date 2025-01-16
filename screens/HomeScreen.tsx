@@ -1,6 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useState} from 'react';
-import {View, Text, Pressable, SafeAreaView, FlatList} from 'react-native';
+import {Text, Pressable, FlatList, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Folder} from './components/Folder';
@@ -80,9 +81,9 @@ const HomeScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.text}>Pavot</Text>
-      <SafeAreaView style={styles.listContainer}>
+      <View style={styles.listContainer}>
         <FlatList
           numColumns={2}
           data={allFolders}
@@ -90,8 +91,8 @@ const HomeScreen = () => {
           contentContainerStyle={styles.list}
           showsVerticalScrollIndicator={false}
         />
-      </SafeAreaView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -102,14 +103,18 @@ const stylesheet = createStyleSheet(theme => ({
     backgroundColor: '#FFFFFF',
   },
   listContainer: {
-    marginTop: 60,
+    flex: 1,
+    marginTop: 0,
+    padding: 0,
   },
   list: {
     alignItems: 'center',
+    top: 0,
     paddingBottom: 50,
   },
   text: {
-    top: 50,
+    margin: 0,
+    padding: 0,
     color: theme.colors.dark,
     fontSize: 40,
     textAlign: 'center',

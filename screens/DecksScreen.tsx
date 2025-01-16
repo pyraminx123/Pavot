@@ -85,7 +85,12 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
     originalDeckName: string,
   ) => {
     const data = retrieveDataFromTable(uniqueDeckName) as wordObj[];
-    const flashcardParams = {data, originalDeckName, uniqueDeckName};
+    const flashcardParams = {
+      data,
+      originalDeckName,
+      uniqueDeckName,
+      uniqueFolderName,
+    };
     navigation.navigate('DeckHome', {
       flashcardParams,
       uniqueFolderName,
@@ -164,6 +169,7 @@ const DecksScreen = ({route, navigation}: DecksProps) => {
 const stylesheet = createStyleSheet({
   container: {
     flex: 1,
+    flexGrow: 1,
     padding: 10,
     backgroundColor: '#FFFFFF',
   },

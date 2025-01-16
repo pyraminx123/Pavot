@@ -7,7 +7,7 @@ import React, {
   useRef,
   useCallback,
 } from 'react';
-import {View, Text, TextInput, Pressable} from 'react-native';
+import {View, Text, TextInput, Pressable, SafeAreaView} from 'react-native';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {CloseHeader} from './components/headers';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
@@ -151,7 +151,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.lineContainer}>
         {segmentData.map((segment, index) => (
           <View
@@ -188,7 +188,7 @@ const WriteScreen = ({navigation, route}: WriteProps) => {
         definition={def}
         userAnswer={text}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

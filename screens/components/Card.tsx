@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useState, useEffect} from 'react';
-import {TextInput, View} from 'react-native';
+import {TextInput, View, PixelRatio} from 'react-native';
 import DeleteButton from './deleteButton';
 import {updateEntryInDeck, insertIntoDeck} from '../handleData';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
@@ -58,42 +58,55 @@ const Card = (props: {
         <DeleteButton deleteFunction={() => props.deleteFunction()} />
       </View>
       <View style={styles.content}>
-        <TextInput
-          value={termInput}
-          onChangeText={text => setTermInput(text)}
-          style={styles.textInput}
-          placeholder={'term'}
-          placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
-        />
-        <TextInput
-          value={definitionInput}
-          onChangeText={text => setDefinitionInput(text)}
-          style={styles.textInput}
-          placeholder={'definition'}
-          placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.4)}
-        />
+        <View style={styles.textInputContainer}>
+          <TextInput
+            value={termInput}
+            onChangeText={text => setTermInput(text)}
+            style={styles.textInput}
+            placeholder={'term'}
+            placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
+          />
+        </View>
+        <View style={styles.textInputContainer}>
+          <TextInput
+            value={definitionInput}
+            onChangeText={text => setDefinitionInput(text)}
+            style={styles.textInput}
+            placeholder={'definition'}
+            placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.4)}
+          />
+        </View>
       </View>
     </View>
   );
 };
 
+const borderRadius = PixelRatio.roundToNearestPixel(10);
+
 const stylesheet = createStyleSheet(theme => ({
   card: {
+    width: '100%',
     backgroundColor: theme.colors.light,
-    borderRadius: 10,
+    borderRadius: borderRadius,
     alignItems: 'center',
     marginTop: 20,
     padding: 20,
   },
   content: {
-    marginTop: 20,
+    marginTop: 10,
+  },
+  textInputContainer: {
+    flexDirection: 'row',
+    width: '100%',
+    marginBottom: 20,
   },
   textInput: {
-    height: 35,
-    width: 293,
-    marginBottom: 10,
+    flex: 1,
+    padding: 0,
     fontFamily: theme.typography.fontFamily,
     fontSize: theme.typography.sizes.text,
+    includeFontPadding: false,
+    textAlignVertical: 'center',
     fontWeight: '300',
     color: theme.colors.dark,
     borderBottomWidth: 1.5,

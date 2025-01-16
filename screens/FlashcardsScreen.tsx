@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {View, Pressable} from 'react-native';
+import {PixelRatio, Pressable, SafeAreaView} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -84,7 +84,7 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
 
   return (
     // TODO handle case where no words are added yet bzw screen doesn't open when no words are added
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <GestureHandlerRootView style={styles.gestureContainer}>
         {termsStack.length > 0 && (
           <>
@@ -101,9 +101,11 @@ const FlashcardsScreen = ({route, navigation}: FlashcardsProps) => {
           </>
         )}
       </GestureHandlerRootView>
-    </View>
+    </SafeAreaView>
   );
 };
+
+const borderRadius = PixelRatio.roundToNearestPixel(10);
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
@@ -117,10 +119,11 @@ const stylesheet = createStyleSheet(theme => ({
     alignItems: 'center',
   },
   card: {
+    overflow: 'hidden',
     width: 320,
     height: 200,
     backgroundColor: theme.colors.light,
-    borderRadius: 10,
+    borderRadius: borderRadius,
     borderWidth: 3,
     borderColor: theme.colors.light,
     backfaceVisibility: 'hidden',

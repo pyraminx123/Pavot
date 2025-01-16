@@ -1,7 +1,7 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {View, FlatList, SafeAreaView, TextInput} from 'react-native';
+import {FlatList, TextInput, View, SafeAreaView} from 'react-native';
 import Card, {addCardToDatabase} from './components/Card';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
@@ -165,7 +165,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
   const {styles, theme} = useStyles(stylesheet);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TextInput
         style={styles.title}
         value={text}
@@ -173,7 +173,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         placeholder="Deck name"
         placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
       />
-      <SafeAreaView>
+      <View>
         <FlatList
           numColumns={1}
           data={data}
@@ -183,18 +183,19 @@ const WordScreen = ({route, navigation}: WordsProps) => {
             <UploadFile previousData={data} setData={setData} />
           }
         />
-      </SafeAreaView>
-    </View>
+      </View>
+    </SafeAreaView>
   );
 };
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
     flex: 1,
-    padding: 30,
+    paddingHorizontal: 30,
     backgroundColor: '#FFFFFF',
   },
   title: {
+    padding: 0,
     fontSize: theme.typography.sizes.title,
     fontFamily: theme.typography.fontFamily,
     color: theme.colors.dark,

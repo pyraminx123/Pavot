@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useLayoutEffect, useState} from 'react';
-import {View, TextInput} from 'react-native';
+import {TextInput, SafeAreaView} from 'react-native';
 import {WordsHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
@@ -43,7 +43,7 @@ const AddFolderScreen = ({navigation, route}: AddFolderProps) => {
   }, [navigation, text]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TextInput
         style={styles.title}
         value={text}
@@ -53,7 +53,7 @@ const AddFolderScreen = ({navigation, route}: AddFolderProps) => {
         placeholder="Folder name"
         placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -64,6 +64,8 @@ const stylesheet = createStyleSheet(theme => ({
     alignItems: 'center',
   },
   title: {
+    padding: 0,
+    includeFontPadding: false,
     fontSize: theme.typography.sizes.title,
     fontFamily: theme.typography.fontFamily,
     color: theme.colors.dark,

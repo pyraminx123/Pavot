@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useEffect, useLayoutEffect, useState} from 'react';
-import {View, TextInput} from 'react-native';
+import {TextInput, SafeAreaView} from 'react-native';
 import {WordsHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
@@ -54,7 +54,7 @@ const WordInfoScreen = ({navigation, route}: WordInfoProps) => {
   }, [term, definition]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <TextInput
         style={styles.title}
         value={term}
@@ -73,7 +73,7 @@ const WordInfoScreen = ({navigation, route}: WordInfoProps) => {
         placeholder="Definition"
         placeholderTextColor={theme.utils.hexToRgba(theme.colors.dark, 0.5)}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useLayoutEffect} from 'react';
-import {Text, View} from 'react-native';
+import {SafeAreaView, Text} from 'react-native';
 import {useStyles, createStyleSheet} from 'react-native-unistyles';
 import {CloseHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -40,9 +40,9 @@ const CongratsScreen = ({navigation, route}: CongratsProps) => {
   }, [navigation]);
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.text}>Congrats!</Text>
-    </View>
+    </SafeAreaView>
   );
 };
 

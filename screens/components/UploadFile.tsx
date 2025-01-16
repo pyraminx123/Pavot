@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
-import {Alert, Pressable, Text} from 'react-native';
+import {Alert, Pressable, Text, View} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {UploadIcon} from './icons';
 import {pick, types} from 'react-native-document-picker';
@@ -70,21 +70,32 @@ const UploadFile = (props: {previousData: wordObj[]; setData: Function}) => {
 
   return (
     <Pressable style={styles.button} onPress={() => handleUpload()}>
-      <Text style={styles.text}>Upload .txt File</Text>
-      <UploadIcon />
+      <View style={styles.content}>
+        <Text style={styles.text}>Upload .txt File</Text>
+        <UploadIcon />
+      </View>
     </Pressable>
   );
 };
 
+// TODO update this to better code
+import {Dimensions} from 'react-native';
+
+const screenWidth = Dimensions.get('window').width;
+
 const stylesheet = createStyleSheet(theme => ({
   button: {
-    flexDirection: 'row',
     backgroundColor: theme.colors.light,
     borderRadius: 10,
+    height: 70,
+    width: screenWidth - 60,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  content: {
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    height: 70,
-    width: 333,
   },
   text: {
     fontSize: theme.typography.sizes.text,

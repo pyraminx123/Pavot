@@ -3,7 +3,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {View, Text, Pressable} from 'react-native';
+import {View, Text, Pressable, SafeAreaView} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {CloseHeader} from './components/headers';
@@ -168,7 +168,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
     }
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.lineContainer}>
         {segmentData.map((segment, index) => (
           <View
@@ -198,7 +198,7 @@ const SingleChoiceScreen = ({navigation, route}: SingleChoiceProps) => {
         definition={correctDef}
         userAnswer={userAnswer}
       />
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -212,7 +212,6 @@ const stylesheet = createStyleSheet(theme => ({
     marginHorizontal: '5%',
     height: 10,
     borderRadius: 10,
-    overflow: 'hidden',
   },
   lineSegment: {
     height: '100%',

@@ -7,7 +7,14 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {View, Text, Pressable, FlatList} from 'react-native';
+import {
+  View,
+  Text,
+  Pressable,
+  FlatList,
+  SafeAreaView,
+  PixelRatio,
+} from 'react-native';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {AppStackParamList} from '../App';
@@ -163,7 +170,7 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
     );
   };
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       {initialData.length > 0 && (
         <View style={styles.pie}>
           <VictoryPie
@@ -213,9 +220,11 @@ const DeckHomeScreen = ({route, navigation}: DeckHomeProps) => {
           renderItem={renderItem}
         />
       </View>
-    </View>
+    </SafeAreaView>
   );
 };
+
+const borderRadius = PixelRatio.roundToNearestPixel(10);
 
 const stylesheet = createStyleSheet(theme => ({
   container: {
@@ -228,13 +237,15 @@ const stylesheet = createStyleSheet(theme => ({
     marginBottom: 10,
   },
   button: {
+    overflow: 'hidden',
     textAlign: 'left',
     width: 150,
     justifyContent: 'center',
     backgroundColor: theme.colors.light,
     padding: 10,
     margin: 5,
-    borderRadius: 10,
+    borderBlockColor: theme.colors.light,
+    borderRadius: borderRadius,
     alignItems: 'center',
     flexWrap: 'wrap',
   },
@@ -253,9 +264,11 @@ const stylesheet = createStyleSheet(theme => ({
     fontWeight: '300',
   },
   wordContainer: {
+    overflow: 'hidden',
+    borderBlockColor: theme.colors.light,
     backgroundColor: theme.colors.light,
     margin: 5,
-    borderRadius: 10,
+    borderRadius: borderRadius,
     width: 320,
     paddingVertical: 15,
     justifyContent: 'center',

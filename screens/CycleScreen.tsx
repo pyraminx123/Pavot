@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react/no-unstable-nested-components */
 import React, {useLayoutEffect} from 'react';
-import {Pressable, Text, View} from 'react-native';
+import {Pressable, SafeAreaView, Text} from 'react-native';
 import {useStyles, createStyleSheet} from 'react-native-unistyles';
 import {CloseHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
@@ -70,7 +70,7 @@ const CycleScreen = ({navigation, route}: CycleProps) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <Text style={styles.text}>Cycle</Text>
       <Pressable
         onPress={() => {
@@ -82,7 +82,7 @@ const CycleScreen = ({navigation, route}: CycleProps) => {
         }}>
         <Text>Continue</Text>
       </Pressable>
-    </View>
+    </SafeAreaView>
   );
 };
 

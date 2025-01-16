@@ -1,6 +1,6 @@
 import React from 'react';
 
-import {View, Text} from 'react-native';
+import {View, Text, PixelRatio} from 'react-native';
 import DeleteButton from './deleteButton';
 import {deleteFolder} from '../handleData';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
@@ -32,9 +32,13 @@ const Folder = (props: {
   );
 };
 
+const borderRadius = PixelRatio.roundToNearestPixel(10);
+
 const stylesheet = createStyleSheet(theme => ({
   folder: {
-    borderRadius: 10,
+    overflow: 'hidden',
+    borderBlockColor: theme.colors.light,
+    borderRadius: borderRadius,
     padding: 10,
     height: 130,
     width: 150,
