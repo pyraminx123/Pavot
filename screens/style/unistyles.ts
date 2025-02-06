@@ -7,8 +7,8 @@ import {
   redTheme,
   pinkTheme,
 } from './themes';
-import {retrieveDataFromTable} from '../handleData';
-import {createSettingsTable} from '../handleData';
+import {retrieveDataFromTable} from '../handleData/functions';
+import {createSettingsTable} from '../handleData/settings';
 
 type AppBreakpoints = typeof breakpoints;
 type AppThemes = {

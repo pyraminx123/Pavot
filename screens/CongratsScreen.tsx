@@ -6,7 +6,7 @@ import {useStyles, createStyleSheet} from 'react-native-unistyles';
 import {CloseHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
-import {deleteDueCards} from './handleData';
+import {deleteDueCards} from './handleData/handleAlgo';
 
 type CongratsProps = NativeStackScreenProps<
   HiddenTabStackParamList,

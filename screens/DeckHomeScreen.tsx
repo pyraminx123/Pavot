@@ -20,7 +20,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {AppStackParamList} from '../App';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {MainHeader} from './components/headers';
-import {retrieveDataFromTable} from './handleData';
+import {retrieveDataFromTable} from './handleData/functions';
 import {wordObj} from './types';
 import {useLearningModeContext} from './contexts/LearningModeContext';
 import {useAddButtonContext} from './contexts/headerContext';

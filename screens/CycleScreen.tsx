@@ -7,7 +7,7 @@ import {CloseHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
 import {useLearningModeContext} from './contexts/LearningModeContext';
-import {retrieveDataFromTable} from './handleData';
+import {retrieveDataFromTable} from './handleData/functions';
 import {wordObj} from './types';
 
 type CycleProps = NativeStackScreenProps<HiddenTabStackParamList, 'Cycle'>;

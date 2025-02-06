@@ -19,12 +19,12 @@ import {useLearningModeContext} from './contexts/LearningModeContext';
 import {
   getDueCards,
   getExamDate,
-  retrieveDataFromTable,
   setDueNewCards,
   setDueReviewCards,
   setExamDate,
   setExamDateSet,
-} from './handleData';
+} from './handleData/handleAlgo';
+import {retrieveDataFromTable} from './handleData/functions';
 import RNDateTimePicker from '@react-native-community/datetimepicker';
 import {folderData, wordObj} from './types';
 import {State} from 'ts-fsrs';
@@ -38,10 +38,7 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const {styles, theme} = useStyles(stylesheet);
   const now = new Date();
   const allWords = route.params.flashcardParams.data;
-  //console.log('all', allDueCards);
-  //console.log(dueCards);
   const allDefs = allWords.map(word => word.definition);
-  //console.log(allDefs);
   const originalDeckName = route.params.flashcardParams.originalDeckName;
   const flashcardParams = route.params.flashcardParams;
   const uniqueDeckName = flashcardParams.uniqueDeckName;
@@ -58,18 +55,17 @@ const LearningModeScreen = ({navigation, route}: LearningModeProps) => {
   const [newCards, setNewCards] = useState<wordObj[]>([]);
   const [reviewCards, setReviewCards] = useState<wordObj[]>([]);
 
+  const fetchData = async () => {
+    const result = await fetchDueCards();
+    if (result) {
+      const {allCardsThatAreDue, dueNewCards, dueReviewCards} = result;
+      setAllDueCards(allCardsThatAreDue);
+      setNewCards(dueNewCards);
+      setReviewCards(dueReviewCards);
+    }
+  };
   useEffect(() => {
     console.log('allWords changed, fetching data');
-    const fetchData = async () => {
-      const result = await fetchDueCards();
-      if (result) {
-        const {allCardsThatAreDue, dueNewCards, dueReviewCards} = result;
-        setAllDueCards(allCardsThatAreDue);
-        setNewCards(dueNewCards);
-        setReviewCards(dueReviewCards);
-      }
-    };
-
     fetchData();
   }, [allWords]);
 

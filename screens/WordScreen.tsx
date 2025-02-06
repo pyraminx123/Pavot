@@ -7,7 +7,7 @@ import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {AppStackParamList} from '../App';
-import {deleteEntryInDeck, changeDeckName, createDeck} from './handleData';
+import {createDeck, changeDeckName, deleteEntryInDeck} from './handleData/deck';
 import {wordObj} from './types';
 import {useFocusEffect} from '@react-navigation/native';
 import {useAddButtonContext} from './contexts/headerContext';
@@ -104,7 +104,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
     }
   };
 
-  const updateCard = (index: number, term: string, definition: string) => {
+  const updateCardInfo = (index: number, term: string, definition: string) => {
     setData(prevData => {
       //console.log('prev', prevData, prevData[index]);
       prevData[index].term = term;
@@ -157,7 +157,7 @@ const WordScreen = ({route, navigation}: WordsProps) => {
         uniqueDeckName={uniqueDeckName}
         uniqueFolderName={uniqueFolderName}
         deleteFunction={() => deleteCard(item.id, item.deckID)}
-        updateCard={updateCard}
+        updateCard={updateCardInfo}
       />
     );
   };

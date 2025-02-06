@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 
 import {View, Text, Pressable} from 'react-native';
-import {deleteDeck} from '../handleData';
+import {deleteDeck} from '../handleData/deck';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 import {EditIcon, BinIcon} from './icons';
 import ContextMenu from './contextMenu';

@@ -5,7 +5,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 import {Folder} from './components/Folder';
-import {retrieveDataFromTable, createFoldersTable} from './handleData';
+import {createFoldersTable} from './handleData/folders';
+import {retrieveDataFromTable} from './handleData/functions';
 
 // for translation
 import '../i18n.config';

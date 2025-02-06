@@ -7,7 +7,8 @@ import {
   Card,
 } from 'ts-fsrs';
 import {folderData, wordObj} from './types';
-import {retrieveDataFromTable, updateCard} from './handleData';
+import {updateCardInfo} from './handleData/handleAlgo';
+import {retrieveDataFromTable} from './handleData/functions';
 
 // TODO add max interval (for tests)
 const algorithm = async (
@@ -82,7 +83,7 @@ const longTerm = async (
   });
   const f: FSRS = fsrs(params);
   let scheduling_cards: RecordLogItem = f.next(card, new Date(), rating);
-  await updateCard(flashcard, scheduling_cards.card, uniqueDeckName);
+  await updateCardInfo(flashcard, scheduling_cards.card, uniqueDeckName);
 };
 
 export default algorithm;

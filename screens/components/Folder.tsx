@@ -2,7 +2,7 @@ import React from 'react';
 
 import {View, Text, PixelRatio} from 'react-native';
 import DeleteButton from './deleteButton';
-import {deleteFolder} from '../handleData';
+import {deleteFolder} from '../handleData/folders';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 const Folder = (props: {

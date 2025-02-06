@@ -6,7 +6,7 @@ import {WordsHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
 import {useStyles, createStyleSheet} from 'react-native-unistyles';
-import {createFolder} from './handleData';
+import {createFolder} from './handleData/folders';
 
 type AddFolderProps = NativeStackScreenProps<
   HiddenTabStackParamList,

@@ -12,7 +12,7 @@ import {
 } from 'react-native';
 
 import DeckContainer from './components/deckContainer';
-import {retrieveDataFromTable} from './handleData';
+import {retrieveDataFromTable} from './handleData/functions';
 import {MainHeader} from './components/headers';
 
 import {NativeStackScreenProps} from '@react-navigation/native-stack';

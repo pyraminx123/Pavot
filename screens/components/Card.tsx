@@ -2,7 +2,8 @@
 import React, {useState, useEffect} from 'react';
 import {TextInput, View, PixelRatio} from 'react-native';
 import DeleteButton from './deleteButton';
-import {updateEntryInDeck, insertIntoDeck} from '../handleData';
+import {changeTermOrDef} from '../handleData/deck';
+import {insertIntoDeck} from '../handleData/deck';
 import {createStyleSheet, useStyles} from 'react-native-unistyles';
 
 interface cardInfo {
@@ -17,7 +18,7 @@ interface cardInfo {
 // TODO update the update and insert functions
 const addCardToDatabase = async (cardProps: cardInfo) => {
   if (cardProps.deckId !== -1) {
-    await updateEntryInDeck(
+    await changeTermOrDef(
       cardProps.uniqueDeckName,
       cardProps.id,
       cardProps.term,

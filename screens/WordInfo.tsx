@@ -6,7 +6,7 @@ import {WordsHeader} from './components/headers';
 import {NativeStackScreenProps} from '@react-navigation/native-stack';
 import {HiddenTabStackParamList} from '../App';
 import {useStyles, createStyleSheet} from 'react-native-unistyles';
-import {updateEntryInDeck} from './handleData';
+import {changeTermOrDef} from './handleData/deck';
 
 type WordInfoProps = NativeStackScreenProps<
   HiddenTabStackParamList,
@@ -22,12 +22,7 @@ const WordInfoScreen = ({navigation, route}: WordInfoProps) => {
   const {styles, theme} = useStyles(stylesheet);
 
   const onSave = () => {
-    updateEntryInDeck(
-      uniqueDeckName,
-      route.params.wordObj.id,
-      term,
-      definition,
-    );
+    changeTermOrDef(uniqueDeckName, route.params.wordObj.id, term, definition);
   };
 
   useLayoutEffect(() => {

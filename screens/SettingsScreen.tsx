@@ -7,7 +7,7 @@ import {
   createStyleSheet,
   useStyles,
 } from 'react-native-unistyles';
-import {changeTheme} from './handleData';
+import {changeTheme} from './handleData/settings';
 import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {AppTabParamList} from '../App';
